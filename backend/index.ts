@@ -21,7 +21,7 @@ app.get('/api/items', async (req, res) => {
   try {
     const items = await prisma.item.findMany({
       include: { histories: true },
-      orderBy: { updateAt: 'desc' }
+      orderBy: { updatedAt: 'desc' }
     });
     res.json(items);
   } catch (error) {
