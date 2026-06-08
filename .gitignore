@@ -1,0 +1,18 @@
+# =========================
+# プロジェクト共通
+# =========================
+node_modules/
+.DS_Store
+
+# =========================
+# バックエンド (Node.js / Prisma)
+# =========================
+backend/.env
+backend/prisma/dev.db
+backend/prisma/dev.db-journal
+
+# =========================
+# フロントエンド (React / Vite)
+# =========================
+frontend/dist/
+frontend/.env
