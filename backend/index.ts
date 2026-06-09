@@ -33,11 +33,12 @@ app.get('/api/items', async (req, res) => {
 //アイテムを追加
 app.post('/api/items', async (req, res) => {
   try {
-    const { name, minThreshold, imageUrl } = req.body;
+    const { name, quantity, minThreshold, imageUrl } = req.body;
 
     const newItem = await prisma.item.create({
       data: {
         name: name,
+        quantity: quantity || 0,
         minThreshold: minThreshold || 5,
         imageUrl: imageUrl || null,
         histories: {
