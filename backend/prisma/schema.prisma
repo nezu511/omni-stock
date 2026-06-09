@@ -18,6 +18,7 @@ model Item {
     name String @unique
     quantity Int @default(0)
     barcode String? @unique
+    imageUrl String? 
     minThreshold Int @default(5)
     orderStatus String @default("NONE")
     createdAt DateTime @default(now())
