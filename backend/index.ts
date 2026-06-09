@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import { PrismaClient } from '@prisma/client';
+import 'dotenv/config'
 
 const prisma = new PrismaClient();
 const app = express();
@@ -54,6 +55,33 @@ app.post('/api/items', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to create item' });
+  }
+});
+
+//アイテム数を増減
+app.post("/api/quantity_change", async (req, res) => {
+  try {
+    const { itemId, quantity_change, actionType } = req.body;
+
+    const updatedItem = await prisma.item.update({
+      where: { id: itemId },
+      data: {
+        quantity: { increment: quantity_change },
+
+        histories: {
+          create: {
+            actionType: actionType || 'QUANTITY_UPDATE',
+            amountChange: quantity_change,
+
+          }
+        }
+      },
+      include: { histories: true }
+    });
+    res.json(updatedItem);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to update amount ' });
   }
 });
 
