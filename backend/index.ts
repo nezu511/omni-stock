@@ -33,7 +33,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // ==========================================
-// 📥 4-1. 画像を受け取るAPI（アップロード口）
+// 📥 画像を受け取るAPI（アップロード口）
 // ==========================================
 // フロントエンドの FormData から 'image' というキーで送られてきたファイルを受け取る
 app.post('/api/upload', upload.single('image'), (req, res) => {
@@ -47,7 +47,7 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
 });
 
 // ==========================================
-// 📤 4-2. 画像を配信する機能（静的ファイル配信設定）
+// 📤 画像を配信する機能（静的ファイル配信設定）
 // ==========================================
 // '/uploads/ファイル名' というURLリクエストが来たら、
 // バックエンドの実際の 'uploads' フォルダ内をそのままブラウザにマウントする許可設定
@@ -126,6 +126,22 @@ app.post("/api/quantity_change", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to update amount ' });
+  }
+});
+
+app.delete("api/items/:id", async (req, res) => {
+  try {
+    const itemId = parseInt(req.params.id, 10);
+
+    await prisma.$transaction([
+      prisma.history.deleteMany({ where: { itemId: itemId } }),
+      prisma.item.delete({ where: { id: itemId } })
+    ]);
+
+    res.json({ message: 'Item deleted successfully' });
+  } catch (error) {
+    console.error("Delete error", error);
+    res.status(500).json({ error: "failed to delete item" });
   }
 });
 
