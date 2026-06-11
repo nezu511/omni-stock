@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 // アイテムの型定義（今回は表示用なのでシンプルに）
 interface Item {
@@ -12,6 +13,8 @@ export default function Admin() {
   const [items, setItems] = useState<Item[]>([]);
   // 検索バーに入力された文字を記憶するState
   const [searchQuery, setSearchQuery] = useState('');
+
+  const navigate = useNavigate(); //遷移用の関数ポインタを取得
 
   // データ取得（今までと全く同じロジック）
   const fetchItems = () => {
@@ -45,7 +48,7 @@ export default function Admin() {
         />
 
         <button
-          onClick={() => alert('後で「新規追加ページ」への遷移を実装します！')}
+          onClick={() => navigate('/manage/new')}
           style={{ padding: '10px 20px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}
         >
           ＋ 新規アイテム追加
