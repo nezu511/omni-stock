@@ -133,17 +133,44 @@ app.delete("api/items/:id", async (req, res) => {
   try {
     const itemId = parseInt(req.params.id, 10);
 
+    //imageUrlを取得
+    const targetItem = await prisma.item.findUnique({
+      where: { id: itemId }
+    });
+
+    if (!targetItem) {
+      return res.status(404).json({ error: 'Item not found' });
+    }
+
     await prisma.$transaction([
       prisma.history.deleteMany({ where: { itemId: itemId } }),
       prisma.item.delete({ where: { id: itemId } })
     ]);
 
-    res.json({ message: 'Item deleted successfully' });
+    //画像の削除
+    if (targetItem.imageUrl) {
+      //URLからファイル名を取り出す
+      const filename = targetItem.imageUrl.split('/').pop();
+
+      if (filename) {
+        const filePath = path.join(__dirname, 'uploads', filename);
+
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+          console.log('Deleted image file: ${filename}');
+        }
+      }
+    }
+
+    res.json({ message: 'Item adn associated image deleted successfully' });
+
   } catch (error) {
-    console.error("Delete error", error);
-    res.status(500).json({ error: "failed to delete item" });
+    console.error('Delete error: ', error);
+    res.status(500).json({ error: 'Failed to delete item' });
   }
 });
+
+
 
 
 const PORT = 3001;
