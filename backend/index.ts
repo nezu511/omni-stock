@@ -129,7 +129,7 @@ app.post("/api/quantity_change", async (req, res) => {
   }
 });
 
-app.delete("api/items/:id", async (req, res) => {
+app.delete("/api/items/:id", async (req, res) => {
   try {
     const itemId = parseInt(req.params.id, 10);
 
@@ -157,7 +157,7 @@ app.delete("api/items/:id", async (req, res) => {
 
         if (fs.existsSync(filePath)) {
           fs.unlinkSync(filePath);
-          console.log('Deleted image file: ${filename}');
+          console.log(`Deleted image file: ${filename}`);
         }
       }
     }

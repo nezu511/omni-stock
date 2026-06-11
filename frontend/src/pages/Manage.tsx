@@ -28,6 +28,27 @@ export default function Admin() {
     fetchItems();
   }, []);
 
+  const handleDelete = async (id: number, name: string) => {
+    const isConfirmed = window.confirm(`本当に「 ${name} 」を削除しますか？\n この操作は取り消せません`);
+
+
+    if (!isConfirmed) return;
+    try {
+      const response = await fetch(`http://localhost:3001/api/items/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        alert("削除が完了しました");
+        fetchItems();
+      } else {
+        alert('削除に失敗');
+      }
+    } catch (error) {
+      console.error('通信エラー: ', error);
+    }
+  };
+
   // 検索ロジック：itemsの配列から、名前に検索ワードが含まれるものだけを抽出する
   const filteredItems = items.filter((item) =>
     item.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -93,12 +114,19 @@ export default function Admin() {
 
                 {/* 🌟 編集ページへの導線ボタン */}
                 <td style={{ padding: '12px 16px', textAlign: 'center' }}>
-                  <button
-                    onClick={() => alert(`ID: ${item.id} の「詳細・編集ページ」へ遷移します！`)}
-                    style={{ padding: '6px 12px', backgroundColor: '#f3f4f6', color: '#374151', border: '1px solid #d1d5db', borderRadius: '4px', cursor: 'pointer', transition: 'background 0.2s' }}
-                  >
-                    📝 詳細・編集
-                  </button>
+                  <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                    <button
+                      onClick={() => alert('ID: ${item.id}の詳細へ遷移')}
+                      style={{ padding: '6px 12px', backgroundColor: '#f3f4f6', color: '#374151', border: '1px solid #d1d5db', borderRadius: '4px', cursor: 'pointer' }}>
+                      編集
+                    </button>
+
+                    <button
+                      onClick={() => handleDelete(item.id, item.name)}
+                      style={{ padding: '6px 12px', backgroundColor: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', borderRadius: '4px', cursor: 'pointer' }}>
+                      🗑️ 削除
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
