@@ -18,10 +18,12 @@ export default function Consume() {
   //1番目：データを書き換えるための専用スイッチ（関数)
   const [items, setItems] = useState<Item[]>([]);
 
-  // 新機能：各アイテムの「入力フォームの数字」を個別に記憶するメモリ
+  // 各アイテムの「入力フォームの数字」を個別に記憶するメモリ
   // {}は辞書型
   // keyは[key: number]で絵遅疑しており，任意の数字が
   const [inputValues, setInputValues] = useState<{ [key: number]: number | '' }>({});
+  // 検索バーに入力された文字を記憶するState
+  const [searchQuery, setSearchQuery] = useState('');
 
   // データの取得
   const fetchItems = () => {
@@ -60,6 +62,11 @@ export default function Consume() {
     }
   };
 
+  // 検索ロジック：itemsの配列から、名前に検索ワードが含まれるものだけを抽出する
+  const filteredItems = items.filter((item) =>
+    item.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div>
       <h2 style={{ color: '#dc2626', borderBottom: '2px solid #fca5a5', paddingBottom: '10px' }}>
@@ -67,8 +74,25 @@ export default function Consume() {
       </h2>
       <p style={{ color: '#6b7280', marginBottom: '20px' }}>使用した分だけ在庫からマイナスします。</p>
 
+      {/* 🌟 検索バー ＆ カメラボタン のエリア */}
+      <div style={{ display: 'flex', gap: '10px', margin: '0 auto 30px', maxWidth: '600px' }}>
+        <input
+          type="text"
+          placeholder="🔍 アイテム名で検索..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          style={{ flex: 1, padding: '12px', fontSize: '16px', border: '1px solid #d1d5db', borderRadius: '8px', boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.05)' }}
+        />
+        <button
+          onClick={() => alert('ここにカメラ起動処理を入れます！')}
+          style={{ padding: '0 20px', fontSize: '20px', backgroundColor: '#374151', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
+        >
+          📷
+        </button>
+      </div>
+
       <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
-        {items.map((item) => (
+        {filteredItems.map((item) => (
           <div key={item.id} style={{
             backgroundColor: 'white',
             border: '1px solid #e5e7eb',
