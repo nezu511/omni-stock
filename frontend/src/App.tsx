@@ -3,6 +3,7 @@ import Home from './pages/Home';
 import Consume from './pages/Consume';
 import Restock from './pages/Restock';
 import Manage from './pages/Manage';
+import AddItem from './pages/AddItem';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
             <Route path="/consume" element={<Consume />} />
             <Route path="/restock" element={<Restock />} />
             <Route path="/manage" element={<Manage />} />
+            <Route path="/manage/new" element={<AddItem />} />
           </Routes>
         </div>
 
