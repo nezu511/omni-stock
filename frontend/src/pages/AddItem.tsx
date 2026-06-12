@@ -24,14 +24,14 @@ export default function AddItem() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // どの入力欄（name）に、どんな値（value）が、何の型（type）で打ち込まれたかを取得
     const { name, value, type } = e.target;
-    
+
     // HTMLの入力はすべて「文字列」になってしまうため、number型の場合は数値にキャストする
     const parsedValue = type === 'number' ? Number(value) : value;
 
     setFormData((prev) => ({
       ...prev,
       // 👈 [name] にすることで、「name欄」なら name が、「quantity欄」なら quantity が動的に上書きされる！
-      [name]: parsedValue, 
+      [name]: parsedValue,
     }));
   };
 
@@ -51,7 +51,7 @@ export default function AddItem() {
         body: uploadData,
       });
       const data = await response.json();
-      
+
       // Step.2: 返ってきたURLを formData の imageUrl の場所だけに上書き記録する
       setFormData((prev) => ({ ...prev, imageUrl: data.imageUrl }));
     } catch (error) {
@@ -62,19 +62,19 @@ export default function AddItem() {
   // 🌟 最終的なデータ送信処理（確定ボタン）
   const handleSubmit = async (e: React.FormEvent) => {
     // ⚠️ 超重要: ブラウザが持っている「フォーム送信時に画面をリロードする」という古い仕様をブロックする
-    e.preventDefault(); 
+    e.preventDefault();
 
     try {
       // 辞書データ（formData）をそのままJSONにして丸投げ！
       const response = await fetch('http://localhost:3001/api/items', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData), 
+        body: JSON.stringify(formData),
       });
 
       if (response.ok) {
         alert('アイテムを登録しました！');
-        navigate('/admin'); // 成功したら管理画面トップへ自動で戻る
+        navigate('/manage'); // 成功したら管理画面トップへ自動で戻る
       } else {
         alert('登録に失敗しました。');
       }
@@ -88,11 +88,11 @@ export default function AddItem() {
   // ==============================================
   return (
     <div style={{ maxWidth: '600px', margin: '0 auto', padding: '20px' }}>
-      
+
       {/* ヘッダー部分 */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #9ca3af', paddingBottom: '10px', marginBottom: '20px' }}>
         <h2 style={{ color: '#374151', margin: 0 }}>✨ 新規アイテム追加</h2>
-        <button onClick={() => navigate('/admin')} style={{ padding: '8px 16px', background: '#f3f4f6', border: '1px solid #d1d5db', borderRadius: '6px', cursor: 'pointer' }}>
+        <button onClick={() => navigate('/manage')} style={{ padding: '8px 16px', background: '#f3f4f6', border: '1px solid #d1d5db', borderRadius: '6px', cursor: 'pointer' }}>
           ← 戻る
         </button>
       </div>
@@ -101,7 +101,7 @@ export default function AddItem() {
         「Enterキーを押した時」にも自動で handleSubmit が発火するようになります。
       */}
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-        
+
         {/* 1. アイテム名入力 */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
           <label style={{ fontWeight: 'bold', color: '#4b5563' }}>アイテム名 <span style={{ color: 'red' }}>*</span></label>
@@ -163,15 +163,15 @@ export default function AddItem() {
         <button
           type="submit"
           disabled={!formData.name} // 名前が空っぽの時はボタンを押せないようにするガード
-          style={{ 
-            marginTop: '10px', 
-            padding: '15px', 
-            backgroundColor: formData.name ? '#2563eb' : '#9ca3af', 
-            color: 'white', 
-            border: 'none', 
-            borderRadius: '8px', 
-            fontSize: '18px', 
-            fontWeight: 'bold', 
+          style={{
+            marginTop: '10px',
+            padding: '15px',
+            backgroundColor: formData.name ? '#2563eb' : '#9ca3af',
+            color: 'white',
+            border: 'none',
+            borderRadius: '8px',
+            fontSize: '18px',
+            fontWeight: 'bold',
             cursor: formData.name ? 'pointer' : 'not-allowed',
             transition: 'background 0.2s'
           }}
