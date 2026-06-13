@@ -78,14 +78,18 @@ app.get('/api/items', async (req, res) => {
 //アイテムを追加
 app.post('/api/items', async (req, res) => {
   try {
-    const { name, quantity, minThreshold, imageUrl } = req.body;
+    const { name, quantity, barcode_str, imageUrl, minThreshold, keywords, url } = req.body;
 
     const newItem = await prisma.item.create({
       data: {
         name: name,
         quantity: quantity || 0,
-        minThreshold: minThreshold || 5,
+        barcode: barcode_str || null,
         imageUrl: imageUrl || null,
+        minThreshold: minThreshold || 5,
+        keywords: keywords || null,
+        site_url: url || null,
+        orderStatus: "NONE",
         histories: {
           create: {
             actionType: 'CREATE',
@@ -128,6 +132,36 @@ app.post("/api/quantity_change", async (req, res) => {
     res.status(500).json({ error: 'Failed to update amount ' });
   }
 });
+
+
+app.patch("/api/change_status", async (req, res) => {
+  const { itemId, orderStatus } = req.body;
+  const allowed = ['NONE', 'ORDERED', 'ARRIVED'];
+
+  if (!allowed.includes(orderStatus)) {
+    return res.status(400).json({ error: 'Invalid orderStatus' });
+  }
+
+  try {
+    const updatedItem = await prisma.item.update({
+      where: { id: itemId },
+      data: {
+        orderStatus: orderStatus,
+        histories: {
+          create: {
+            actionType: orderStatus,
+            amountChange: 0,
+          }
+        }
+      }
+    })
+    res.json(updatedItem);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to update orderStatus' });
+  }
+
+})
 
 app.delete("/api/items/:id", async (req, res) => {
   try {
