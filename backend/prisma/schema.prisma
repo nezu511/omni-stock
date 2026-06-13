@@ -20,6 +20,8 @@ model Item {
     barcode String? @unique
     imageUrl String? 
     minThreshold Int @default(5)
+    keywords String? 
+    site_url String?
     orderStatus String @default("NONE")
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

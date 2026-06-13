@@ -1,13 +1,7 @@
 import { useEffect, useState } from 'react';
-
 // アイテムの型定義
-interface Item {
-  id: number;
-  name: string;
-  quantity: number;
-  minThreshold: number;
-  imageUrl: string | null;
-}
+import type { Item } from '../types';
+
 
 export default function Consume() {
   //useState：監視の登録(Reactへの依頼)

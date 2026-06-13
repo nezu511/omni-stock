@@ -1,0 +1,12 @@
+export interface Item {
+  id: number;
+  name: string;
+  quantity: number;
+  barcode: string | null;
+  imageUrl: string | null;
+  minThreshold: number;
+  keywords: string | null;
+  orderStatus: string;
+  orderUrl: string | null;
+}
+

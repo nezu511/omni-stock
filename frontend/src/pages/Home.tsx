@@ -1,12 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-
-interface Item {
-  id: number;
-  name: string;
-  quantity: number;
-  minThreshold: number;
-}
+import type { Item } from '../types';
 
 function Home() {
 

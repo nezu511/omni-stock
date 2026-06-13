@@ -1,13 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import type { Item } from '../types';
 
-// 1. 前回完璧に設計した「完全な構造体」の型定義
-interface ItemFormData {
-  name: string;
-  quantity: number;
-  minThreshold: number;
-  imageUrl: string;
-}
+type ItemFormData = Omit<Item, 'id'>;
 
 export default function AddItem() {
   const navigate = useNavigate();
@@ -16,8 +11,11 @@ export default function AddItem() {
   const [formData, setFormData] = useState<ItemFormData>({
     name: '',
     quantity: 1,
-    minThreshold: 5,
+    barcode: '',
     imageUrl: '',
+    minThreshold: 5,
+    keywords: '',
+    orderUrl: '',
   });
 
   // 🌟 万能のメモリ更新関数（テキスト＆数字入力の割り込みハンドラ）

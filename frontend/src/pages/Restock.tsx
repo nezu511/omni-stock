@@ -1,13 +1,7 @@
 import { useEffect, useState } from 'react';
 
-interface Item {
-  id: number;
-  name: string;
-  quantity: number;
-  minThreshold: number;
-  imageUrl: string | null;
-  // barcode: string | null; // 今後バーコード機能で使います！
-}
+import type { Item } from '../types';
+
 
 export default function Restock() {
   const [items, setItems] = useState<Item[]>([]);

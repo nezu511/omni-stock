@@ -2,12 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // アイテムの型定義（今回は表示用なのでシンプルに）
-interface Item {
-  id: number;
-  name: string;
-  quantity: number;
-  minThreshold: number;
-}
+import type { Item } from '../types';
+
 
 export default function Admin() {
   const [items, setItems] = useState<Item[]>([]);
