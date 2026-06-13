@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { Item } from '../types';
 
-type ItemFormData = Omit<Item, 'id'>;
+type ItemFormData = Omit<Item, 'id' | 'barcode'>;
 
 export default function AddItem() {
   const navigate = useNavigate();
@@ -11,7 +11,6 @@ export default function AddItem() {
   const [formData, setFormData] = useState<ItemFormData>({
     name: '',
     quantity: 1,
-    barcode: '',
     imageUrl: '',
     minThreshold: 5,
     keywords: '',
@@ -138,6 +137,31 @@ export default function AddItem() {
               style={{ padding: '10px', border: '1px solid #d1d5db', borderRadius: '6px', fontSize: '16px' }}
             />
           </div>
+        </div>
+
+        {/* 3. 検索用キーワード入力フォーム */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+          <label style={{ fontWidth: 'bold', color: '#4b5563' }}> キーワード</label>
+          <input
+            type="text"
+            name="keywords" // 👈 ここも一致させる
+            value={formData.keywords}
+            onChange={handleChange}
+            style={{ padding: '10px', border: '1px solid #d1d5db', borderRadius: '6px', fontSize: '16px' }}
+          />
+        </div>
+
+
+        {/* 3. 購入用URL */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+          <label style={{ fontWidth: 'bold', color: '#4b5563' }}> 商品購入用URL</label>
+          <input
+            type="text"
+            name="orderUrl" // 👈 ここも一致させる
+            value={formData.orderUrl}
+            onChange={handleChange}
+            style={{ padding: '10px', border: '1px solid #d1d5db', borderRadius: '6px', fontSize: '16px' }}
+          />
         </div>
 
         {/* 3. 画像アップロード機能 */}
