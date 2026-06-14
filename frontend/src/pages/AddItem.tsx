@@ -141,7 +141,7 @@ export default function AddItem() {
 
         {/* 3. 検索用キーワード入力フォーム */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-          <label style={{ fontWidth: 'bold', color: '#4b5563' }}> キーワード</label>
+          <label style={{ fontWeight: 'bold', color: '#4b5563' }}> キーワード</label>
           <input
             type="text"
             name="keywords" // 👈 ここも一致させる
@@ -154,7 +154,7 @@ export default function AddItem() {
 
         {/* 3. 購入用URL */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-          <label style={{ fontWidth: 'bold', color: '#4b5563' }}> 商品購入用URL</label>
+          <label style={{ fontWeight: 'bold', color: '#4b5563' }}> 商品購入用URL</label>
           <input
             type="text"
             name="orderUrl" // 👈 ここも一致させる
