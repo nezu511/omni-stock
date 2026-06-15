@@ -25,11 +25,12 @@
 ## タスク1: 検索ロジックの多様化【最優先・足慣らし】
 依存: なし / 難易度: 低
 
-- [ ] `Consume.tsx` の検索フィルタを拡張: `item.name` だけでなく `item.keywords` も `.includes()` の対象に含める。
-- [ ] `Restock.tsx` も同様に拡張。
-- [ ] `Manage.tsx` も同様に拡張。
-- [ ] 注意点: `keywords` は `String | null` の可能性があるため、null のときに `.toLowerCase()` で落ちないようガードする（`(item.keywords ?? '')` 等）。
-- [ ] 3画面で検索ロジックが重複するため、共通のフィルタ関数に切り出せないか検討・提案する（必須ではない）。
+- [x] `Consume.tsx` の検索フィルタを拡張: `item.name` だけでなく `item.keywords` も `.includes()` の対象に含める。
+- [x] `Restock.tsx` も同様に拡張。
+- [x] `Manage.tsx` も同様に拡張。
+- [x] 注意点: `keywords` は `String | null` の可能性があるため、null のときに `.toLowerCase()` で落ちないようガードする（`(item.keywords ?? '')` 等）。
+- [x] 3画面で検索ロジックが重複するため、共通のフィルタ関数に切り出せないか検討・提案する（必須ではない）。
+  - → `frontend/src/utils/searchItems.ts` に `matchesSearchQuery(item, query)` を切り出し、3画面から共通利用する形にした。
 
 ---
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 // アイテムの型定義
 import type { Item } from '../types';
+import { matchesSearchQuery } from '../utils/searchItems';
 
 
 export default function Consume() {
@@ -57,10 +58,8 @@ export default function Consume() {
     }
   };
 
-  // 検索ロジック：itemsの配列から、名前に検索ワードが含まれるものだけを抽出する
-  const filteredItems = items.filter((item) =>
-    item.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // 検索ロジック：itemsの配列から、名前またはキーワードに検索ワードが含まれるものだけを抽出する
+  const filteredItems = items.filter((item) => matchesSearchQuery(item, searchQuery));
 
   return (
     <div>
