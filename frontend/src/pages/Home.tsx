@@ -93,6 +93,12 @@ function Home() {
                     注文した
                   </button>
                 )}
+                <Link
+                  to={`/manage/${item.id}`}
+                  style={{ display: 'block', textAlign: 'center', marginTop: '8px', backgroundColor: '#e5e7eb', color: '#374151', textDecoration: 'none', borderRadius: '6px', padding: '8px', fontSize: '14px', fontWeight: 'bold' }}
+                >
+                  詳細
+                </Link>
               </div>
             ))}
           </div>
@@ -124,6 +130,12 @@ function Home() {
                 >
                   確認した
                 </button>
+                <Link
+                  to={`/manage/${item.id}`}
+                  style={{ display: 'block', textAlign: 'center', marginTop: '8px', backgroundColor: '#e5e7eb', color: '#374151', textDecoration: 'none', borderRadius: '6px', padding: '8px', fontSize: '14px', fontWeight: 'bold' }}
+                >
+                  詳細
+                </Link>
               </div>
             ))}
           </div>

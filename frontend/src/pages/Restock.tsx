@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import type { Item } from '../types';
 
@@ -88,13 +89,16 @@ export default function Restock() {
             boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
           }}>
 
-            {item.imageUrl ? (
-              <img src={item.imageUrl} alt={item.name} style={{ width: '100%', height: '140px', objectFit: 'cover', borderRadius: '8px' }} />
-            ) : (
-              <div style={{ width: '100%', height: '140px', backgroundColor: '#f3f4f6', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9ca3af' }}>
-                画像なし
-              </div>
-            )}
+            {/* 画像エリア（クリックで詳細ページへ） */}
+            <Link to={`/manage/${item.id}`}>
+              {item.imageUrl ? (
+                <img src={item.imageUrl} alt={item.name} style={{ width: '100%', height: '140px', objectFit: 'cover', borderRadius: '8px', cursor: 'pointer' }} />
+              ) : (
+                <div style={{ width: '100%', height: '140px', backgroundColor: '#f3f4f6', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9ca3af', cursor: 'pointer' }}>
+                  画像なし
+                </div>
+              )}
+            </Link>
 
             <h3 style={{ margin: '12px 0 5px 0', fontSize: '18px', color: '#1f2937' }}>{item.name}</h3>
 
@@ -133,6 +137,13 @@ export default function Restock() {
                 入荷
               </button>
             </div>
+
+            <Link
+              to={`/manage/${item.id}`}
+              style={{ display: 'block', textAlign: 'center', marginTop: '10px', backgroundColor: '#e5e7eb', color: '#374151', textDecoration: 'none', borderRadius: '6px', padding: '8px', fontSize: '14px', fontWeight: 'bold' }}
+            >
+              詳細
+            </Link>
 
           </div>
         ))}
