@@ -149,6 +149,55 @@ app.post("/api/quantity_change", async (req, res) => {
 });
 
 
+//アイテム1件と履歴を取得
+app.get('/api/items/:id', async (req, res) => {
+  try {
+    const itemId = parseInt(req.params.id, 10);
+
+    const item = await prisma.item.findUnique({
+      where: { id: itemId },
+      include: { histories: { orderBy: { timestamp: 'desc' } } }
+    });
+
+    if (!item) {
+      return res.status(404).json({ error: 'Item not found' });
+    }
+
+    // DBカラム名 site_url を、フロントの types.ts に合わせて orderUrl にリネームして返す
+    const { site_url, ...rest } = item;
+    res.json({ ...rest, orderUrl: site_url });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch item' });
+  }
+});
+
+//アイテムのメタデータ（名前・しきい値・キーワード・画像・購入URL）を部分更新
+app.patch('/api/items/:id', async (req, res) => {
+  try {
+    const itemId = parseInt(req.params.id, 10);
+    const { name, minThreshold, keywords, imageUrl, orderUrl } = req.body;
+
+    const updatedItem = await prisma.item.update({
+      where: { id: itemId },
+      data: {
+        ...(name !== undefined && { name }),
+        ...(minThreshold !== undefined && { minThreshold }),
+        ...(keywords !== undefined && { keywords }),
+        ...(imageUrl !== undefined && { imageUrl }),
+        ...(orderUrl !== undefined && { site_url: orderUrl }),
+      },
+      include: { histories: { orderBy: { timestamp: 'desc' } } }
+    });
+
+    const { site_url, ...rest } = updatedItem;
+    res.json({ ...rest, orderUrl: site_url });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to update item' });
+  }
+});
+
 app.patch("/api/change_status", async (req, res) => {
   const { itemId, orderStatus } = req.body;
   const allowed = ['NONE', 'ORDERED', 'ARRIVED'];

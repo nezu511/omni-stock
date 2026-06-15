@@ -112,7 +112,7 @@ export default function Admin() {
                 <td style={{ padding: '12px 16px', textAlign: 'center' }}>
                   <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
                     <button
-                      onClick={() => alert('ID: ${item.id}の詳細へ遷移')}
+                      onClick={() => navigate(`/manage/${item.id}`)}
                       style={{ padding: '6px 12px', backgroundColor: '#f3f4f6', color: '#374151', border: '1px solid #d1d5db', borderRadius: '4px', cursor: 'pointer' }}>
                       編集
                     </button>

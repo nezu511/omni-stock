@@ -1,3 +1,11 @@
+export interface History {
+  id: number;
+  itemId: number;
+  actionType: string;
+  amountChange: number;
+  timestamp: string;
+}
+
 export interface Item {
   id: number;
   name: string;
@@ -8,5 +16,6 @@ export interface Item {
   keywords: string | null;
   orderStatus: string;
   orderUrl: string | null;
+  histories?: History[];
 }
 

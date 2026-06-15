@@ -4,6 +4,7 @@ import Consume from './pages/Consume';
 import Restock from './pages/Restock';
 import Manage from './pages/Manage';
 import AddItem from './pages/AddItem';
+import ItemDetail from './pages/ItemDetail';
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
             <Route path="/restock" element={<Restock />} />
             <Route path="/manage" element={<Manage />} />
             <Route path="/manage/new" element={<AddItem />} />
+            <Route path="/manage/:id" element={<ItemDetail />} />
           </Routes>
         </div>
 
