@@ -33,13 +33,13 @@
 
 ---
 
-## タスク2: ホーム画面 (Home.tsx) の拡張【状態の出口を作る】
+## タスク2: ホーム画面 (Home.tsx) の拡張【状態の出口を作る】 :完了！
 依存: なし（ただしステータス変更APIを使うため、change_status を叩く関数が必要） / 難易度: 中
 
 派生状態を2系統に分岐する:
-- [ ] `needsOrder`: `quantity <= minThreshold` かつ `orderStatus === 'NONE'`（要発注）
+- [x] `needsOrder`: `quantity <= minThreshold` かつ `orderStatus === 'NONE'`（要発注）
   - ※ `&& orderStatus === 'NONE'` を必ず入れること。注文済みアイテムが要発注に二重表示されるのを防ぐため。
-- [ ] `arrivedItems`: `orderStatus === 'ARRIVED'`（要確認）
+- [x] `arrivedItems`: `orderStatus === 'ARRIVED'`（要確認）
 
 UI とアクション:
 - [ ] 要発注ブロック（赤系）: 各カードに「注文した」ボタン → `change_status` に `{ itemId, orderStatus: 'ORDERED' }` を送る。
@@ -55,11 +55,11 @@ UI とアクション:
 依存: タスク2（状態遷移の理解）/ 難易度: 中〜高
 
 - [ ] 検索バーが空（未入力）のときのデフォルト表示を「`orderStatus === 'ORDERED'` のアイテム一覧」にする。検索ワードが入ったら通常の絞り込みに戻す。
-- [ ] 入荷（在庫プラス）時の `orderStatus` 連動ルール（**この前の議論で確定した仕様**）:
+- [x] 入荷（在庫プラス）時の `orderStatus` 連動ルール（**この前の議論で確定した仕様**）:
   - 入荷前が `'ORDERED'` の場合のみ → `'ARRIVED'` に変更する。
   - 入荷前が `'NONE'` の場合 → `'NONE'` のまま（数量のみ増加、ARRIVED にしない）。
   - 「注文していない物がたまたま増えただけ」を ARRIVED 扱いしないための分岐。
-- [ ] 実装方式: バックエンドで「現在の orderStatus を `findUnique` で読んでから分岐」する方式を推奨（数量変更とステータス変更を1回のリクエストで原子的に行うため）。
+- [x] 実装方式: バックエンドで「現在の orderStatus を `findUnique` で読んでから分岐」する方式を推奨（数量変更とステータス変更を1回のリクエストで原子的に行うため）。
   - この設計判断（なぜフロントで2回叩かずバックで1回にまとめるか＝中途半端な状態を防ぐ原子性）をコメントで残す。
 - [ ] 実装前に Plan Mode で「どのAPIをどう改修するか」を必ず提示すること。
 

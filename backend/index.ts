@@ -111,17 +111,32 @@ app.post("/api/quantity_change", async (req, res) => {
   try {
     const { itemId, quantity_change, actionType } = req.body;
 
+    const historyEntries: { actionType: string; amountChange: number }[] = [
+      { actionType: actionType || 'QUANTITY_UPDATE', amountChange: quantity_change }
+    ];
+
+    // 入荷(RESTOCK)時、入荷前の orderStatus が 'ORDERED'（注文済み）の場合のみ
+    // 'ARRIVED'（入荷済み）へ遷移させる。「注文していない物がたまたま増えただけ」を
+    // ARRIVED 扱いしないための分岐。
+    // 数量変更とステータス変更を1回の update にまとめることで、
+    // 片方だけ反映された中途半端な状態（原子性の欠如）を防ぐ。
+    let orderStatusUpdate = {};
+    if (actionType === 'RESTOCK') {
+      const currentItem = await prisma.item.findUnique({ where: { id: itemId } });
+      if (currentItem?.orderStatus === 'ORDERED') {
+        orderStatusUpdate = { orderStatus: 'ARRIVED' };
+        historyEntries.push({ actionType: 'ARRIVED', amountChange: 0 });
+      }
+    }
+
     const updatedItem = await prisma.item.update({
       where: { id: itemId },
       data: {
         quantity: { increment: quantity_change },
+        ...orderStatusUpdate,
 
         histories: {
-          create: {
-            actionType: actionType || 'QUANTITY_UPDATE',
-            amountChange: quantity_change,
-
-          }
+          create: historyEntries
         }
       },
       include: { histories: true }
