@@ -4,7 +4,7 @@ import type { Item } from '../types';
 
 // 注文ステータスの表示用ラベルと色
 const STATUS_LABELS: { [key: string]: { label: string; color: string; bg: string } } = {
-  NONE: { label: '未注文', color: '#374151', bg: '#f3f4f6' },
+  NONE: { label: 'None', color: '#374151', bg: '#f3f4f6' },
   ORDERED: { label: '注文済み', color: '#92400e', bg: '#fef3c7' },
   ARRIVED: { label: '入荷済み（未確認）', color: '#059669', bg: '#ecfdf5' },
 };
@@ -17,7 +17,7 @@ const ACTION_LABELS: { [key: string]: string } = {
   RESTOCK: '入荷',
   ORDERED: '注文済みに変更',
   ARRIVED: '入荷済みに変更',
-  NONE: '未注文に変更',
+  NONE: 'Noneに変更',
 };
 
 type ItemFormData = Pick<Item, 'name' | 'minThreshold' | 'keywords' | 'imageUrl' | 'orderUrl'>;
