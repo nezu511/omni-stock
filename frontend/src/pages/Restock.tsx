@@ -49,8 +49,12 @@ export default function Restock() {
     }
   };
 
-  // 🌟 検索ロジック：itemsの配列から、名前またはキーワードに検索ワードが含まれるものだけを抽出する
-  const filteredItems = items.filter((item) => matchesSearchQuery(item, searchQuery));
+  // 検索ワードが空のときは「注文済み（入荷待ち）」のアイテムのみを表示し、
+  // 検索が始まったらorderStatusに関係なく名前・キーワードで絞り込む
+  const isDefaultView = searchQuery.trim() === '';
+  const filteredItems = isDefaultView
+    ? items.filter((item) => item.orderStatus === 'ORDERED')
+    : items.filter((item) => matchesSearchQuery(item, searchQuery));
 
   return (
     <div>
@@ -75,6 +79,10 @@ export default function Restock() {
           📷
         </button>
       </div>
+
+      {isDefaultView && (
+        <h3 style={{ color: '#92400e', marginBottom: '15px' }}>📦 注文済み（入荷待ち）のアイテム</h3>
+      )}
 
       <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
         {/* 🌟 itemsではなく、絞り込み済みの filteredItems をループして描画する */}
@@ -147,10 +155,12 @@ export default function Restock() {
           </div>
         ))}
 
-        {/* 検索結果がゼロだった時のメッセージ */}
+        {/* 0件だった時のメッセージ（デフォルト表示か検索結果かで分岐） */}
         {filteredItems.length === 0 && (
           <p style={{ color: '#6b7280', width: '100%', textAlign: 'center', marginTop: '20px' }}>
-            「{searchQuery}」に一致する物品は見つかりませんでした。
+            {isDefaultView
+              ? '現在、注文済み（入荷待ち）のアイテムはありません。'
+              : `「${searchQuery}」に一致する物品は見つかりませんでした。`}
           </p>
         )}
       </div>

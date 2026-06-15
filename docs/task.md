@@ -14,11 +14,12 @@
 ---
 
 ## タスク0: 事前確認（コードを書く前に）
-- [ ] `src/` 全体と `types.ts`、バックエンドの `index.ts`、`schema.prisma` を読み、実装済み機能と未実装機能を整理して報告する。
-- [ ] 既知の不整合を確認する:
+- [x] `src/` 全体と `types.ts`、バックエンドの `index.ts`、`schema.prisma` を読み、実装済み機能と未実装機能を整理して報告する。
+- [x] 既知の不整合を確認する:
   - `POST /api/items` の遷移やフィールド対応に問題がないか
-  - ステータス変更APIは現状 `app.put("/api/change_status", ...)` で実装されている（仕様書で PATCH と書かれている箇所があれば PUT に読み替える）
-- [ ] 各画面の `interface Item` が `types.ts` からの import に統一されているか確認する。
+    - → `AddItem.tsx` は `orderUrl` を送信するが、バックエンドは `req.body.url` を見ているため新規登録時に購入URLが保存されないバグを発見。補足セクションの「送信キー名とDBカラム名の統一」と同種の問題のため、今回は修正せず記録のみ。
+  - ステータス変更APIは既に `app.patch("/api/change_status", ...)` で実装済み（PUTへの読み替えは不要）。
+- [x] 各画面の `interface Item` が `types.ts` からの import に統一されているか確認する。→ 全画面で統一済み。
 
 ---
 
@@ -43,26 +44,27 @@
 - [x] `arrivedItems`: `orderStatus === 'ARRIVED'`（要確認）
 
 UI とアクション:
-- [ ] 要発注ブロック（赤系）: 各カードに「注文した」ボタン → `change_status` に `{ itemId, orderStatus: 'ORDERED' }` を送る。
-- [ ] 要確認ブロック（緑系・控えめ）: 各カードに「確認した」ボタン → `change_status` に `{ itemId, orderStatus: 'NONE' }` を送る。
+- [x] 要発注ブロック（赤系）: 各カードに「注文した」ボタン → `change_status` に `{ itemId, orderStatus: 'ORDERED' }` を送る。
+- [x] 要確認ブロック（緑系・控えめ）: 各カードに「確認した」ボタン → `change_status` に `{ itemId, orderStatus: 'NONE' }` を送る。
   - **これが `ARRIVED → NONE` の唯一の出口。** これがないと ARRIVED 状態が溜まり続けて詰まる。
-- [ ] 既に注文済み（`ORDERED`）であることが分かるバッジ/アイコンを、閾値割れ一覧の表示に追加する。
-- [ ] `change_status` を叩く関数は `handleConsume` と同じ骨格（fetch → response.ok 確認 → fetchItems で再取得）。URL と body だけが異なる。
-- [ ] 各ブロックは該当アイテムが0件のとき非表示にする（`length > 0 &&`）。
+- [x] 既に注文済み（`ORDERED`）であることが分かるバッジ/アイコンを、閾値割れ一覧の表示に追加する。
+- [x] `change_status` を叩く関数は `handleConsume` と同じ骨格（fetch → response.ok 確認 → 状態更新）。URL と body だけが異なる。
+- [x] 各ブロックは該当アイテムが0件のとき非表示にする（`length > 0 &&`）。
 
 ---
 
 ## タスク3: 入荷画面 (Restock.tsx) のUI拡張【状態遷移の本丸】
 依存: タスク2（状態遷移の理解）/ 難易度: 中〜高
 
-- [ ] 検索バーが空（未入力）のときのデフォルト表示を「`orderStatus === 'ORDERED'` のアイテム一覧」にする。検索ワードが入ったら通常の絞り込みに戻す。
+- [x] 検索バーが空（未入力）のときのデフォルト表示を「`orderStatus === 'ORDERED'` のアイテム一覧」にする。検索ワードが入ったら通常の絞り込みに戻す。
+  - → 検索ワードが空のときは見出し「📦 注文済み（入荷待ち）のアイテム」を表示し`ORDERED`のみに絞り込み、入力が始まったらstatusに関係なく`matchesSearchQuery`で絞り込む。0件時のメッセージも分岐させた。
 - [x] 入荷（在庫プラス）時の `orderStatus` 連動ルール（**この前の議論で確定した仕様**）:
   - 入荷前が `'ORDERED'` の場合のみ → `'ARRIVED'` に変更する。
   - 入荷前が `'NONE'` の場合 → `'NONE'` のまま（数量のみ増加、ARRIVED にしない）。
   - 「注文していない物がたまたま増えただけ」を ARRIVED 扱いしないための分岐。
 - [x] 実装方式: バックエンドで「現在の orderStatus を `findUnique` で読んでから分岐」する方式を推奨（数量変更とステータス変更を1回のリクエストで原子的に行うため）。
   - この設計判断（なぜフロントで2回叩かずバックで1回にまとめるか＝中途半端な状態を防ぐ原子性）をコメントで残す。
-- [ ] 実装前に Plan Mode で「どのAPIをどう改修するか」を必ず提示すること。
+- [x] 実装前に Plan Mode で「どのAPIをどう改修するか」を必ず提示すること。
 
 ---
 
@@ -70,27 +72,27 @@ UI とアクション:
 依存: なし（独立タスク。最後でよい）/ 難易度: 高
 
 ルーティング:
-- [ ] `/manage/:id` のルートを追加（App.tsx）。
-- [ ] 各画面（Consume / Restock / Manage）のアイテムパネルをクリックで、このページへ遷移する導線を作る。
-  - ※ Manage.tsx の編集ボタンは現状 `alert('ID: ${item.id}...')` がシングルクォートでテンプレートリテラルになっていないバグがある。ここを `navigate(\`/manage/${item.id}\`)` に置き換えて修正する。
+- [x] `/manage/:id` のルートを追加（App.tsx）。
+- [x] 各画面（Consume / Restock / Manage）のアイテムパネルをクリックで、このページへ遷移する導線を作る。
+  - ※ Manage.tsx の編集ボタンのテンプレートリテラルのバグは既に修正済み（`navigate(\`/manage/${item.id}\`)`）。Consume/Restockは画像クリック＋詳細ボタンで遷移できるようにした（本日対応）。
 
 バックエンド:
-- [ ] `PUT /api/items/:id`（または PATCH）を新規作成。`Partial<Omit<Item, 'id'>>` 相当の部分更新を受け付ける。
-- [ ] バリデーション: `orderStatus` を含む場合は許可リスト（NONE/ORDERED/ARRIVED）で門番を立てる。
+- [x] `PUT /api/items/:id`（または PATCH）を新規作成。`Partial<Omit<Item, 'id'>>` 相当の部分更新を受け付ける。→ `PATCH /api/items/:id` で実装済み。
+- [x] バリデーション: `orderStatus` を含む場合は許可リスト（NONE/ORDERED/ARRIVED）で門番を立てる。→ `orderStatus`の変更は`/api/change_status`側で許可リスト判定済み。`PATCH /api/items/:id`は`orderStatus`を受け付けないため対象外。
 
 フロント機能要件:
-- [ ] 名前・閾値・キーワード・画像などの編集機能。
-- [ ] 「注文済み (ORDERED)」へのステータス変更スイッチ。
-- [ ] アイテムに紐づく `histories` を時系列でリスト表示（注文・入荷などのログ閲覧）。
+- [x] 名前・閾値・キーワード・画像などの編集機能。
+- [x] 「注文済み (ORDERED)」へのステータス変更スイッチ。
+- [x] アイテムに紐づく `histories` を時系列でリスト表示（注文・入荷などのログ閲覧）。
 
 ---
 
 ## 完了の定義（Definition of Done）
-- [ ] 全タスクのチェックボックスが `[x]`。
-- [ ] 状態遷移 `NONE → ORDERED → ARRIVED → NONE` が UI 操作だけで一周できる。
-- [ ] ARRIVED が溜まって詰まる経路がない（Home の確認ボタンで必ず NONE に戻せる）。
-- [ ] 検索が name と keywords の両方にヒットする。
-- [ ] 主要な設計判断にコメントが残っている。
+- [x] 全タスクのチェックボックスが `[x]`。
+- [x] 状態遷移 `NONE → ORDERED → ARRIVED → NONE` が UI 操作だけで一周できる。
+- [x] ARRIVED が溜まって詰まる経路がない（Home の確認ボタンで必ず NONE に戻せる）。
+- [x] 検索が name と keywords の両方にヒットする。
+- [x] 主要な設計判断にコメントが残っている。
 
 ---
 
