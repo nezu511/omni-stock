@@ -9,6 +9,7 @@ export interface History {
 export interface Item {
   id: number;
   name: string;
+  englishName: string | null;
   quantity: number;
   barcode: string | null;
   imageUrl: string | null;

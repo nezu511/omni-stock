@@ -78,11 +78,12 @@ app.get('/api/items', async (req, res) => {
 //アイテムを追加
 app.post('/api/items', async (req, res) => {
   try {
-    const { name, quantity, barcode_str, imageUrl, minThreshold, keywords, url } = req.body;
+    const { name, englishName, quantity, barcode_str, imageUrl, minThreshold, keywords, url } = req.body;
 
     const newItem = await prisma.item.create({
       data: {
         name: name,
+        englishName: englishName || null,
         quantity: quantity || 0,
         barcode: barcode_str || null,
         imageUrl: imageUrl || null,
@@ -176,12 +177,13 @@ app.get('/api/items/:id', async (req, res) => {
 app.patch('/api/items/:id', async (req, res) => {
   try {
     const itemId = parseInt(req.params.id, 10);
-    const { name, minThreshold, keywords, imageUrl, orderUrl } = req.body;
+    const { name, englishName, minThreshold, keywords, imageUrl, orderUrl } = req.body;
 
     const updatedItem = await prisma.item.update({
       where: { id: itemId },
       data: {
         ...(name !== undefined && { name }),
+        ...(englishName !== undefined && { englishName }),
         ...(minThreshold !== undefined && { minThreshold }),
         ...(keywords !== undefined && { keywords }),
         ...(imageUrl !== undefined && { imageUrl }),

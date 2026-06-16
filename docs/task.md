@@ -87,6 +87,20 @@ UI とアクション:
 
 ---
 
+## タスク: 日本語・英語を切り替えるようにして
+フロントエンド：
+- [x] ボタンなど全ての表記を英語にして
+- [x] 各ページに英語と日本語を切り替えるボタンを配置
+  - → ナビバー右端に EN/日本語 トグルボタンを設置。`localStorage` に保存してリロード後も維持。
+  - → `frontend/src/locales/` に翻訳オブジェクト（ja.ts/en.ts）、`LanguageContext.tsx` で全体管理。
+
+データベース：
+- [x] 英語名を記録
+  - → Itemモデルに `englishName String?` を追加（`prisma db push` 適用済み）。
+  - → AddItem・ItemDetail に「英語名」入力欄を追加。英語名でも検索可能（searchItems.ts を拡張）。
+
+
+
 ## 完了の定義（Definition of Done）
 - [x] 全タスクのチェックボックスが `[x]`。
 - [x] 状態遷移 `NONE → ORDERED → ARRIVED → NONE` が UI 操作だけで一周できる。
