@@ -101,6 +101,70 @@ UI とアクション:
 
 
 
+## タスク5: 試薬発注管理機能【新規・独立機能】
+依存: タスク1〜4がすべて完了していること（在庫の状態遷移と混在させない）/ 難易度: 高
+
+### 背景・設計方針（必ず先に読むこと）
+試薬は既存の `Item`（消耗品）とは**性質が異なる**ため、`Item` に相乗りさせず**別モデルに切り出す**（案C）。
+- 試薬は個数（`quantity`）を管理しない。「頼んだ / 届いた」という**発注状態**が主役。
+- 同じ試薬を繰り返し発注するため、「試薬の品目マスタ」と「発注リクエスト1件」を**1対多**で分離する。
+  （`Item`↔`History`、`Reagent`↔`ReagentRequest` は同じ1対多パターン）
+- **リクエストする人と発注する人は別**。よって `REQUESTED`（要望）→ `ORDERED`（発注担当が承認・発注）→ `ARRIVED`（到着）の承認フローを持つ。
+- 状態の語彙のうち `ORDERED` / `ARRIVED` は既存Itemと共通にし、業者の受け取り操作を共通の感覚で扱えるようにする。試薬だけ先頭に `REQUESTED` がある。
+- ログイン機能はまだないため、権限チェック（誰が押せるか）はUI上の画面分離で表現するに留め、サーバー側の権限制御は将来課題とする。
+
+### 5-1. DBスキーマ（schema.prisma）
+- [x] `Reagent` モデル（品目マスタ）を追加する。
+  - `id` Int @id @default(autoincrement())
+  - `name` String @unique（試薬名・重複登録を防ぐ）
+  - `englishName` String?（英語UI対応。既存Itemと揃える）
+  - `site_url` String?（発注先URL）
+  - `createdAt` DateTime @default(now())
+  - `requests` ReagentRequest[]（1対多）
+- [x] `ReagentRequest` モデル（発注リクエスト1件＝イベント）を追加する。
+  - `id` Int @id @default(autoincrement())
+  - `reagentId` Int
+  - `reagent` Reagent @relation(fields: [reagentId], references: [id], onDelete: Cascade)
+  - `status` String @default("REQUESTED")（REQUESTED / ORDERED / ARRIVED）
+  - `requestedBy` String?（誰が要望したか）
+  - `createdAt` DateTime @default(now())（いつ要望したか＝履歴の起点）
+  - `updatedAt` DateTime @updatedAt
+- [x] `prisma db push`（または migrate）でDBに反映する。
+- [x] `status` を String にした理由（SQLiteはネイティブenum非対応）をコメントで残し、許可リストはAPI側の門番で担保する。
+
+### 5-2. バックエンドAPI
+- [x] `GET /api/reagents`: 全試薬マスタを `requests` 込みで取得（最新リクエストの状態を一覧に出すため）。
+- [x] `POST /api/reagents`: 試薬マスタの新規登録（name, englishName, site_url）。既存なら作らない運用なので、重複名は P2002 を想定し 400 で返すと親切（必須ではない）。
+- [x] `POST /api/reagent_requests`: 発注リクエストを1件作成（reagentId, requestedBy を受け、status は "REQUESTED" 固定）。
+  - 既存の試薬を選んで発注 = 新しい ReagentRequest を1行生やすだけ（マスタは増やさない）。
+- [x] `PATCH /api/reagent_requests/:id/status`: リクエストの状態遷移。
+  - 許可リスト `['REQUESTED', 'ORDERED', 'ARRIVED']` で門番を立てる（400で弾く）。
+  - 数量は存在しないため在庫操作は行わない。状態だけ更新する。
+- [x] 実装前に Plan Mode でAPI設計を提示すること。
+
+### 5-3. フロント：リクエスト作成画面（ReagentRequest.tsx 等）
+- [x] 試薬マスタを**検索**して選べるUI（`searchItems.ts` と同様の name/englishName 部分一致）。
+  - 既存試薬：選ぶだけで発注リクエスト作成。
+  - 新規試薬：その場でマスタ登録（name, englishName, site_url）してからリクエスト作成。
+- [x] フォームは個数・画像・閾値を持たない（既存AddItemより大幅に軽量でよい）。
+- [x] `requestedBy` を入力（ログインがないため当面は手入力のテキストでよい）。
+
+### 5-4. フロント：発注承認・状態管理画面
+- [x] リクエスト一覧を状態別に表示：REQUESTED（承認待ち）/ ORDERED（発注済・入荷待ち）/ ARRIVED（到着）。
+- [x] `REQUESTED → ORDERED`：「発注した（承認）」ボタン。発注担当の操作。`site_url` があれば発注先リンクを併設（target="_blank" rel="noopener noreferrer"）。
+- [x] `ORDERED → ARRIVED`：「到着」ボタン。業者の受け取り操作。
+- [x] `ARRIVED` は履歴として残す（消す必要はない）。同じ試薬の過去リクエスト件数・日時が `requests` から辿れることを確認する。
+
+### 5-5. 多言語・導線
+- [x] 新規画面の文言を `locales`（ja/en）に追加し、言語トグルに追従させる。
+- [x] ナビゲーション（または Home）から試薬管理画面への導線を追加する。
+
+### 5-x 設計上の注意（混同しやすい点）
+- 試薬の状態遷移と、既存Itemの `orderStatus` 遷移は**別物**。同じ関数・同じテーブルで処理しないこと。
+- 「同じ試薬を再発注」は「マスタを編集」ではなく「新しい ReagentRequest を作成」で実現する（履歴が残る）。
+
+---
+
 ## 完了の定義（Definition of Done）
 - [x] 全タスクのチェックボックスが `[x]`。
 - [x] 状態遷移 `NONE → ORDERED → ARRIVED → NONE` が UI 操作だけで一周できる。
@@ -108,9 +172,17 @@ UI とアクション:
 - [x] 検索が name と keywords の両方にヒットする。
 - [x] 主要な設計判断にコメントが残っている。
 
+### タスク5（試薬）の完了の定義
+- [x] 試薬の状態遷移 `REQUESTED → ORDERED → ARRIVED` が UI 操作だけで一周できる。
+- [x] 同じ試薬を再発注すると、マスタは増えず ReagentRequest だけが1件増える（履歴が残る）。
+- [x] 試薬管理が既存Itemの在庫ロジック（Home の閾値割れ等）に一切影響していない。
+- [x] 新規画面が言語トグル（ja/en）に追従する。
+
 ---
 
 ## 補足: 将来の課題（今回のスコープ外・メモのみ）
 - バーコードの1対多対応（ロット違い）: `Barcode` テーブルを切り出す案。今回は対象外。
 - `@unique` 制約違反（重複名など）を 500 ではなく 400 + 専用メッセージで返す（Prisma の P2002 判定）。
 - フロントの送信キー名とDBのカラム名の統一（`barcode_str`/`url` → `barcode`/`site_url`）。
+- タスク0で発見済み: `AddItem.tsx` が購入URLを `url` キーで送るがバックは `req.body.url` 経由で、新規登録時に `site_url` が保存されないバグ。上記キー名統一とあわせて修正する。
+- 試薬発注の権限制御（リクエスト者と発注担当の区別をサーバー側で強制）: ログイン機能の実装が前提のため将来課題。

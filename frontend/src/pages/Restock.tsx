@@ -1,14 +1,17 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import type { Item } from '../types';
+import type { Item, Reagent, ReagentRequest } from '../types';
 import { matchesSearchQuery } from '../utils/searchItems';
 import { useLang } from '../contexts/LanguageContext';
+
+type RequestWithReagent = ReagentRequest & { reagent: Reagent };
 
 export default function Restock() {
   const { i18n } = useLang();
   const [items, setItems] = useState<Item[]>([]);
   const [inputValues, setInputValues] = useState<{ [key: number]: number | '' }>({});
   const [searchQuery, setSearchQuery] = useState('');
+  const [orderedReagentRequests, setOrderedReagentRequests] = useState<RequestWithReagent[]>([]);
 
   const fetchItems = () => {
     fetch('http://localhost:3001/api/items')
@@ -17,8 +20,23 @@ export default function Restock() {
       .catch((err) => console.error('Error:', err));
   };
 
+  const fetchReagents = () => {
+    fetch('http://localhost:3001/api/reagents')
+      .then((res) => res.json())
+      .then((reagents: Reagent[]) => {
+        const ordered: RequestWithReagent[] = reagents.flatMap((r) =>
+          r.requests
+            .filter((req) => req.status === 'ORDERED')
+            .map((req) => ({ ...req, reagent: r }))
+        );
+        setOrderedReagentRequests(ordered);
+      })
+      .catch((err) => console.error('Error:', err));
+  };
+
   useEffect(() => {
     fetchItems();
+    fetchReagents();
   }, []);
 
   const handleRestock = async (itemId: number, restockAmount: number) => {
@@ -50,12 +68,62 @@ export default function Restock() {
     }
   };
 
+  const handleReagentArrive = async (requestId: number) => {
+    const res = await fetch(`http://localhost:3001/api/reagent_requests/${requestId}/status`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'ARRIVED' }),
+    });
+    if (!res.ok) {
+      alert(i18n.restock.reagentArriveFailed);
+      return;
+    }
+    setOrderedReagentRequests((prev) => prev.filter((r) => r.id !== requestId));
+  };
+
   // 検索ワードが空のときは「注文済み（入荷待ち）」とその他のアイテムをセクション分けして表示し、
   // 検索が始まったらorderStatusに関係なく名前・キーワードで絞り込む
   const isDefaultView = searchQuery.trim() === '';
   const orderedItems = items.filter((item) => item.orderStatus === 'ORDERED');
   const otherItems = items.filter((item) => item.orderStatus !== 'ORDERED');
   const searchResults = items.filter((item) => matchesSearchQuery(item, searchQuery));
+
+  const renderReagentRequestCard = (req: RequestWithReagent) => (
+    <div key={req.id} style={{
+      backgroundColor: 'white',
+      border: '2px solid #ddd6fe',
+      padding: '15px',
+      borderRadius: '12px',
+      width: '240px',
+      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+    }}>
+      <div style={{ fontSize: '11px', fontWeight: 'bold', color: '#7c3aed', backgroundColor: '#f5f3ff', padding: '3px 8px', borderRadius: '4px', display: 'inline-block', marginBottom: '8px' }}>
+        {i18n.restock.reagentBadge}
+      </div>
+      <h3 style={{ margin: '0 0 4px', fontSize: '18px', color: '#1f2937' }}>{req.reagent.name}</h3>
+      {req.reagent.englishName && (
+        <div style={{ fontSize: '13px', color: '#6b7280', marginBottom: '6px' }}>{req.reagent.englishName}</div>
+      )}
+      {req.requestedBy && (
+        <div style={{ fontSize: '13px', color: '#374151', marginBottom: '8px' }}>
+          {i18n.restock.requestedBy} {req.requestedBy}
+        </div>
+      )}
+      {req.reagent.site_url && (
+        <a href={req.reagent.site_url} target="_blank" rel="noopener noreferrer"
+          style={{ fontSize: '13px', color: '#3b82f6', display: 'block', marginBottom: '10px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          🔗 {req.reagent.site_url}
+        </a>
+      )}
+      <hr style={{ border: 'none', borderTop: '1px dashed #ddd6fe', margin: '10px 0' }} />
+      <button
+        onClick={() => handleReagentArrive(req.id)}
+        style={{ width: '100%', padding: '10px', backgroundColor: '#7c3aed', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
+      >
+        {i18n.restock.reagentArriveButton}
+      </button>
+    </div>
+  );
 
   const renderItemCard = (item: Item) => (
     <div key={item.id} style={{
@@ -153,8 +221,9 @@ export default function Restock() {
           <h3 style={{ color: '#92400e', marginBottom: '15px' }}>{i18n.restock.orderedSection}</h3>
           <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', marginBottom: '30px' }}>
             {orderedItems.map(renderItemCard)}
+            {orderedReagentRequests.map(renderReagentRequestCard)}
 
-            {orderedItems.length === 0 && (
+            {orderedItems.length === 0 && orderedReagentRequests.length === 0 && (
               <p style={{ color: '#6b7280', width: '100%', textAlign: 'center', marginTop: '20px' }}>
                 {i18n.restock.noOrdered}
               </p>

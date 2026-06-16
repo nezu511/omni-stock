@@ -5,6 +5,7 @@ export interface Translations {
     consume: string;
     restock: string;
     manage: string;
+    reagent: string;
     langToggle: string;
   };
   home: {
@@ -20,6 +21,13 @@ export interface Translations {
     arrivedDesc: string;
     stockLabel: string;
     confirmButton: string;
+    reagentButton: string;
+    reagentRequestAlert: (count: number) => string;
+    reagentRequestDesc: string;
+    reagentManageButton: string;
+    reagentArrivedAlert: (count: number) => string;
+    reagentArrivedDesc: string;
+    reagentConfirmButton: string;
   };
   consume: {
     title: string;
@@ -49,6 +57,10 @@ export interface Translations {
     detailButton: string;
     notFound: (query: string) => string;
     updateFailed: string;
+    reagentBadge: string;
+    reagentArriveButton: string;
+    reagentArriveFailed: string;
+    requestedBy: string;
   };
   manage: {
     title: string;
@@ -104,5 +116,43 @@ export interface Translations {
       ORDERED: string;
       ARRIVED: string;
     };
+  };
+  reagentRequest: {
+    title: string;
+    subtitle: string;
+    searchPlaceholder: string;
+    requestedByLabel: string;
+    requestedByPlaceholder: string;
+    submitButton: string;
+    submitSuccess: string;
+    submitFailed: string;
+    newReagentToggle: string;
+    newReagentTitle: string;
+    nameLabel: string;
+    englishNameLabel: string;
+    urlLabel: string;
+    registerAndRequest: string;
+    registerFailed: string;
+    noResults: string;
+    manageLink: string;
+  };
+  reagentManage: {
+    title: string;
+    subtitle: string;
+    requestedSection: string;
+    orderedSection: string;
+    arrivedSection: string;
+    orderButton: string;
+    orderFailed: string;
+    arriveButton: string;
+    arriveFailed: string;
+    requestedBy: string;
+    noRequested: string;
+    noOrdered: string;
+    noArrived: string;
+    requestLink: string;
+    siteUrl: string;
+    requestedAt: string;
+    loading: string;
   };
 }

@@ -39,4 +39,26 @@ model History {
       timestamp DateTime @default(now())
 }
 
+// 試薬品目マスタ。同じ試薬を繰り返し発注するため、マスタ(Reagent)と
+// 発注イベント(ReagentRequest)を1対多で分離する。
+model Reagent {
+  id          Int              @id @default(autoincrement())
+  name        String           @unique
+  englishName String?
+  site_url    String?
+  createdAt   DateTime         @default(now())
+  requests    ReagentRequest[]
+}
 
+// 発注リクエスト1件＝イベント。
+// status は String（SQLiteはネイティブenum非対応）。
+// 許可リスト ['REQUESTED','ORDERED','ARRIVED'] はAPI側の門番で担保する。
+model ReagentRequest {
+  id          Int      @id @default(autoincrement())
+  reagentId   Int
+  reagent     Reagent  @relation(fields: [reagentId], references: [id], onDelete: Cascade)
+  status      String   @default("REQUESTED")
+  requestedBy String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

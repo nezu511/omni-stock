@@ -273,6 +273,83 @@ app.delete("/api/items/:id", async (req, res) => {
 
 
 
+// ==========================================
+// 🧪 試薬マスタ API
+// ==========================================
+
+// 全試薬マスタを発注リクエスト込みで取得
+app.get('/api/reagents', async (req, res) => {
+  try {
+    const reagents = await prisma.reagent.findMany({
+      include: { requests: { orderBy: { createdAt: 'desc' } } },
+      orderBy: { name: 'asc' },
+    });
+    res.json(reagents);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch reagents' });
+  }
+});
+
+// 試薬マスタ新規登録（重複名は 400）
+app.post('/api/reagents', async (req, res) => {
+  try {
+    const { name, englishName, site_url } = req.body;
+    const reagent = await prisma.reagent.create({
+      data: { name, englishName: englishName || null, site_url: site_url || null },
+    });
+    res.json(reagent);
+  } catch (error: any) {
+    if (error?.code === 'P2002') {
+      return res.status(400).json({ error: 'Reagent with that name already exists' });
+    }
+    console.error(error);
+    res.status(500).json({ error: 'Failed to create reagent' });
+  }
+});
+
+// ==========================================
+// 🧪 試薬リクエスト API
+// ==========================================
+
+// 発注リクエスト作成（既存試薬を選んで新規リクエスト1件を生やす）
+app.post('/api/reagent_requests', async (req, res) => {
+  try {
+    const { reagentId, requestedBy } = req.body;
+    const request = await prisma.reagentRequest.create({
+      data: { reagentId, requestedBy: requestedBy || null, status: 'REQUESTED' },
+      include: { reagent: true },
+    });
+    res.json(request);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to create reagent request' });
+  }
+});
+
+// 状態遷移（許可リストで門番。数量操作なし、状態のみ更新）
+app.patch('/api/reagent_requests/:id/status', async (req, res) => {
+  const allowed = ['REQUESTED', 'ORDERED', 'ARRIVED'];
+  const { status } = req.body;
+
+  if (!allowed.includes(status)) {
+    return res.status(400).json({ error: 'Invalid status' });
+  }
+
+  try {
+    const id = parseInt(req.params.id, 10);
+    const updated = await prisma.reagentRequest.update({
+      where: { id },
+      data: { status },
+      include: { reagent: true },
+    });
+    res.json(updated);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to update status' });
+  }
+});
+
 const PORT = 3001;
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

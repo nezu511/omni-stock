@@ -20,3 +20,22 @@ export interface Item {
   histories?: History[];
 }
 
+export interface ReagentRequest {
+  id: number;
+  reagentId: number;
+  status: string;
+  requestedBy: string | null;
+  createdAt: string;
+  updatedAt: string;
+  reagent?: Reagent;
+}
+
+export interface Reagent {
+  id: number;
+  name: string;
+  englishName: string | null;
+  site_url: string | null;
+  createdAt: string;
+  requests: ReagentRequest[];
+}
+

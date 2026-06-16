@@ -5,6 +5,8 @@ import Restock from './pages/Restock';
 import Manage from './pages/Manage';
 import AddItem from './pages/AddItem';
 import ItemDetail from './pages/ItemDetail';
+import ReagentRequest from './pages/ReagentRequest';
+import ReagentManage from './pages/ReagentManage';
 import { LanguageProvider, useLang } from './contexts/LanguageContext';
 
 function NavBar() {
@@ -18,6 +20,7 @@ function NavBar() {
         <Link to="/consume" style={{ textDecoration: 'none', color: '#4b5563', fontWeight: 'bold' }}>{i18n.nav.consume}</Link>
         <Link to="/restock" style={{ textDecoration: 'none', color: '#4b5563', fontWeight: 'bold' }}>{i18n.nav.restock}</Link>
         <Link to="/manage" style={{ textDecoration: 'none', color: '#4b5563', fontWeight: 'bold' }}>{i18n.nav.manage}</Link>
+        <Link to="/reagents" style={{ textDecoration: 'none', color: '#4b5563', fontWeight: 'bold' }}>{i18n.nav.reagent}</Link>
         <button
           onClick={toggleLanguage}
           style={{ padding: '6px 14px', fontSize: '14px', backgroundColor: '#f3f4f6', color: '#374151', border: '1px solid #d1d5db', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
@@ -43,6 +46,8 @@ function App() {
               <Route path="/manage" element={<Manage />} />
               <Route path="/manage/new" element={<AddItem />} />
               <Route path="/manage/:id" element={<ItemDetail />} />
+              <Route path="/reagents" element={<ReagentRequest />} />
+              <Route path="/reagents/manage" element={<ReagentManage />} />
             </Routes>
           </div>
         </div>
