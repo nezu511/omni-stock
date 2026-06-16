@@ -47,8 +47,9 @@ export default function Consume() {
       });
 
       if (response.ok) {
-        fetchItems(); // 成功したら一覧を再取得
-        // 入力フォームの数字を空っぽにリセットする
+        setItems((prev) => prev.map((item) =>
+          item.id === itemId ? { ...item, quantity: item.quantity - consumeAmount } : item
+        ));
         setInputValues((prev) => ({ ...prev, [itemId]: '' }));
       } else {
         alert('在庫の更新に失敗しました');

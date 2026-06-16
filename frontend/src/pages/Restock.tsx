@@ -39,7 +39,9 @@ export default function Restock() {
       });
 
       if (response.ok) {
-        fetchItems();
+        setItems((prev) => prev.map((item) =>
+          item.id === itemId ? { ...item, quantity: item.quantity + restockAmount } : item
+        ));
         setInputValues((prev) => ({ ...prev, [itemId]: '' }));
       } else {
         alert('在庫の更新に失敗しました');
