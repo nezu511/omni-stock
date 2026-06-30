@@ -3,6 +3,12 @@
 # =========================
 node_modules/
 .DS_Store
+Thumbs.db
+*.log
+
+# IDE
+.vscode/
+.idea/
 
 # =========================
 # バックエンド (Node.js / Prisma)
@@ -10,6 +16,10 @@ node_modules/
 backend/.env
 backend/prisma/dev.db
 backend/prisma/dev.db-journal
+
+# アップロード画像（ディレクトリは保持）
+backend/uploads/*
+!backend/uploads/.gitkeep
 
 # =========================
 # フロントエンド (React / Vite)
