@@ -36,6 +36,11 @@ export const ja: Translations = {
     reagentArrivedAlert: (n) => `🧪 試薬 到着確認 (${n}件)`,
     reagentArrivedDesc: '以下の試薬が到着しています。確認したら「確認した」を押してください。',
     reagentConfirmButton: '確認した',
+    pendingAlert: (n) => `⚠️ 承認待ち (${n}件)`,
+    pendingDesc: '以下のアイテム・試薬の補充・発注承認が必要です。',
+    arrivedCombinedAlert: (n) => `✅ 到着確認 (${n}件)`,
+    arrivedCombinedDesc: '以下のアイテム・試薬が届いています。確認したら「確認した」を押してください。',
+    toOrderButton: '発注へ',
   },
   consume: {
     title: '📤 物品の使用（消費）',
