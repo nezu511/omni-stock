@@ -91,6 +91,7 @@ export interface Translations {
     colName: string;
     colStock: string;
     colThreshold: string;
+    colStatus: string;
     colAction: string;
     editButton: string;
     deleteButton: string;

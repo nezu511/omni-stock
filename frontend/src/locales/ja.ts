@@ -91,6 +91,7 @@ export const ja: Translations = {
     colName: 'アイテム名',
     colStock: '現在在庫',
     colThreshold: 'しきい値',
+    colStatus: 'ステータス',
     colAction: '操作',
     editButton: '編集',
     deleteButton: '🗑️ 削除',

@@ -76,6 +76,7 @@ export default function Admin() {
               <th style={{ padding: '12px 16px', color: '#4b5563' }}>{i18n.manage.colName}</th>
               <th style={{ padding: '12px 16px', color: '#4b5563' }}>{i18n.manage.colStock}</th>
               <th style={{ padding: '12px 16px', color: '#4b5563' }}>{i18n.manage.colThreshold}</th>
+              <th style={{ padding: '12px 16px', color: '#4b5563' }}>{i18n.manage.colStatus}</th>
               <th style={{ padding: '12px 16px', color: '#4b5563', textAlign: 'center' }}>{i18n.manage.colAction}</th>
             </tr>
           </thead>
@@ -96,6 +97,23 @@ export default function Admin() {
                 </td>
 
                 <td style={{ padding: '12px 16px', color: '#6b7280' }}>{item.minThreshold}</td>
+
+                <td style={{ padding: '12px 16px' }}>
+                  {(() => {
+                    const STATUS_STYLE: Record<string, { color: string; bg: string; label: string }> = {
+                      NONE:      { color: '#374151', bg: '#f3f4f6',  label: i18n.itemDetail.statuses.NONE },
+                      REQUESTED: { color: '#1d4ed8', bg: '#eff6ff',  label: i18n.itemDetail.statuses.REQUESTED },
+                      ORDERED:   { color: '#92400e', bg: '#fef3c7',  label: i18n.itemDetail.statuses.ORDERED },
+                      ARRIVED:   { color: '#059669', bg: '#ecfdf5',  label: i18n.itemDetail.statuses.ARRIVED },
+                    };
+                    const s = STATUS_STYLE[item.orderStatus] ?? STATUS_STYLE.NONE;
+                    return (
+                      <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: '6px', fontSize: '13px', fontWeight: 'bold', color: s.color, backgroundColor: s.bg }}>
+                        {s.label}
+                      </span>
+                    );
+                  })()}
+                </td>
 
                 <td style={{ padding: '12px 16px', textAlign: 'center' }}>
                   <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
