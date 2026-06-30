@@ -6,6 +6,7 @@ import { useLang } from '../contexts/LanguageContext';
 
 const STATUS_COLORS = {
   NONE: { color: '#374151', bg: '#f3f4f6' },
+  REQUESTED: { color: '#1d4ed8', bg: '#eff6ff' },
   ORDERED: { color: '#92400e', bg: '#fef3c7' },
   ARRIVED: { color: '#059669', bg: '#ecfdf5' },
 } as const;
@@ -32,6 +33,7 @@ export default function ItemDetail() {
 
   const statusLabels = {
     NONE: { label: i18n.itemDetail.statuses.NONE, ...STATUS_COLORS.NONE },
+    REQUESTED: { label: i18n.itemDetail.statuses.REQUESTED, ...STATUS_COLORS.REQUESTED },
     ORDERED: { label: i18n.itemDetail.statuses.ORDERED, ...STATUS_COLORS.ORDERED },
     ARRIVED: { label: i18n.itemDetail.statuses.ARRIVED, ...STATUS_COLORS.ARRIVED },
   };

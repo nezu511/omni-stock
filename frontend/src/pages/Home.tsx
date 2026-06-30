@@ -33,8 +33,9 @@ function Home() {
   }, []);
 
   const needsOrder = items.filter(item => item.quantity <= item.minThreshold && item.orderStatus === 'NONE');
+  const requestedLowStock = items.filter(item => item.quantity <= item.minThreshold && item.orderStatus === 'REQUESTED');
   const orderedLowStock = items.filter(item => item.quantity <= item.minThreshold && item.orderStatus === 'ORDERED');
-  const lowStockItems = [...needsOrder, ...orderedLowStock];
+  const lowStockItems = [...needsOrder, ...requestedLowStock, ...orderedLowStock];
   const arrivedItems = items.filter(item => item.orderStatus === 'ARRIVED');
 
   // REQUESTED 状態のリクエストを持つ試薬（承認待ち）
@@ -60,6 +61,19 @@ function Home() {
       );
     } catch (err) {
       console.error('Error:', err);
+    }
+  };
+
+  const handleCancelReagentRequest = async (requestId: number) => {
+    try {
+      const res = await fetch(`${API_BASE}/api/reagent_requests/${requestId}`, { method: 'DELETE' });
+      if (!res.ok) { alert(i18n.home.reagentCancelFailed); return; }
+      setReagents(prev => prev.map(r => ({
+        ...r,
+        requests: r.requests.filter(req => req.id !== requestId),
+      })));
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -139,10 +153,36 @@ function Home() {
                   <span style={{ color: '#dc2626', fontWeight: 'bold' }}>{i18n.home.stockLeft} {formatQuantity(item.quantity, item.unitPerBox)}</span>
                   <span style={{ color: '#6b7280' }}>{i18n.home.thresholdLabel} {item.minThreshold}</span>
                 </div>
-                {item.orderStatus === 'ORDERED' ? (
-                  <div style={{ textAlign: 'center', backgroundColor: '#fef3c7', color: '#92400e', fontSize: '14px', fontWeight: 'bold', padding: '8px', borderRadius: '6px' }}>
-                    {i18n.home.orderedBadge}
-                  </div>
+                {item.orderStatus === 'REQUESTED' ? (
+                  <>
+                    <div style={{ textAlign: 'center', backgroundColor: '#f3f4f6', color: '#374151', fontSize: '14px', fontWeight: 'bold', padding: '8px', borderRadius: '6px', marginBottom: '6px' }}>
+                      {i18n.home.requestedBadge}
+                    </div>
+                    <button
+                      onClick={() => handleChangeStatus(item.id, 'ORDERED')}
+                      style={{ width: '100%', backgroundColor: '#dc2626', color: 'white', border: 'none', borderRadius: '6px', padding: '8px', fontSize: '14px', fontWeight: 'bold', cursor: 'pointer', marginBottom: '4px' }}
+                    >
+                      {i18n.home.orderButton}
+                    </button>
+                    <button
+                      onClick={() => handleChangeStatus(item.id, 'NONE')}
+                      style={{ width: '100%', backgroundColor: 'white', color: '#6b7280', border: '1px solid #d1d5db', borderRadius: '6px', padding: '6px', fontSize: '13px', cursor: 'pointer' }}
+                    >
+                      {i18n.home.cancelButton}
+                    </button>
+                  </>
+                ) : item.orderStatus === 'ORDERED' ? (
+                  <>
+                    <div style={{ textAlign: 'center', backgroundColor: '#fef3c7', color: '#92400e', fontSize: '14px', fontWeight: 'bold', padding: '8px', borderRadius: '6px', marginBottom: '4px' }}>
+                      {i18n.home.orderedBadge}
+                    </div>
+                    <button
+                      onClick={() => handleChangeStatus(item.id, 'NONE')}
+                      style={{ width: '100%', backgroundColor: 'white', color: '#6b7280', border: '1px solid #d1d5db', borderRadius: '6px', padding: '6px', fontSize: '13px', cursor: 'pointer' }}
+                    >
+                      {i18n.home.cancelButton}
+                    </button>
+                  </>
                 ) : (
                   <button
                     onClick={() => handleChangeStatus(item.id, 'ORDERED')}
@@ -246,24 +286,27 @@ function Home() {
           </div>
           <p style={{ color: '#713f12', marginBottom: '16px' }}>{i18n.home.reagentRequestDesc}</p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '15px' }}>
-            {pendingReagents.map((r) => {
-              const pendingCount = r.requests.filter(req => req.status === 'REQUESTED').length;
-              return (
-                <div key={r.id} style={{ backgroundColor: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #fde68a', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
-                  <div style={{ fontWeight: 'bold', color: '#111827', marginBottom: '4px' }}>{r.name}</div>
-                  {r.englishName && <div style={{ fontSize: '13px', color: '#6b7280', marginBottom: '8px' }}>{r.englishName}</div>}
-                  <div style={{ fontSize: '13px', color: '#92400e', marginBottom: '10px' }}>
-                    {pendingCount} pending
+            {pendingReagents.flatMap((r) =>
+              r.requests
+                .filter(req => req.status === 'REQUESTED')
+                .map(req => (
+                  <div key={req.id} style={{ backgroundColor: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #fde68a', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+                    <div style={{ fontWeight: 'bold', color: '#111827', marginBottom: '4px' }}>{r.name}</div>
+                    {r.englishName && <div style={{ fontSize: '13px', color: '#6b7280', marginBottom: '4px' }}>{r.englishName}</div>}
+                    {req.requestedBy && (
+                      <div style={{ fontSize: '13px', color: '#374151', marginBottom: '8px' }}>
+                        {i18n.reagentManage.requestedBy} {req.requestedBy}
+                      </div>
+                    )}
+                    <button
+                      onClick={() => handleCancelReagentRequest(req.id)}
+                      style={{ width: '100%', backgroundColor: 'white', color: '#6b7280', border: '1px solid #d1d5db', borderRadius: '6px', padding: '6px', fontSize: '13px', cursor: 'pointer' }}
+                    >
+                      {i18n.home.reagentCancelButton}
+                    </button>
                   </div>
-                  <Link
-                    to="/reagents/manage"
-                    style={{ display: 'block', textAlign: 'center', backgroundColor: '#d97706', color: 'white', textDecoration: 'none', borderRadius: '6px', padding: '8px', fontSize: '14px', fontWeight: 'bold' }}
-                  >
-                    {i18n.home.reagentManageButton.replace('→ ', '')}
-                  </Link>
-                </div>
-              );
-            })}
+                ))
+            )}
           </div>
         </div>
       )}

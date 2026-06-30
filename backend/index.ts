@@ -196,10 +196,25 @@ app.post("/api/quantity_change", async (req, res) => {
       return res.status(400).json({ error: 'Insufficient stock', quantity: currentItem.quantity });
     }
 
+    const newQty = (currentItem?.quantity ?? 0) + quantity_change;
+
     if (actionType === 'RESTOCK') {
       if (currentItem?.orderStatus === 'ORDERED') {
+        // 発注済み → 入荷済みに自動遷移
         orderStatusUpdate = { orderStatus: 'ARRIVED' };
         historyEntries.push({ actionType: 'ARRIVED', amountChange: 0 });
+      } else if (currentItem?.orderStatus === 'REQUESTED' && newQty > (currentItem?.minThreshold ?? 0)) {
+        // 補充検討中で入荷後に閾値を超えた → 自動でNONEに戻す
+        orderStatusUpdate = { orderStatus: 'NONE' };
+        historyEntries.push({ actionType: 'NONE', amountChange: 0 });
+      }
+    }
+
+    if (actionType === 'CONSUME') {
+      if (currentItem?.orderStatus === 'NONE' && newQty <= (currentItem?.minThreshold ?? 0)) {
+        // 通常状態で消費して閾値以下になった → 補充検討中に自動遷移
+        orderStatusUpdate = { orderStatus: 'REQUESTED' };
+        historyEntries.push({ actionType: 'REQUESTED', amountChange: 0 });
       }
     }
 
@@ -290,7 +305,7 @@ app.patch('/api/items/:id', async (req, res) => {
 
 app.patch("/api/change_status", async (req, res) => {
   const { itemId, orderStatus } = req.body;
-  const allowed = ['NONE', 'ORDERED', 'ARRIVED'];
+  const allowed = ['NONE', 'REQUESTED', 'ORDERED', 'ARRIVED'];
 
   if (!allowed.includes(orderStatus)) {
     return res.status(400).json({ error: 'Invalid orderStatus' });
@@ -423,6 +438,23 @@ app.post('/api/reagent_requests', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to create reagent request' });
+  }
+});
+
+// 試薬リクエストのキャンセル（REQUESTED・ORDERED のみ削除可）
+app.delete('/api/reagent_requests/:id', async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  try {
+    const target = await prisma.reagentRequest.findUnique({ where: { id } });
+    if (!target) return res.status(404).json({ error: 'Request not found' });
+    if (target.status === 'ARRIVED') {
+      return res.status(400).json({ error: 'ARRIVED のリクエストはキャンセルできません' });
+    }
+    await prisma.reagentRequest.delete({ where: { id } });
+    res.json({ message: 'Cancelled' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to cancel request' });
   }
 });
 

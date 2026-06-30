@@ -17,8 +17,11 @@ export interface Translations {
     lowStockDesc: string;
     stockLeft: string;
     thresholdLabel: string;
+    requestedBadge: string;
     orderedBadge: string;
     orderButton: string;
+    cancelButton: string;
+    cancelFailed: string;
     detailButton: string;
     arrivedAlert: (count: number) => string;
     arrivedDesc: string;
@@ -28,6 +31,8 @@ export interface Translations {
     reagentRequestAlert: (count: number) => string;
     reagentRequestDesc: string;
     reagentManageButton: string;
+    reagentCancelButton: string;
+    reagentCancelFailed: string;
     reagentArrivedAlert: (count: number) => string;
     reagentArrivedDesc: string;
     reagentConfirmButton: string;
@@ -63,6 +68,8 @@ export interface Translations {
     detailButton: string;
     notFound: (query: string) => string;
     updateFailed: string;
+    cancelButton: string;
+    cancelFailed: string;
     reagentBadge: string;
     reagentArriveButton: string;
     reagentArriveFailed: string;
@@ -124,6 +131,7 @@ export interface Translations {
     actions: Record<string, string>;
     statuses: {
       NONE: string;
+      REQUESTED: string;
       ORDERED: string;
       ARRIVED: string;
     };
@@ -168,6 +176,8 @@ export interface Translations {
     orderFailed: string;
     arriveButton: string;
     arriveFailed: string;
+    cancelButton: string;
+    cancelFailed: string;
     requestedBy: string;
     noRequested: string;
     noOrdered: string;
