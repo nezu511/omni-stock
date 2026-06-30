@@ -211,8 +211,9 @@ app.post("/api/quantity_change", async (req, res) => {
     }
 
     if (actionType === 'CONSUME') {
-      if (currentItem?.orderStatus === 'NONE' && newQty <= (currentItem?.minThreshold ?? 0)) {
-        // 通常状態で消費して閾値以下になった → 補充検討中に自動遷移
+      const s = currentItem?.orderStatus;
+      // NONE or ARRIVED（確認前に消費）で閾値以下になった → 補充検討中に自動遷移
+      if ((s === 'NONE' || s === 'ARRIVED') && newQty <= (currentItem?.minThreshold ?? 0)) {
         orderStatusUpdate = { orderStatus: 'REQUESTED' };
         historyEntries.push({ actionType: 'REQUESTED', amountChange: 0 });
       }
