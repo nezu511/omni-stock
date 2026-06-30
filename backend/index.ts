@@ -487,6 +487,17 @@ app.patch('/api/reagent_requests/:id/status', async (req, res) => {
   }
 });
 
+app.delete('/api/reagents/:id', async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  try {
+    await prisma.reagentRequest.deleteMany({ where: { reagentId: id } });
+    await prisma.reagent.delete({ where: { id } });
+    res.json({ message: 'Deleted' });
+  } catch (error) {
+    res.status(404).json({ error: 'Reagent not found' });
+  }
+});
+
 const PORT = 3001;
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
