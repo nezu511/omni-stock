@@ -33,9 +33,8 @@ function Home() {
   }, []);
 
   const needsOrder = items.filter(item => item.quantity <= item.minThreshold && item.orderStatus === 'NONE');
-  const requestedLowStock = items.filter(item => item.quantity <= item.minThreshold && item.orderStatus === 'REQUESTED');
-  const orderedLowStock = items.filter(item => item.quantity <= item.minThreshold && item.orderStatus === 'ORDERED');
-  const lowStockItems = [...needsOrder, ...requestedLowStock, ...orderedLowStock];
+  const requestedItems = items.filter(item => item.quantity <= item.minThreshold && item.orderStatus === 'REQUESTED');
+  const lowStockItems = [...needsOrder, ...requestedItems];
   const arrivedItems = items.filter(item => item.orderStatus === 'ARRIVED');
 
   // REQUESTED 状態のリクエストを持つ試薬（承認待ち）
@@ -155,7 +154,7 @@ function Home() {
                 </div>
                 {item.orderStatus === 'REQUESTED' ? (
                   <>
-                    <div style={{ textAlign: 'center', backgroundColor: '#f3f4f6', color: '#374151', fontSize: '14px', fontWeight: 'bold', padding: '8px', borderRadius: '6px', marginBottom: '6px' }}>
+                    <div style={{ textAlign: 'center', backgroundColor: '#eff6ff', color: '#1d4ed8', fontSize: '13px', fontWeight: 'bold', padding: '6px 8px', borderRadius: '6px', marginBottom: '6px' }}>
                       {i18n.home.requestedBadge}
                     </div>
                     <button
@@ -164,18 +163,6 @@ function Home() {
                     >
                       {i18n.home.orderButton}
                     </button>
-                    <button
-                      onClick={() => handleChangeStatus(item.id, 'NONE')}
-                      style={{ width: '100%', backgroundColor: 'white', color: '#6b7280', border: '1px solid #d1d5db', borderRadius: '6px', padding: '6px', fontSize: '13px', cursor: 'pointer' }}
-                    >
-                      {i18n.home.cancelButton}
-                    </button>
-                  </>
-                ) : item.orderStatus === 'ORDERED' ? (
-                  <>
-                    <div style={{ textAlign: 'center', backgroundColor: '#fef3c7', color: '#92400e', fontSize: '14px', fontWeight: 'bold', padding: '8px', borderRadius: '6px', marginBottom: '4px' }}>
-                      {i18n.home.orderedBadge}
-                    </div>
                     <button
                       onClick={() => handleChangeStatus(item.id, 'NONE')}
                       style={{ width: '100%', backgroundColor: 'white', color: '#6b7280', border: '1px solid #d1d5db', borderRadius: '6px', padding: '6px', fontSize: '13px', cursor: 'pointer' }}
@@ -298,6 +285,12 @@ function Home() {
                         {i18n.reagentManage.requestedBy} {req.requestedBy}
                       </div>
                     )}
+                    <Link
+                      to="/reagents/manage"
+                      style={{ display: 'block', textAlign: 'center', backgroundColor: '#d97706', color: 'white', textDecoration: 'none', borderRadius: '6px', padding: '7px', fontSize: '13px', fontWeight: 'bold', marginBottom: '4px' }}
+                    >
+                      {i18n.home.detailButton}
+                    </Link>
                     <button
                       onClick={() => handleCancelReagentRequest(req.id)}
                       style={{ width: '100%', backgroundColor: 'white', color: '#6b7280', border: '1px solid #d1d5db', borderRadius: '6px', padding: '6px', fontSize: '13px', cursor: 'pointer' }}

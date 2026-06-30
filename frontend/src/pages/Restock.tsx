@@ -41,25 +41,6 @@ export default function Restock() {
     fetchReagents();
   }, []);
 
-  const handleCancelOrder = async (itemId: number) => {
-    try {
-      const res = await fetch(`${API_BASE}/api/change_status`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ itemId, orderStatus: 'NONE' }),
-      });
-      if (res.ok) {
-        setItems(prev => prev.map(item =>
-          item.id === itemId ? { ...item, orderStatus: 'NONE' } : item
-        ));
-      } else {
-        alert(i18n.restock.cancelFailed);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   const handleRestock = async (itemId: number, restockAmount: number) => {
     if (restockAmount <= 0) return;
 
@@ -209,15 +190,6 @@ export default function Restock() {
           {i18n.restock.restockButton}
         </button>
       </div>
-
-      {item.orderStatus === 'ORDERED' && (
-        <button
-          onClick={() => handleCancelOrder(item.id)}
-          style={{ width: '100%', marginTop: '6px', padding: '7px', backgroundColor: 'white', color: '#6b7280', border: '1px solid #d1d5db', borderRadius: '6px', cursor: 'pointer', fontSize: '13px' }}
-        >
-          {i18n.restock.cancelButton}
-        </button>
-      )}
 
       <Link
         to={`/manage/${item.id}`}
