@@ -21,7 +21,20 @@ function broadcastEvent(event: string, data: Record<string, unknown>) {
   sseClients.forEach((client) => client.write(payload));
 }
 
-app.use(cors());
+// プライベートIPアドレス（ローカルネットワーク）からのリクエストのみ許可する。
+// 10.x, 172.16-31.x, 192.168.x は RFC1918 のプライベートアドレス帯。
+// ラボPCから直接開いた場合の origin: null（ファイル直接開き）も許可する。
+const PRIVATE_IP_RE = /^https?:\/\/(localhost|127\.0\.0\.1|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+|192\.168\.\d+\.\d+)(:\d+)?$/;
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || PRIVATE_IP_RE.test(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS: このオリジンからのアクセスは許可されていません'));
+    }
+  },
+}));
 app.use(express.json());
 
 
