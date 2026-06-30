@@ -32,9 +32,7 @@ function Home() {
       .catch((err) => console.error('Error:', err));
   }, []);
 
-  const needsOrder = items.filter(item => item.quantity <= item.minThreshold && item.orderStatus === 'NONE');
-  const requestedItems = items.filter(item => item.quantity <= item.minThreshold && item.orderStatus === 'REQUESTED');
-  const lowStockItems = [...needsOrder, ...requestedItems];
+  const lowStockItems = items.filter(item => item.quantity <= item.minThreshold && item.orderStatus === 'REQUESTED');
   const arrivedItems = items.filter(item => item.orderStatus === 'ARRIVED');
 
   // REQUESTED 状態のリクエストを持つ試薬（承認待ち）
@@ -152,32 +150,18 @@ function Home() {
                   <span style={{ color: '#dc2626', fontWeight: 'bold' }}>{i18n.home.stockLeft} {formatQuantity(item.quantity, item.unitPerBox)}</span>
                   <span style={{ color: '#6b7280' }}>{i18n.home.thresholdLabel} {item.minThreshold}</span>
                 </div>
-                {item.orderStatus === 'REQUESTED' ? (
-                  <>
-                    <div style={{ textAlign: 'center', backgroundColor: '#eff6ff', color: '#1d4ed8', fontSize: '13px', fontWeight: 'bold', padding: '6px 8px', borderRadius: '6px', marginBottom: '6px' }}>
-                      {i18n.home.requestedBadge}
-                    </div>
-                    <button
-                      onClick={() => handleChangeStatus(item.id, 'ORDERED')}
-                      style={{ width: '100%', backgroundColor: '#dc2626', color: 'white', border: 'none', borderRadius: '6px', padding: '8px', fontSize: '14px', fontWeight: 'bold', cursor: 'pointer', marginBottom: '4px' }}
-                    >
-                      {i18n.home.orderButton}
-                    </button>
-                    <button
-                      onClick={() => handleChangeStatus(item.id, 'NONE')}
-                      style={{ width: '100%', backgroundColor: 'white', color: '#6b7280', border: '1px solid #d1d5db', borderRadius: '6px', padding: '6px', fontSize: '13px', cursor: 'pointer' }}
-                    >
-                      {i18n.home.cancelButton}
-                    </button>
-                  </>
-                ) : (
-                  <button
-                    onClick={() => handleChangeStatus(item.id, 'ORDERED')}
-                    style={{ width: '100%', backgroundColor: '#dc2626', color: 'white', border: 'none', borderRadius: '6px', padding: '8px', fontSize: '14px', fontWeight: 'bold', cursor: 'pointer' }}
-                  >
-                    {i18n.home.orderButton}
-                  </button>
-                )}
+                <button
+                  onClick={() => handleChangeStatus(item.id, 'ORDERED')}
+                  style={{ width: '100%', backgroundColor: '#dc2626', color: 'white', border: 'none', borderRadius: '6px', padding: '8px', fontSize: '14px', fontWeight: 'bold', cursor: 'pointer', marginBottom: '4px' }}
+                >
+                  {i18n.home.orderButton}
+                </button>
+                <button
+                  onClick={() => handleChangeStatus(item.id, 'NONE')}
+                  style={{ width: '100%', backgroundColor: 'white', color: '#6b7280', border: '1px solid #d1d5db', borderRadius: '6px', padding: '6px', fontSize: '13px', cursor: 'pointer' }}
+                >
+                  {i18n.home.cancelButton}
+                </button>
                 <Link
                   to={`/manage/${item.id}`}
                   style={{ display: 'block', textAlign: 'center', marginTop: '8px', backgroundColor: '#e5e7eb', color: '#374151', textDecoration: 'none', borderRadius: '6px', padding: '8px', fontSize: '14px', fontWeight: 'bold' }}
