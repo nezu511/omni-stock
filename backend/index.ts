@@ -21,7 +21,20 @@ function broadcastEvent(event: string, data: Record<string, unknown>) {
   sseClients.forEach((client) => client.write(payload));
 }
 
-app.use(cors());
+// プライベートIPアドレス（ローカルネットワーク）からのリクエストのみ許可する。
+// 10.x, 172.16-31.x, 192.168.x は RFC1918 のプライベートアドレス帯。
+// ラボPCから直接開いた場合の origin: null（ファイル直接開き）も許可する。
+const PRIVATE_IP_RE = /^https?:\/\/(localhost|127\.0\.0\.1|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+|192\.168\.\d+\.\d+)(:\d+)?$/;
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || PRIVATE_IP_RE.test(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS: このオリジンからのアクセスは許可されていません'));
+    }
+  },
+}));
 app.use(express.json());
 
 
@@ -34,28 +47,47 @@ if (!fs.existsSync(uploadDir)) {
 // 🌟 3. multerの設定（保存先とファイル名のルール）
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, uploadDir); // 'uploads' フォルダに保存
+    cb(null, uploadDir);
   },
   filename: function (req, file, cb) {
-    // ファイル名が衝突しないように、現在時刻のミリ秒（Time Stamp）を頭に付与
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + '-' + file.originalname);
+    const ext = path.extname(file.originalname).toLowerCase();
+    cb(null, uniqueSuffix + ext);
   }
 });
-const upload = multer({ storage: storage });
+
+const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  fileFilter: (req, file, cb) => {
+    if (ALLOWED_MIME_TYPES.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('画像ファイル（JPEG / PNG / GIF / WebP）のみアップロードできます'));
+    }
+  },
+});
 
 // ==========================================
 // 📥 画像を受け取るAPI（アップロード口）
 // ==========================================
 // フロントエンドの FormData から 'image' というキーで送られてきたファイルを受け取る
-app.post('/api/upload', upload.single('image'), (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ error: 'Failed to upload image' });
-  }
-
-  // 外部からアクセスするためのURLを生成してフロントエンドに返す
-  const imageUrl = `http://localhost:3001/uploads/${req.file.filename}`;
-  res.json({ imageUrl: imageUrl });
+app.post('/api/upload', (req, res) => {
+  upload.single('image')(req, res, (err) => {
+    if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({ error: 'ファイルサイズは5MB以下にしてください' });
+    }
+    if (err) {
+      return res.status(400).json({ error: err.message });
+    }
+    if (!req.file) {
+      return res.status(400).json({ error: 'ファイルがありません' });
+    }
+    const imageUrl = `http://${req.headers.host?.split(':')[0] ?? 'localhost'}:3001/uploads/${req.file.filename}`;
+    res.json({ imageUrl });
+  });
 });
 
 // ==========================================

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { API_BASE } from '../config';
 import { useNavigate } from 'react-router-dom';
 import { useLang } from '../contexts/LanguageContext';
 import type { Reagent, ReagentRequest } from '../types';
@@ -20,7 +21,7 @@ export default function ReagentManage() {
   async function fetchAll() {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:3001/api/reagents');
+      const res = await fetch(`${API_BASE}/api/reagents`);
       const reagents: Reagent[] = await res.json();
       // 全リクエストをフラットに展開し、reagent情報を付与
       const all: RequestWithReagent[] = reagents.flatMap((r) =>
@@ -37,7 +38,7 @@ export default function ReagentManage() {
   }
 
   async function updateStatus(id: number, status: string, errorMsg: string) {
-    const res = await fetch(`http://localhost:3001/api/reagent_requests/${id}/status`, {
+    const res = await fetch(`${API_BASE}/api/reagent_requests/${id}/status`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status }),

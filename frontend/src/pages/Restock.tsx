@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { API_BASE } from '../config';
 import { Link } from 'react-router-dom';
 import type { Item, Reagent, ReagentRequest } from '../types';
 import { matchesSearchQuery } from '../utils/searchItems';
@@ -15,14 +16,14 @@ export default function Restock() {
   const [orderedReagentRequests, setOrderedReagentRequests] = useState<RequestWithReagent[]>([]);
 
   const fetchItems = () => {
-    fetch('http://localhost:3001/api/items')
+    fetch(`${API_BASE}/api/items`)
       .then((res) => res.json())
       .then((data) => setItems(data))
       .catch((err) => console.error('Error:', err));
   };
 
   const fetchReagents = () => {
-    fetch('http://localhost:3001/api/reagents')
+    fetch(`${API_BASE}/api/reagents`)
       .then((res) => res.json())
       .then((reagents: Reagent[]) => {
         const ordered: RequestWithReagent[] = reagents.flatMap((r) =>
@@ -44,7 +45,7 @@ export default function Restock() {
     if (restockAmount <= 0) return;
 
     try {
-      const response = await fetch('http://localhost:3001/api/quantity_change', {
+      const response = await fetch(`${API_BASE}/api/quantity_change`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -70,7 +71,7 @@ export default function Restock() {
   };
 
   const handleReagentArrive = async (requestId: number) => {
-    const res = await fetch(`http://localhost:3001/api/reagent_requests/${requestId}/status`, {
+    const res = await fetch(`${API_BASE}/api/reagent_requests/${requestId}/status`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status: 'ARRIVED' }),

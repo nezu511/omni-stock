@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
+import { API_BASE } from '../config';
 import { useLang } from '../contexts/LanguageContext';
 
-const API_BASE = 'http://localhost:3001';
 
 // Safari を含むすべてのブラウザで通知許可をリクエストするには
 // ユーザーの操作（クリック）から呼び出す必要がある。
