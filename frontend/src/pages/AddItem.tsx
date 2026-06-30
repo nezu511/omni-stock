@@ -8,6 +8,7 @@ type ItemFormData = {
   quantity: number;
   imageUrl: string;
   minThreshold: number;
+  unitPerBox: number;
   keywords: string;
   orderUrl: string;
 };
@@ -22,6 +23,7 @@ export default function AddItem() {
     quantity: 1,
     imageUrl: '',
     minThreshold: 5,
+    unitPerBox: 1,
     keywords: '',
     orderUrl: '',
   });
@@ -134,6 +136,18 @@ export default function AddItem() {
               style={{ padding: '10px', border: '1px solid #d1d5db', borderRadius: '6px', fontSize: '16px' }}
             />
           </div>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+          <label style={{ fontWeight: 'bold', color: '#4b5563' }}>{i18n.addItem.unitPerBoxLabel}</label>
+          <input
+            type="number"
+            name="unitPerBox"
+            min="1"
+            value={formData.unitPerBox}
+            onChange={handleChange}
+            style={{ padding: '10px', border: '1px solid #d1d5db', borderRadius: '6px', fontSize: '16px' }}
+          />
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { Item, Reagent, ReagentRequest } from '../types';
 import { matchesSearchQuery } from '../utils/searchItems';
+import { formatBoxQuantity } from '../utils/formatQuantity';
 import { useLang } from '../contexts/LanguageContext';
 
 type RequestWithReagent = ReagentRequest & { reagent: Reagent };
@@ -149,24 +150,30 @@ export default function Restock() {
 
       <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
         <p style={{ fontSize: '28px', fontWeight: 'bold', margin: '0', color: '#059669' }}>
-          {i18n.restock.stockLeft} {item.quantity}
+          {i18n.restock.stockLeft} {formatBoxQuantity(item.quantity, item.unitPerBox)}
         </p>
       </div>
+
+      {item.unitPerBox > 1 && (
+        <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '2px' }}>
+          {i18n.restock.boxHint(item.unitPerBox)}
+        </div>
+      )}
 
       <hr style={{ border: 'none', borderTop: '1px dashed #e5e7eb', margin: '15px 0' }} />
 
       <button
-        onClick={() => handleRestock(item.id, 1)}
+        onClick={() => handleRestock(item.id, item.unitPerBox > 1 ? item.unitPerBox : 1)}
         style={{ width: '100%', padding: '10px', background: '#ecfdf5', color: '#059669', border: '1px solid #a7f3d0', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', marginBottom: '10px', transition: 'background 0.2s' }}
       >
-        {i18n.restock.quickButton}
+        {item.unitPerBox > 1 ? i18n.restock.quickBoxButton : i18n.restock.quickButton}
       </button>
 
       <div style={{ display: 'flex', gap: '5px' }}>
         <input
           type="number"
           min="1"
-          placeholder={i18n.restock.quantityPlaceholder}
+          placeholder={item.unitPerBox > 1 ? i18n.restock.boxPlaceholder : i18n.restock.quantityPlaceholder}
           value={inputValues[item.id] || ''}
           onChange={(e) => {
             const val = parseInt(e.target.value, 10);
@@ -175,7 +182,7 @@ export default function Restock() {
           style={{ flex: 1, padding: '8px', border: '1px solid #d1d5db', borderRadius: '6px', fontSize: '16px' }}
         />
         <button
-          onClick={() => handleRestock(item.id, inputValues[item.id] as number)}
+          onClick={() => handleRestock(item.id, (inputValues[item.id] as number) * (item.unitPerBox > 1 ? item.unitPerBox : 1))}
           disabled={!inputValues[item.id]}
           style={{ padding: '8px 12px', background: inputValues[item.id] ? '#059669' : '#d1d5db', color: 'white', border: 'none', borderRadius: '6px', cursor: inputValues[item.id] ? 'pointer' : 'not-allowed', fontWeight: 'bold' }}
         >

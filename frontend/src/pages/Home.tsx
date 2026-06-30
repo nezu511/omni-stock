@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import type { Item, Reagent, ReagentRequest } from '../types';
+import { formatQuantity } from '../utils/formatQuantity';
 import { useLang } from '../contexts/LanguageContext';
 
 type RequestWithReagent = ReagentRequest & { reagent: Reagent };
@@ -134,7 +135,7 @@ function Home() {
               <div key={item.id} style={{ backgroundColor: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #fecaca', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
                 <div style={{ fontWeight: 'bold', color: '#111827', marginBottom: '8px' }}>{item.name}</div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', marginBottom: '10px' }}>
-                  <span style={{ color: '#dc2626', fontWeight: 'bold' }}>{i18n.home.stockLeft} {item.quantity}</span>
+                  <span style={{ color: '#dc2626', fontWeight: 'bold' }}>{i18n.home.stockLeft} {formatQuantity(item.quantity, item.unitPerBox)}</span>
                   <span style={{ color: '#6b7280' }}>{i18n.home.thresholdLabel} {item.minThreshold}</span>
                 </div>
                 {item.orderStatus === 'ORDERED' ? (

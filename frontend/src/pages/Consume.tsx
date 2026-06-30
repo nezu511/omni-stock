@@ -8,6 +8,7 @@ export default function Consume() {
   const { i18n } = useLang();
   const [items, setItems] = useState<Item[]>([]);
   const [inputValues, setInputValues] = useState<{ [key: number]: number | '' }>({});
+  const [consumeMode, setConsumeMode] = useState<{ [key: number]: 'unit' | 'box' }>({});
   const [searchQuery, setSearchQuery] = useState('');
 
   const fetchItems = () => {
@@ -100,7 +101,40 @@ export default function Consume() {
               </p>
             </div>
 
+            {item.unitPerBox > 1 && (
+              <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '2px' }}>
+                {i18n.consume.boxHint(item.unitPerBox)}
+              </div>
+            )}
+
             <hr style={{ border: 'none', borderTop: '1px dashed #e5e7eb', margin: '15px 0' }} />
+
+            {item.unitPerBox > 1 && (
+              <div style={{ display: 'flex', gap: '6px', marginBottom: '10px' }}>
+                <button
+                  onClick={() => setConsumeMode((prev) => ({ ...prev, [item.id]: 'unit' }))}
+                  style={{
+                    flex: 1, padding: '6px', fontSize: '13px', fontWeight: 'bold', borderRadius: '6px',
+                    border: '1px solid #fca5a5', cursor: 'pointer',
+                    background: (consumeMode[item.id] ?? 'unit') === 'unit' ? '#dc2626' : '#fff',
+                    color: (consumeMode[item.id] ?? 'unit') === 'unit' ? 'white' : '#dc2626',
+                  }}
+                >
+                  {i18n.consume.unitModeButton}
+                </button>
+                <button
+                  onClick={() => setConsumeMode((prev) => ({ ...prev, [item.id]: 'box' }))}
+                  style={{
+                    flex: 1, padding: '6px', fontSize: '13px', fontWeight: 'bold', borderRadius: '6px',
+                    border: '1px solid #fca5a5', cursor: 'pointer',
+                    background: consumeMode[item.id] === 'box' ? '#dc2626' : '#fff',
+                    color: consumeMode[item.id] === 'box' ? 'white' : '#dc2626',
+                  }}
+                >
+                  {i18n.consume.boxModeButton}
+                </button>
+              </div>
+            )}
 
             <button
               onClick={() => handleConsume(item.id, 1)}
@@ -113,7 +147,7 @@ export default function Consume() {
               <input
                 type="number"
                 min="1"
-                placeholder={i18n.consume.quantityPlaceholder}
+                placeholder={item.unitPerBox > 1 && consumeMode[item.id] === 'box' ? `${i18n.consume.boxModeButton}数` : i18n.consume.quantityPlaceholder}
                 value={inputValues[item.id] || ''}
                 onChange={(e) => {
                   const val = parseInt(e.target.value, 10);
@@ -122,7 +156,11 @@ export default function Consume() {
                 style={{ flex: 1, padding: '8px', border: '1px solid #d1d5db', borderRadius: '6px', fontSize: '16px' }}
               />
               <button
-                onClick={() => handleConsume(item.id, inputValues[item.id] as number)}
+                onClick={() => {
+                  const raw = inputValues[item.id] as number;
+                  const isBox = item.unitPerBox > 1 && consumeMode[item.id] === 'box';
+                  handleConsume(item.id, isBox ? raw * item.unitPerBox : raw);
+                }}
                 disabled={!inputValues[item.id]}
                 style={{ padding: '8px 12px', background: inputValues[item.id] ? '#dc2626' : '#d1d5db', color: 'white', border: 'none', borderRadius: '6px', cursor: inputValues[item.id] ? 'pointer' : 'not-allowed', fontWeight: 'bold' }}
               >

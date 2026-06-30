@@ -109,7 +109,7 @@ app.get('/api/items', async (req, res) => {
 //アイテムを追加
 app.post('/api/items', async (req, res) => {
   try {
-    const { name, englishName, quantity, barcode_str, imageUrl, minThreshold, keywords, url } = req.body;
+    const { name, englishName, quantity, barcode_str, imageUrl, minThreshold, keywords, url, unitPerBox } = req.body;
 
     const newItem = await prisma.item.create({
       data: {
@@ -122,6 +122,7 @@ app.post('/api/items', async (req, res) => {
         keywords: keywords || null,
         site_url: url || null,
         orderStatus: "NONE",
+        unitPerBox: unitPerBox || 1,
         histories: {
           create: {
             actionType: 'CREATE',
@@ -222,7 +223,7 @@ app.get('/api/items/:id', async (req, res) => {
 app.patch('/api/items/:id', async (req, res) => {
   try {
     const itemId = parseInt(req.params.id, 10);
-    const { name, englishName, minThreshold, keywords, imageUrl, orderUrl } = req.body;
+    const { name, englishName, minThreshold, keywords, imageUrl, orderUrl, unitPerBox } = req.body;
 
     const updatedItem = await prisma.item.update({
       where: { id: itemId },
@@ -233,6 +234,7 @@ app.patch('/api/items/:id', async (req, res) => {
         ...(keywords !== undefined && { keywords }),
         ...(imageUrl !== undefined && { imageUrl }),
         ...(orderUrl !== undefined && { site_url: orderUrl }),
+        ...(unitPerBox !== undefined && { unitPerBox }),
       },
       include: { histories: { orderBy: { timestamp: 'desc' } } }
     });

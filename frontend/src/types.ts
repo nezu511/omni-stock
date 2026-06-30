@@ -17,6 +17,7 @@ export interface Item {
   keywords: string | null;
   orderStatus: string;
   orderUrl: string | null;
+  unitPerBox: number;
   histories?: History[];
 }
 

@@ -11,7 +11,7 @@ const STATUS_COLORS = {
 
 type StatusKey = keyof typeof STATUS_COLORS;
 
-type ItemFormData = Pick<Item, 'name' | 'englishName' | 'minThreshold' | 'keywords' | 'imageUrl' | 'orderUrl'>;
+type ItemFormData = Pick<Item, 'name' | 'englishName' | 'minThreshold' | 'unitPerBox' | 'keywords' | 'imageUrl' | 'orderUrl'>;
 
 export default function ItemDetail() {
   const { id } = useParams();
@@ -23,6 +23,7 @@ export default function ItemDetail() {
     name: '',
     englishName: '',
     minThreshold: 5,
+    unitPerBox: 1,
     keywords: '',
     imageUrl: '',
     orderUrl: '',
@@ -43,6 +44,7 @@ export default function ItemDetail() {
           name: data.name,
           englishName: data.englishName ?? '',
           minThreshold: data.minThreshold,
+          unitPerBox: data.unitPerBox ?? 1,
           keywords: data.keywords ?? '',
           imageUrl: data.imageUrl ?? '',
           orderUrl: data.orderUrl ?? '',
@@ -206,6 +208,18 @@ export default function ItemDetail() {
             name="minThreshold"
             min="0"
             value={formData.minThreshold}
+            onChange={handleChange}
+            style={{ padding: '10px', border: '1px solid #d1d5db', borderRadius: '6px', fontSize: '16px' }}
+          />
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+          <label style={{ fontWeight: 'bold', color: '#4b5563' }}>{i18n.itemDetail.unitPerBoxLabel}</label>
+          <input
+            type="number"
+            name="unitPerBox"
+            min="1"
+            value={formData.unitPerBox}
             onChange={handleChange}
             style={{ padding: '10px', border: '1px solid #d1d5db', borderRadius: '6px', fontSize: '16px' }}
           />

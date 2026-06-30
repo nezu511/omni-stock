@@ -43,6 +43,9 @@ export interface Translations {
     useButton: string;
     detailButton: string;
     updateFailed: string;
+    unitModeButton: string;
+    boxModeButton: string;
+    boxHint: (n: number) => string;
   };
   restock: {
     title: string;
@@ -64,6 +67,9 @@ export interface Translations {
     reagentArriveButton: string;
     reagentArriveFailed: string;
     requestedBy: string;
+    quickBoxButton: string;
+    boxPlaceholder: string;
+    boxHint: (n: number) => string;
   };
   manage: {
     title: string;
@@ -87,6 +93,7 @@ export interface Translations {
     englishNameLabel: string;
     quantityLabel: string;
     thresholdLabel: string;
+    unitPerBoxLabel: string;
     keywordsLabel: string;
     urlLabel: string;
     imageLabel: string;
@@ -103,6 +110,7 @@ export interface Translations {
     nameLabel: string;
     englishNameLabel: string;
     thresholdLabel: string;
+    unitPerBoxLabel: string;
     keywordsLabel: string;
     urlLabel: string;
     imageLabel: string;
