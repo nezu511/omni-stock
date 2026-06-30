@@ -7,6 +7,9 @@ export const ja: Translations = {
     manage: '管理',
     reagent: '試薬',
     langToggle: 'English',
+    notifyRequest: 'クリックして通知を有効にする',
+    notifyGranted: '通知が有効です',
+    notifyDenied: '通知がブロックされています — ブラウザの設定から許可してください',
   },
   home: {
     question: '本日はどの作業を行いますか？',
@@ -124,6 +127,17 @@ export const ja: Translations = {
       ORDERED: '注文済み',
       ARRIVED: '入荷済み（未確認）',
     },
+  },
+  notifications: {
+    permissionDenied: '通知が拒否されています。ブラウザの設定から通知を許可してください。',
+    lowStockTitle: '⚠️ 在庫低下',
+    lowStockBody: (name, qty, min) => `${name}: 残り ${qty} 個（閾値: ${min}）`,
+    itemArrivedTitle: '✅ 入荷確認',
+    itemArrivedBody: (name) => `${name} が入荷しました。確認してください。`,
+    reagentRequestedTitle: '🧪 試薬リクエスト',
+    reagentRequestedBody: (name, by) => by ? `${name}（要望者: ${by}）` : name,
+    reagentArrivedTitle: '✅ 試薬到着',
+    reagentArrivedBody: (name) => `${name} が到着しました。`,
   },
   reagentRequest: {
     title: '🧪 試薬の発注リクエスト',

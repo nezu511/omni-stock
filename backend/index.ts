@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Response } from 'express';
 import cors from 'cors';
 import { PrismaClient } from '@prisma/client';
 import 'dotenv/config'
@@ -8,6 +8,18 @@ import fs from 'fs';
 
 const prisma = new PrismaClient();
 const app = express();
+
+// ==========================================
+// 📡 SSE — ブラウザへのリアルタイム通知
+// ==========================================
+// 接続中の全クライアントを保持する。リクエスト単位で res を保存し、
+// 切断時に削除することでメモリリークを防ぐ。
+const sseClients = new Set<Response>();
+
+function broadcastEvent(event: string, data: Record<string, unknown>) {
+  const payload = `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
+  sseClients.forEach((client) => client.write(payload));
+}
 
 app.use(cors());
 app.use(express.json());
@@ -59,6 +71,25 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 //動作確認用ルート
 app.get('/', (req, res) => {
   res.send('Lab Inventory API is running');
+});
+
+// SSE エンドポイント — クライアントはここに接続し続けてイベントを受け取る
+app.get('/api/events', (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders();
+
+  sseClients.add(res);
+
+  // 接続が切れたらクライアントリストから削除
+  req.on('close', () => {
+    sseClients.delete(res);
+  });
+
+  // 30秒ごとにハートビートを送り、プロキシによる接続タイムアウトを防ぐ
+  const heartbeat = setInterval(() => res.write(': heartbeat\n\n'), 30000);
+  req.on('close', () => clearInterval(heartbeat));
 });
 
 //在庫一覧を取得するAPI
@@ -142,6 +173,20 @@ app.post("/api/quantity_change", async (req, res) => {
       },
       include: { histories: true }
     });
+
+    // 使用後に在庫が閾値以下になったら通知
+    if (actionType === 'CONSUME' && updatedItem.quantity <= updatedItem.minThreshold) {
+      broadcastEvent('low_stock', {
+        name: updatedItem.name,
+        quantity: updatedItem.quantity,
+        minThreshold: updatedItem.minThreshold,
+      });
+    }
+    // 入荷によって ARRIVED に遷移した場合に通知
+    if (actionType === 'RESTOCK' && updatedItem.orderStatus === 'ARRIVED') {
+      broadcastEvent('item_arrived', { name: updatedItem.name });
+    }
+
     res.json(updatedItem);
   } catch (error) {
     console.error(error);
@@ -220,13 +265,18 @@ app.patch("/api/change_status", async (req, res) => {
           }
         }
       }
-    })
+    });
+
+    // 手動で ARRIVED に変更された場合に通知（入荷ページ以外からの操作）
+    if (orderStatus === 'ARRIVED') {
+      broadcastEvent('item_arrived', { name: updatedItem.name });
+    }
+
     res.json(updatedItem);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to update orderStatus' });
   }
-
 })
 
 app.delete("/api/items/:id", async (req, res) => {
@@ -320,6 +370,12 @@ app.post('/api/reagent_requests', async (req, res) => {
       data: { reagentId, requestedBy: requestedBy || null, status: 'REQUESTED' },
       include: { reagent: true },
     });
+
+    broadcastEvent('reagent_requested', {
+      reagentName: request.reagent.name,
+      requestedBy: request.requestedBy ?? '',
+    });
+
     res.json(request);
   } catch (error) {
     console.error(error);
@@ -343,6 +399,11 @@ app.patch('/api/reagent_requests/:id/status', async (req, res) => {
       data: { status },
       include: { reagent: true },
     });
+
+    if (status === 'ARRIVED') {
+      broadcastEvent('reagent_arrived', { reagentName: updated.reagent.name });
+    }
+
     res.json(updated);
   } catch (error) {
     console.error(error);

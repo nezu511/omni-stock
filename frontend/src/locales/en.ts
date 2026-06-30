@@ -7,6 +7,9 @@ export const en: Translations = {
     manage: 'Manage',
     reagent: 'Reagents',
     langToggle: '日本語',
+    notifyRequest: 'Click to enable notifications',
+    notifyGranted: 'Notifications enabled',
+    notifyDenied: 'Notifications blocked — enable in browser settings',
   },
   home: {
     question: 'What would you like to do today?',
@@ -124,6 +127,17 @@ export const en: Translations = {
       ORDERED: 'Ordered',
       ARRIVED: 'Arrived (Unconfirmed)',
     },
+  },
+  notifications: {
+    permissionDenied: 'Notification permission denied. Please allow notifications in browser settings.',
+    lowStockTitle: '⚠️ Low Stock',
+    lowStockBody: (name, qty, min) => `${name}: ${qty} remaining (min: ${min})`,
+    itemArrivedTitle: '✅ Item Arrived',
+    itemArrivedBody: (name) => `${name} has arrived. Please confirm.`,
+    reagentRequestedTitle: '🧪 Reagent Request',
+    reagentRequestedBody: (name, by) => by ? `${name} — requested by ${by}` : name,
+    reagentArrivedTitle: '✅ Reagent Arrived',
+    reagentArrivedBody: (name) => `${name} has arrived.`,
   },
   reagentRequest: {
     title: '🧪 Request Reagent',

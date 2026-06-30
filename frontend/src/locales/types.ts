@@ -7,6 +7,9 @@ export interface Translations {
     manage: string;
     reagent: string;
     langToggle: string;
+    notifyRequest?: string;
+    notifyGranted?: string;
+    notifyDenied?: string;
   };
   home: {
     question: string;
@@ -135,6 +138,17 @@ export interface Translations {
     registerFailed: string;
     noResults: string;
     manageLink: string;
+  };
+  notifications: {
+    permissionDenied: string;
+    lowStockTitle: string;
+    lowStockBody: (name: string, qty: number, min: number) => string;
+    itemArrivedTitle: string;
+    itemArrivedBody: (name: string) => string;
+    reagentRequestedTitle: string;
+    reagentRequestedBody: (name: string, by: string) => string;
+    reagentArrivedTitle: string;
+    reagentArrivedBody: (name: string) => string;
   };
   reagentManage: {
     title: string;
