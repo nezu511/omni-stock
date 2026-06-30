@@ -142,11 +142,11 @@ function Home() {
 
           {/* 在庫低下アラート */}
           {lowStockItems.length > 0 && (
-            <div style={{ textAlign: 'left', backgroundColor: '#fef2f2', border: '2px solid #fca5a5', borderRadius: '12px', padding: '20px', marginBottom: pendingReagents.length > 0 ? '16px' : '0' }}>
+            <div style={{ textAlign: 'left', marginBottom: pendingReagents.length > 0 ? '20px' : '0' }}>
               <h3 style={{ color: '#dc2626', marginTop: 0 }}>
                 {i18n.home.lowStockAlert(lowStockItems.length)}
               </h3>
-              <p style={{ color: '#991b1b', marginBottom: '20px' }}>
+              <p style={{ color: '#991b1b', marginBottom: '16px' }}>
                 {i18n.home.lowStockDesc}
               </p>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '15px' }}>
@@ -183,7 +183,7 @@ function Home() {
 
           {/* 試薬 承認待ちリクエスト */}
           {pendingReagents.length > 0 && (
-            <div style={{ textAlign: 'left', backgroundColor: '#fefce8', border: '2px solid #fde047', borderRadius: '12px', padding: '20px' }}>
+            <div style={{ textAlign: 'left' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
                 <h3 style={{ color: '#a16207', marginTop: 0 }}>
                   {i18n.home.reagentRequestAlert(pendingReagents.length)}
@@ -239,11 +239,11 @@ function Home() {
 
           {/* 消耗品 入荷確認 */}
           {arrivedItems.length > 0 && (
-            <div style={{ textAlign: 'left', backgroundColor: '#ecfdf5', border: '2px solid #6ee7b7', borderRadius: '12px', padding: '20px', marginBottom: arrivedReagentRequests.length > 0 ? '16px' : '0' }}>
+            <div style={{ textAlign: 'left', marginBottom: arrivedReagentRequests.length > 0 ? '20px' : '0' }}>
               <h3 style={{ color: '#059669', marginTop: 0 }}>
                 {i18n.home.arrivedAlert(arrivedItems.length)}
               </h3>
-              <p style={{ color: '#065f46', marginBottom: '20px' }}>
+              <p style={{ color: '#065f46', marginBottom: '16px' }}>
                 {i18n.home.arrivedDesc}
               </p>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '15px' }}>
@@ -273,11 +273,11 @@ function Home() {
 
           {/* 試薬 到着確認 */}
           {arrivedReagentRequests.length > 0 && (
-            <div style={{ textAlign: 'left', backgroundColor: '#f5f3ff', border: '2px solid #c4b5fd', borderRadius: '12px', padding: '20px' }}>
+            <div style={{ textAlign: 'left' }}>
               <h3 style={{ color: '#6d28d9', marginTop: 0 }}>
                 {i18n.home.reagentArrivedAlert(arrivedReagentRequests.length)}
               </h3>
-              <p style={{ color: '#5b21b6', marginBottom: '20px' }}>
+              <p style={{ color: '#5b21b6', marginBottom: '16px' }}>
                 {i18n.home.reagentArrivedDesc}
               </p>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '15px' }}>
