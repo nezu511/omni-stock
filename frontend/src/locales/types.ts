@@ -36,6 +36,11 @@ export interface Translations {
     reagentArrivedAlert: (count: number) => string;
     reagentArrivedDesc: string;
     reagentConfirmButton: string;
+    pendingAlert: (count: number) => string;
+    pendingDesc: string;
+    arrivedCombinedAlert: (count: number) => string;
+    arrivedCombinedDesc: string;
+    toOrderButton: string;
   };
   consume: {
     title: string;

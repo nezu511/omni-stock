@@ -36,6 +36,11 @@ export const en: Translations = {
     reagentArrivedAlert: (n) => `🧪 Reagent Arrivals (${n})`,
     reagentArrivedDesc: 'The following reagents have arrived. Press "Confirmed" when checked.',
     reagentConfirmButton: 'Confirmed',
+    pendingAlert: (n) => `⚠️ Pending Approval (${n})`,
+    pendingDesc: 'The following items and reagents require restocking or order approval.',
+    arrivedCombinedAlert: (n) => `✅ Arrival Confirmation (${n})`,
+    arrivedCombinedDesc: 'The following items and reagents have arrived. Press "Confirmed" when checked.',
+    toOrderButton: 'Go to Order',
   },
   consume: {
     title: '📤 Consume Items',
