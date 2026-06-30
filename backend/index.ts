@@ -133,7 +133,10 @@ app.post('/api/items', async (req, res) => {
     });
 
     res.json(newItem);
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.code === 'P2002') {
+      return res.status(400).json({ error: 'Item with that name already exists' });
+    }
     console.error(error);
     res.status(500).json({ error: 'Failed to create item' });
   }
@@ -154,8 +157,14 @@ app.post("/api/quantity_change", async (req, res) => {
     // 数量変更とステータス変更を1回の update にまとめることで、
     // 片方だけ反映された中途半端な状態（原子性の欠如）を防ぐ。
     let orderStatusUpdate = {};
+    const currentItem = await prisma.item.findUnique({ where: { id: itemId } });
+
+    // 消費時に在庫がマイナスになる操作を弾く
+    if (quantity_change < 0 && currentItem && currentItem.quantity + quantity_change < 0) {
+      return res.status(400).json({ error: 'Insufficient stock', quantity: currentItem.quantity });
+    }
+
     if (actionType === 'RESTOCK') {
-      const currentItem = await prisma.item.findUnique({ where: { id: itemId } });
       if (currentItem?.orderStatus === 'ORDERED') {
         orderStatusUpdate = { orderStatus: 'ARRIVED' };
         historyEntries.push({ actionType: 'ARRIVED', amountChange: 0 });
