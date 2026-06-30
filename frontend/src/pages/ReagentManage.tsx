@@ -37,6 +37,12 @@ export default function ReagentManage() {
     }
   }
 
+  async function cancelRequest(id: number) {
+    const res = await fetch(`${API_BASE}/api/reagent_requests/${id}`, { method: 'DELETE' });
+    if (!res.ok) { alert(t.cancelFailed); return; }
+    setRequests(prev => prev.filter(r => r.id !== id));
+  }
+
   async function updateStatus(id: number, status: string, errorMsg: string) {
     const res = await fetch(`${API_BASE}/api/reagent_requests/${id}/status`, {
       method: 'PATCH',
@@ -135,12 +141,20 @@ export default function ReagentManage() {
               key={req.id}
               req={req}
               actions={
-                <button
-                  onClick={() => updateStatus(req.id, 'ORDERED', t.orderFailed)}
-                  style={{ padding: '6px 14px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px', whiteSpace: 'nowrap' }}
-                >
-                  {t.orderButton}
-                </button>
+                <>
+                  <button
+                    onClick={() => updateStatus(req.id, 'ORDERED', t.orderFailed)}
+                    style={{ padding: '6px 14px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px', whiteSpace: 'nowrap' }}
+                  >
+                    {t.orderButton}
+                  </button>
+                  <button
+                    onClick={() => cancelRequest(req.id)}
+                    style={{ padding: '6px 14px', backgroundColor: 'white', color: '#6b7280', border: '1px solid #d1d5db', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', whiteSpace: 'nowrap' }}
+                  >
+                    {t.cancelButton}
+                  </button>
+                </>
               }
             />
           ))
@@ -160,12 +174,20 @@ export default function ReagentManage() {
               key={req.id}
               req={req}
               actions={
-                <button
-                  onClick={() => updateStatus(req.id, 'ARRIVED', t.arriveFailed)}
-                  style={{ padding: '6px 14px', backgroundColor: '#10b981', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px', whiteSpace: 'nowrap' }}
-                >
-                  {t.arriveButton}
-                </button>
+                <>
+                  <button
+                    onClick={() => updateStatus(req.id, 'ARRIVED', t.arriveFailed)}
+                    style={{ padding: '6px 14px', backgroundColor: '#10b981', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px', whiteSpace: 'nowrap' }}
+                  >
+                    {t.arriveButton}
+                  </button>
+                  <button
+                    onClick={() => cancelRequest(req.id)}
+                    style={{ padding: '6px 14px', backgroundColor: 'white', color: '#6b7280', border: '1px solid #d1d5db', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', whiteSpace: 'nowrap' }}
+                  >
+                    {t.cancelButton}
+                  </button>
+                </>
               }
             />
           ))
