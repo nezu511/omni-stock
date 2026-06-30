@@ -33,8 +33,8 @@ function NavBar() {
       <div style={{ display: 'flex', gap: '15px', marginLeft: 'auto', alignItems: 'center' }}>
         <Link to="/consume" style={{ textDecoration: 'none', color: '#4b5563', fontWeight: 'bold' }}>{i18n.nav.consume}</Link>
         <Link to="/restock" style={{ textDecoration: 'none', color: '#4b5563', fontWeight: 'bold' }}>{i18n.nav.restock}</Link>
-        <Link to="/manage" style={{ textDecoration: 'none', color: '#4b5563', fontWeight: 'bold' }}>{i18n.nav.manage}</Link>
         <Link to="/reagents" style={{ textDecoration: 'none', color: '#4b5563', fontWeight: 'bold' }}>{i18n.nav.reagent}</Link>
+        <Link to="/manage" style={{ textDecoration: 'none', color: '#4b5563', fontWeight: 'bold' }}>{i18n.nav.manage}</Link>
 
         {/* 通知ベルボタン — permission === 'unsupported' のときは非表示（iOS Safari 等） */}
         {bellLabel && (
