@@ -91,6 +91,7 @@ export const en: Translations = {
     colName: 'Item Name',
     colStock: 'Stock',
     colThreshold: 'Min Threshold',
+    colStatus: 'Status',
     colAction: 'Actions',
     editButton: 'Edit',
     deleteButton: '🗑️ Delete',
