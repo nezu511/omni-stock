@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { API_BASE } from '../config';
 import { useState, useEffect } from 'react';
 import type { Item, Reagent, ReagentRequest } from '../types';
 import { formatQuantity } from '../utils/formatQuantity';
@@ -21,11 +22,11 @@ function Home() {
   });
 
   useEffect(() => {
-    fetch('http://localhost:3001/api/items')
+    fetch(`${API_BASE}/api/items`)
       .then((res) => res.json())
       .then((data) => setItems(data))
       .catch((err) => console.error('Error:', err));
-    fetch('http://localhost:3001/api/reagents')
+    fetch(`${API_BASE}/api/reagents`)
       .then((res) => res.json())
       .then((data) => setReagents(data))
       .catch((err) => console.error('Error:', err));
@@ -48,7 +49,7 @@ function Home() {
 
   const handleChangeStatus = async (itemId: number, orderStatus: string) => {
     try {
-      const res = await fetch('http://localhost:3001/api/change_status', {
+      const res = await fetch(`${API_BASE}/api/change_status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ itemId, orderStatus }),

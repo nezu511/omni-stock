@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { API_BASE } from '../config';
 import { useNavigate, useParams } from 'react-router-dom';
 import type { Item } from '../types';
 import { useLang } from '../contexts/LanguageContext';
@@ -36,7 +37,7 @@ export default function ItemDetail() {
   };
 
   const fetchItem = () => {
-    fetch(`http://localhost:3001/api/items/${id}`)
+    fetch(`${API_BASE}/api/items/${id}`)
       .then((res) => res.json())
       .then((data: Item) => {
         setItem(data);
@@ -72,7 +73,7 @@ export default function ItemDetail() {
     uploadData.append('image', file);
 
     try {
-      const response = await fetch('http://localhost:3001/api/upload', {
+      const response = await fetch(`${API_BASE}/api/upload`, {
         method: 'POST',
         body: uploadData,
       });
@@ -87,7 +88,7 @@ export default function ItemDetail() {
     e.preventDefault();
 
     try {
-      const response = await fetch(`http://localhost:3001/api/items/${id}`, {
+      const response = await fetch(`${API_BASE}/api/items/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -109,7 +110,7 @@ export default function ItemDetail() {
 
   const handleChangeStatus = async (orderStatus: string) => {
     try {
-      const res = await fetch('http://localhost:3001/api/change_status', {
+      const res = await fetch(`${API_BASE}/api/change_status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ itemId: Number(id), orderStatus }),
