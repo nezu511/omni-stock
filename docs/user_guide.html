@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Omni-Stock 使い方ガイド</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap');
+
+  :root {
+    --blue:    #2563eb;
+    --blue-lt: #eff6ff;
+    --blue-bd: #bfdbfe;
+    --teal:    #0d9488;
+    --teal-lt: #f0fdfa;
+    --red:     #dc2626;
+    --red-lt:  #fef2f2;
+    --amber:   #d97706;
+    --amber-lt:#fffbeb;
+    --gray-50: #f9fafb;
+    --gray-100:#f3f4f6;
+    --gray-200:#e5e7eb;
+    --gray-400:#9ca3af;
+    --gray-600:#4b5563;
+    --gray-800:#1f2937;
+    --gray-900:#111827;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: white;
+  }
+
+  /* ---- 表紙 ---- */
+  .cover {
+    page-break-after: always;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #0d9488 100%);
+    color: white;
+    text-align: center;
+    padding: 60px 40px;
+  }
+  .cover-icon {
+    font-size: 64px;
+    margin-bottom: 24px;
+  }
+  .cover-title {
+    font-size: 32pt;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-bottom: 12px;
+  }
+  .cover-subtitle {
+    font-size: 14pt;
+    opacity: 0.85;
+    margin-bottom: 48px;
+    font-weight: 400;
+  }
+  .cover-divider {
+    width: 60px;
+    height: 3px;
+    background: rgba(255,255,255,0.5);
+    margin: 24px auto;
+    border-radius: 2px;
+  }
+  .cover-date {
+    font-size: 11pt;
+    opacity: 0.7;
+    margin-top: 8px;
+  }
+  .cover-features {
+    display: flex;
+    gap: 24px;
+    margin-top: 48px;
+  }
+  .cover-feature {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 12px;
+    padding: 16px 20px;
+    text-align: center;
+    width: 160px;
+  }
+  .cover-feature-icon { font-size: 24px; margin-bottom: 6px; }
+  .cover-feature-text { font-size: 9pt; opacity: 0.9; line-height: 1.4; }
+
+  /* ---- ページ共通 ---- */
+  .page {
+    page-break-before: always;
+    padding: 40px 48px;
+    min-height: 100vh;
+  }
+
+  /* ---- 目次 ---- */
+  .toc-page {
+    page-break-after: always;
+    padding: 40px 48px;
+  }
+  .toc-title {
+    font-size: 18pt;
+    font-weight: 700;
+    color: var(--blue);
+    border-bottom: 3px solid var(--blue);
+    padding-bottom: 10px;
+    margin-bottom: 28px;
+  }
+  .toc-item {
+    display: flex;
+    align-items: baseline;
+    padding: 6px 0;
+    border-bottom: 1px dotted var(--gray-200);
+  }
+  .toc-num {
+    width: 28px;
+    font-weight: 700;
+    color: var(--blue);
+    flex-shrink: 0;
+  }
+  .toc-label { flex: 1; font-size: 11pt; }
+  .toc-sub {
+    padding: 3px 0 3px 28px;
+    color: var(--gray-600);
+    font-size: 9.5pt;
+    border-bottom: 1px dotted var(--gray-100);
+    display: flex;
+    align-items: baseline;
+  }
+  .toc-sub-dot { margin-right: 8px; color: var(--gray-400); }
+
+  /* ---- セクションヘッダ ---- */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(90deg, var(--blue) 0%, #3b82f6 100%);
+    color: white;
+    padding: 14px 20px;
+    border-radius: 10px;
+    margin-bottom: 24px;
+  }
+  .section-header-icon { font-size: 22px; }
+  .section-header-text { font-size: 15pt; font-weight: 700; }
+
+  /* ---- 小見出し ---- */
+  h3 {
+    font-size: 12pt;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin: 20px 0 10px;
+    padding-left: 10px;
+    border-left: 4px solid var(--blue);
+  }
+
+  /* ---- テキスト ---- */
+  p { margin-bottom: 10px; }
+  ul { padding-left: 20px; margin-bottom: 12px; }
+  li { margin-bottom: 4px; }
+
+  /* ---- ステップリスト ---- */
+  .steps { list-style: none; padding: 0; margin-bottom: 16px; }
+  .steps li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--gray-100);
+  }
+  .step-num {
+    background: var(--blue);
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9pt;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .step-body { flex: 1; line-height: 1.6; }
+  .step-body strong { color: var(--blue); }
+
+  /* ---- 注意・ヒントボックス ---- */
+  .callout {
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 14px 0;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .callout-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .callout-body { flex: 1; font-size: 9.5pt; line-height: 1.6; }
+  .callout-body strong { font-size: 10pt; }
+  .callout.warn  { background: var(--amber-lt); border-left: 4px solid var(--amber); }
+  .callout.info  { background: var(--blue-lt);  border-left: 4px solid var(--blue); }
+  .callout.tip   { background: var(--teal-lt);  border-left: 4px solid var(--teal); }
+  .callout.danger{ background: var(--red-lt);   border-left: 4px solid var(--red); }
+
+  /* ---- テーブル ---- */
+  table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 9.5pt; }
+  thead tr { background: var(--blue); color: white; }
+  thead th { padding: 9px 14px; text-align: left; font-weight: 600; }
+  tbody tr:nth-child(even) { background: var(--gray-50); }
+  tbody td { padding: 8px 14px; border-bottom: 1px solid var(--gray-200); vertical-align: top; }
+  td:first-child { font-weight: 600; white-space: nowrap; }
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 8.5pt;
+    font-weight: 600;
+  }
+  .badge-req   { background: #eff6ff; color: #1d4ed8; }
+  .badge-opt   { background: var(--gray-100); color: var(--gray-600); }
+
+  /* ---- スクリーンショット ---- */
+  .screenshot-wrap {
+    border: 1px solid var(--gray-200);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 14px 0 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  .screenshot-wrap img { width: 100%; display: block; }
+  .screenshot-caption {
+    text-align: center;
+    font-size: 8.5pt;
+    color: var(--gray-400);
+    margin-bottom: 14px;
+    margin-top: 4px;
+  }
+
+  /* ---- FAQ ---- */
+  .faq-item {
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  .faq-q {
+    background: var(--gray-50);
+    padding: 10px 14px;
+    font-weight: 700;
+    font-size: 10pt;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .faq-q-badge {
+    background: var(--blue);
+    color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8.5pt;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .faq-a {
+    padding: 10px 14px 10px 42px;
+    font-size: 9.5pt;
+    color: var(--gray-600);
+    line-height: 1.65;
+    border-top: 1px solid var(--gray-200);
+  }
+
+  /* ---- ステータスバッジ ---- */
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 8.5pt;
+    font-weight: 700;
+    vertical-align: middle;
+  }
+  .status-none     { background: var(--gray-100); color: var(--gray-600); }
+  .status-requested{ background: #eff6ff; color: #1d4ed8; }
+  .status-ordered  { background: #fffbeb; color: #92400e; }
+  .status-arrived  { background: #ecfdf5; color: #059669; }
+
+  /* ---- ナビゲーション概要カード ---- */
+  .nav-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 16px 0;
+  }
+  .nav-card {
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .nav-card.consume { background: #fef2f2; border: 1px solid #fecaca; }
+  .nav-card.restock { background: #f0fdf4; border: 1px solid #bbf7d0; }
+  .nav-card.reagent { background: #faf5ff; border: 1px solid #e9d5ff; }
+  .nav-card.manage  { background: var(--gray-50); border: 1px solid var(--gray-200); }
+  .nav-card-icon  { font-size: 24px; margin-top: 2px; }
+  .nav-card-name  { font-size: 12pt; font-weight: 700; margin-bottom: 2px; }
+  .nav-card-desc  { font-size: 9pt; color: var(--gray-600); line-height: 1.5; }
+  .nav-card.consume .nav-card-name { color: #dc2626; }
+  .nav-card.restock .nav-card-name { color: #16a34a; }
+  .nav-card.reagent .nav-card-name { color: #7c3aed; }
+  .nav-card.manage  .nav-card-name { color: var(--gray-800); }
+
+  /* ---- フローチャート風 ---- */
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin: 14px 0;
+  }
+  .flow-step {
+    background: var(--blue-lt);
+    border: 1px solid var(--blue-bd);
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 9pt;
+    font-weight: 600;
+    color: var(--blue);
+    white-space: nowrap;
+  }
+  .flow-arrow { color: var(--gray-400); font-size: 14px; }
+
+  /* ---- アクセス方法ボックス ---- */
+  .access-box {
+    background: var(--gray-900);
+    color: #e5e7eb;
+    border-radius: 10px;
+    padding: 16px 20px;
+    font-family: 'Courier New', monospace;
+    font-size: 11pt;
+    margin: 14px 0;
+    text-align: center;
+    letter-spacing: 0.03em;
+  }
+  .access-box span { color: #60a5fa; }
+
+  /* ---- ページ番号・フッター ---- */
+  @page {
+    size: A4;
+    margin: 0;
+  }
+  @media print {
+    .cover { min-height: 297mm; }
+    .page  { min-height: 297mm; }
+    .toc-page { min-height: 297mm; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== 表紙 ===== -->
+<div class="cover">
+  <div class="cover-icon">📦</div>
+  <div class="cover-title">Omni-Stock</div>
+  <div class="cover-subtitle">研究室在庫管理システム　使い方ガイド</div>
+  <div class="cover-divider"></div>
+  <div class="cover-date">2026年7月版</div>
+
+  <div class="cover-features">
+    <div class="cover-feature">
+      <div class="cover-feature-icon">🧪</div>
+      <div class="cover-feature-text">消耗品・試薬<br>の在庫管理</div>
+    </div>
+    <div class="cover-feature">
+      <div class="cover-feature-icon">🔔</div>
+      <div class="cover-feature-text">在庫低下<br>アラート</div>
+    </div>
+    <div class="cover-feature">
+      <div class="cover-feature-icon">📋</div>
+      <div class="cover-feature-text">試薬の<br>発注管理</div>
+    </div>
+    <div class="cover-feature">
+      <div class="cover-feature-icon">🌐</div>
+      <div class="cover-feature-text">ブラウザから<br>どこでもアクセス</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 目次 ===== -->
+<div class="toc-page">
+  <div class="toc-title">目次</div>
+
+  <div class="toc-item">
+    <span class="toc-num">1</span>
+    <span class="toc-label">はじめに ― システムの概要とアクセス方法</span>
+  </div>
+  <div class="toc-sub"><span class="toc-sub-dot">•</span> システムでできること</div>
+  <div class="toc-sub"><span class="toc-sub-dot">•</span> ブラウザからのアクセス方法</div>
+
+  <div class="toc-item" style="margin-top:8px;">
+    <span class="toc-num">2</span>
+    <span class="toc-label">画面の見方 ― ナビゲーションとホーム画面</span>
+  </div>
+  <div class="toc-sub"><span class="toc-sub-dot">•</span> ナビゲーションバー</div>
+  <div class="toc-sub"><span class="toc-sub-dot">•</span> ホーム画面（アラート・承認待ち・到着確認）</div>
+
+  <div class="toc-item" style="margin-top:8px;">
+    <span class="toc-num">3</span>
+    <span class="toc-label">在庫を使う ― 使用ページ</span>
+  </div>
+  <div class="toc-sub"><span class="toc-sub-dot">•</span> 基本操作</div>
+  <div class="toc-sub"><span class="toc-sub-dot">•</span> 箱単位で管理されているアイテム</div>
+
+  <div class="toc-item" style="margin-top:8px;">
+    <span class="toc-num">4</span>
+    <span class="toc-label">在庫を入荷する ― 入荷ページ</span>
+  </div>
+  <div class="toc-sub"><span class="toc-sub-dot">•</span> 操作手順・箱単位の物品</div>
+  <div class="toc-sub"><span class="toc-sub-dot">•</span> 入荷確認ステータスについて</div>
+
+  <div class="toc-item" style="margin-top:8px;">
+    <span class="toc-num">5</span>
+    <span class="toc-label">試薬を発注・管理する ― 試薬ページ</span>
+  </div>
+  <div class="toc-sub"><span class="toc-sub-dot">•</span> 発注リクエストの提出</div>
+  <div class="toc-sub"><span class="toc-sub-dot">•</span> 新しい試薬の登録・発注状況の確認</div>
+
+  <div class="toc-item" style="margin-top:8px;">
+    <span class="toc-num">6</span>
+    <span class="toc-label">アイテムを管理する ― 管理ページ</span>
+  </div>
+  <div class="toc-sub"><span class="toc-sub-dot">•</span> アイテムの追加・編集</div>
+  <div class="toc-sub"><span class="toc-sub-dot">•</span> ステータスの手動変更・操作履歴</div>
+
+  <div class="toc-item" style="margin-top:8px;">
+    <span class="toc-num">7</span>
+    <span class="toc-label">よくある質問</span>
+  </div>
+</div>
+
+<!-- ===== 1. はじめに ===== -->
+<div class="page">
+  <div class="section-header">
+    <span class="section-header-icon">👋</span>
+    <span class="section-header-text">1. はじめに</span>
+  </div>
+
+  <p><strong>Omni-Stock</strong> は研究室の消耗品・試薬在庫をブラウザで一元管理するシステムです。<br>
+  スマートフォン・タブレット・PCなど、研究室内のどのデバイスからでも操作できます。</p>
+
+  <div class="nav-cards" style="margin-top:20px;">
+    <div class="nav-card consume">
+      <div class="nav-card-icon">📉</div>
+      <div>
+        <div class="nav-card-name">在庫を記録</div>
+        <div class="nav-card-desc">使用・入荷を記録して、リアルタイムの在庫数を把握</div>
+      </div>
+    </div>
+    <div class="nav-card restock">
+      <div class="nav-card-icon">🔔</div>
+      <div>
+        <div class="nav-card-name">低在庫アラート</div>
+        <div class="nav-card-desc">しきい値を下回ると自動でホームにアラート表示</div>
+      </div>
+    </div>
+    <div class="nav-card reagent">
+      <div class="nav-card-icon">🧫</div>
+      <div>
+        <div class="nav-card-name">試薬の発注管理</div>
+        <div class="nav-card-desc">リクエスト提出から到着確認まで一括管理</div>
+      </div>
+    </div>
+    <div class="nav-card manage">
+      <div class="nav-card-icon">📊</div>
+      <div>
+        <div class="nav-card-name">操作履歴</div>
+        <div class="nav-card-desc">いつ・誰が・何個使用/入荷したか記録に残る</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>アクセス方法</h3>
+  <p>ブラウザを開き、以下のURLを入力してください（研究室内ネットワークからのみアクセス可能）。</p>
+
+  <div class="access-box">
+    http://<span>&lt;サーバーのIPアドレス&gt;</span>:5173
+  </div>
+
+  <div class="callout info">
+    <span class="callout-icon">ℹ️</span>
+    <div class="callout-body">
+      <strong>IPアドレスの確認方法</strong><br>
+      システム担当者に「サーバーのIPアドレス」を確認してください。<br>
+      例：<code>http://192.168.1.100:5173</code>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <span class="callout-icon">⚠️</span>
+    <div class="callout-body">
+      <strong>接続できない場合</strong><br>
+      スマートフォン・PCが研究室と同じWi-Fiネットワークに接続されているか確認してください。
+    </div>
+  </div>
+</div>
+
+<!-- ===== 2. 画面の見方 ===== -->
+<div class="page">
+  <div class="section-header">
+    <span class="section-header-icon">🖥️</span>
+    <span class="section-header-text">2. 画面の見方</span>
+  </div>
+
+  <h3>ナビゲーションバー</h3>
+  <p>画面上部のバーから各機能に移動できます。</p>
+
+  <div class="screenshot-wrap">
+    <img src="guide-images/01_home.png" alt="ホーム画面">
+  </div>
+  <div class="screenshot-caption">▲ ホーム画面</div>
+
+  <table>
+    <thead><tr><th>リンク名</th><th>主な用途</th></tr></thead>
+    <tbody>
+      <tr><td>🔴 使用</td><td>試薬・消耗品を使ったときに在庫を減らす</td></tr>
+      <tr><td>🟢 入荷</td><td>物品が届いたときに在庫を増やす</td></tr>
+      <tr><td>🟣 試薬</td><td>試薬の発注リクエストを提出・確認する</td></tr>
+      <tr><td>⚙️ 管理</td><td>アイテムの登録・編集・削除を行う</td></tr>
+    </tbody>
+  </table>
+
+  <h3>ホーム画面のアラート</h3>
+  <p>在庫の状態に応じて、ホーム画面に自動でパネルが表示されます。</p>
+
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:14px 0;">
+    <div class="callout warn" style="margin:0;">
+      <span class="callout-icon">⚠️</span>
+      <div class="callout-body">
+        <strong>承認待ちパネル</strong><br>
+        在庫がしきい値を下回ったアイテム、または発注リクエストが提出された試薬が表示されます。<br>
+        「注文した」ボタンで発注済みに移動します。
+      </div>
+    </div>
+    <div class="callout tip" style="margin:0;">
+      <span class="callout-icon">✅</span>
+      <div class="callout-body">
+        <strong>到着確認パネル</strong><br>
+        入荷処理されたアイテム・試薬が表示されます。<br>
+        現物を確認したら「確認した」を押してください。
+      </div>
+    </div>
+  </div>
+
+  <div class="callout info">
+    <span class="callout-icon">💡</span>
+    <div class="callout-body">
+      アラートがない場合はパネルが表示されません。すべてのパネルが消えていれば在庫は正常な状態です。
+    </div>
+  </div>
+</div>
+
+<!-- ===== 3. 在庫を使う ===== -->
+<div class="page">
+  <div class="section-header">
+    <span class="section-header-icon">📉</span>
+    <span class="section-header-text">3. 在庫を使う（使用ページ）</span>
+  </div>
+
+  <p>試薬や消耗品を実験で使用したとき、使った量をここで記録します。</p>
+
+  <div class="screenshot-wrap">
+    <img src="guide-images/02_consume.png" alt="使用ページ">
+  </div>
+  <div class="screenshot-caption">▲ 使用ページ</div>
+
+  <h3>基本操作</h3>
+  <ol class="steps">
+    <li>
+      <span class="step-num">1</span>
+      <span class="step-body">使用したアイテムのカードを探す。検索ボックスにアイテム名・英語名・キーワードを入力して絞り込めます。</span>
+    </li>
+    <li>
+      <span class="step-num">2</span>
+      <span class="step-body"><strong>－1 ボタン</strong>：1個だけ使った場合はこのボタンを押すと即座に在庫が1減ります。</span>
+    </li>
+    <li>
+      <span class="step-num">3</span>
+      <span class="step-body"><strong>個数を入力 → 使用ボタン</strong>：複数個使った場合は個数欄に入力して「使用」を押します。</span>
+    </li>
+  </ol>
+
+  <h3>箱単位で管理されているアイテム</h3>
+  <p>「1箱 ＝ N個」で管理されているアイテムでは、<strong>個で消費 / 箱で消費</strong> ボタンが表示されます。</p>
+
+  <div class="screenshot-wrap">
+    <img src="guide-images/03_consume_box_mode.png" alt="箱モードで消費">
+  </div>
+  <div class="screenshot-caption">▲ 箱管理アイテムの使用画面</div>
+
+  <table>
+    <thead><tr><th>ボタン</th><th>動作</th></tr></thead>
+    <tbody>
+      <tr><td>個で消費</td><td>入力した個数分を在庫から引く</td></tr>
+      <tr><td>箱で消費</td><td>入力した箱数 × 1箱あたりの個数を在庫から引く</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout danger">
+    <span class="callout-icon">🚫</span>
+    <div class="callout-body">
+      <strong>在庫不足エラー</strong><br>
+      現在の在庫数を超える量を入力した場合、操作はキャンセルされます。在庫数を確認してから再入力してください。
+    </div>
+  </div>
+</div>
+
+<!-- ===== 4. 在庫を入荷する ===== -->
+<div class="page">
+  <div class="section-header">
+    <span class="section-header-icon">📦</span>
+    <span class="section-header-text">4. 在庫を入荷する（入荷ページ）</span>
+  </div>
+
+  <p>物品が届いたときに在庫数を増やします。</p>
+
+  <div class="screenshot-wrap">
+    <img src="guide-images/04_restock.png" alt="入荷ページ">
+  </div>
+  <div class="screenshot-caption">▲ 入荷ページ</div>
+
+  <h3>画面の構成</h3>
+  <table>
+    <thead><tr><th>セクション</th><th>内容</th></tr></thead>
+    <tbody>
+      <tr><td>注文済み（入荷待ち）</td><td>発注中の物品が先頭にまとめて表示されます。優先的に確認できます。</td></tr>
+      <tr><td>その他のアイテム</td><td>発注状態に関係なく在庫を追加できます。</td></tr>
+    </tbody>
+  </table>
+
+  <h3>操作手順</h3>
+  <ol class="steps">
+    <li>
+      <span class="step-num">1</span>
+      <span class="step-body">届いたアイテムのカードを探す</span>
+    </li>
+    <li>
+      <span class="step-num">2</span>
+      <span class="step-body"><strong>＋1 クイック入荷</strong>：1個（または1箱）だけ届いた場合はこのボタンを押す</span>
+    </li>
+    <li>
+      <span class="step-num">3</span>
+      <span class="step-body"><strong>個数 / 箱数を入力 → 入荷ボタン</strong>：複数の場合は数量を入力して押す</span>
+    </li>
+  </ol>
+
+  <h3>箱単位の物品の残量表示</h3>
+  <table>
+    <thead><tr><th>表示例</th><th>意味</th></tr></thead>
+    <tbody>
+      <tr><td>残: 24</td><td>個別管理（24個）</td></tr>
+      <tr><td>残: 3箱</td><td>箱管理で切り捨て表示（1箱=10個なら30個）</td></tr>
+      <tr><td>1箱 ＝ 10個</td><td>変換レートの表示</td></tr>
+    </tbody>
+  </table>
+
+  <h3>入荷後のステータス遷移</h3>
+  <p>発注済みの物品を入荷処理すると、ステータスが自動で変わります。</p>
+
+  <div class="flow">
+    <div class="flow-step">📋 注文済み<br><small>ORDERED</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">✅ 入荷済み（未確認）<br><small>ARRIVED</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">「確認した」を押す</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">通常<br><small>NONE</small></div>
+  </div>
+
+  <div class="callout tip">
+    <span class="callout-icon">✅</span>
+    <div class="callout-body">
+      入荷後にホームの <strong>「到着確認」パネル</strong> に表示されます。現物を確認したら「確認した」を押してください。
+    </div>
+  </div>
+</div>
+
+<!-- ===== 5. 試薬を発注・管理する ===== -->
+<div class="page">
+  <div class="section-header">
+    <span class="section-header-icon">🧫</span>
+    <span class="section-header-text">5. 試薬を発注・管理する（試薬ページ）</span>
+  </div>
+
+  <p>試薬の購入リクエストを提出し、購入担当者と情報を共有します。</p>
+
+  <div class="screenshot-wrap">
+    <img src="guide-images/05_reagents.png" alt="試薬ページ">
+  </div>
+  <div class="screenshot-caption">▲ 試薬リクエストページ</div>
+
+  <h3>発注リクエストを出す</h3>
+  <ol class="steps">
+    <li>
+      <span class="step-num">1</span>
+      <span class="step-body">試薬名で検索する（英語名でも検索可能）</span>
+    </li>
+    <li>
+      <span class="step-num">2</span>
+      <span class="step-body">該当の試薬を選択してリクエストフォームを開く</span>
+    </li>
+    <li>
+      <span class="step-num">3</span>
+      <span class="step-body">依頼者名を入力して「リクエスト」ボタンを押す</span>
+    </li>
+  </ol>
+
+  <h3>新しい試薬を登録する</h3>
+  <p>リストにない試薬は「<strong>＋ 新規試薬を登録</strong>」から追加します。</p>
+  <ul>
+    <li>試薬名（日本語）</li>
+    <li>英語名（検索精度が上がります）</li>
+    <li>購入先URL（メーカーサイトなど）</li>
+  </ul>
+
+  <h3>発注状況を確認する（発注管理ページ）</h3>
+  <p>画面右上「<strong>→ 発注状況を確認</strong>」から発注中・到着済みの一覧を見られます。</p>
+
+  <table>
+    <thead><tr><th>ステータス</th><th>意味</th><th>次の操作</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="status status-requested">● 承認待ち</span></td>
+        <td>リクエスト提出済み</td>
+        <td>「発注した」を押す</td>
+      </tr>
+      <tr>
+        <td><span class="status status-ordered">● 注文済み</span></td>
+        <td>発注済み・到着待ち</td>
+        <td>届いたら入荷ページで入荷処理</td>
+      </tr>
+      <tr>
+        <td><span class="status status-arrived">● 入荷済み</span></td>
+        <td>入荷確認待ち</td>
+        <td>ホームで「確認した」を押す</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout info">
+    <span class="callout-icon">💡</span>
+    <div class="callout-body">
+      リクエストを取り消したい場合は「キャンセル」ボタンを押します。ただし <strong>入荷済み</strong> になったリクエストはキャンセルできません。
+    </div>
+  </div>
+</div>
+
+<!-- ===== 6. アイテムを管理する ===== -->
+<div class="page">
+  <div class="section-header">
+    <span class="section-header-icon">⚙️</span>
+    <span class="section-header-text">6. アイテムを管理する（管理ページ）</span>
+  </div>
+
+  <p>在庫アイテムの登録・編集・削除を行います（主にシステム担当者が操作します）。</p>
+
+  <div class="screenshot-wrap">
+    <img src="guide-images/06_manage.png" alt="管理ページ">
+  </div>
+  <div class="screenshot-caption">▲ 管理ページ（アイテム一覧）</div>
+
+  <h3>アイテムを追加する</h3>
+  <p>「<strong>＋ 新規アイテム追加</strong>」ボタンから追加画面を開きます。</p>
+
+  <div class="screenshot-wrap">
+    <img src="guide-images/07_add_item.png" alt="アイテム追加画面">
+  </div>
+  <div class="screenshot-caption">▲ アイテム追加画面</div>
+
+  <table>
+    <thead><tr><th>項目</th><th>説明</th><th>必須</th></tr></thead>
+    <tbody>
+      <tr><td>アイテム名</td><td>他と重複しない名前を入力</td><td><span class="badge badge-req">必須</span></td></tr>
+      <tr><td>英語名</td><td>検索用（省略可）</td><td><span class="badge badge-opt">任意</span></td></tr>
+      <tr><td>初期在庫数</td><td>登録時の現在在庫</td><td><span class="badge badge-opt">任意</span></td></tr>
+      <tr><td>警告しきい値</td><td>この個数を下回るとホームにアラート表示（デフォルト：5）</td><td><span class="badge badge-opt">任意</span></td></tr>
+      <tr><td>1箱あたりの個数</td><td>箱管理する場合に設定（例：10）。デフォルト：1</td><td><span class="badge badge-opt">任意</span></td></tr>
+      <tr><td>キーワード</td><td>検索用タグ（スペース区切りで複数可）</td><td><span class="badge badge-opt">任意</span></td></tr>
+      <tr><td>購入先URL</td><td>発注時のリンク</td><td><span class="badge badge-opt">任意</span></td></tr>
+      <tr><td>画像</td><td>カードに表示されるサムネイル</td><td><span class="badge badge-opt">任意</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>アイテムを編集する</h3>
+  <p>管理ページの「<strong>編集</strong>」ボタン、または各ページの「<strong>詳細</strong>」ボタンから編集画面を開きます。</p>
+
+  <div class="screenshot-wrap" style="max-width:80%; margin-left:auto; margin-right:auto;">
+    <img src="guide-images/08_item_detail.png" alt="アイテム詳細・編集画面">
+  </div>
+  <div class="screenshot-caption">▲ アイテム詳細・編集画面</div>
+
+  <ul>
+    <li>在庫数・注文ステータスの確認ができます</li>
+    <li>ステータスを手動で「注文済み」「入荷済み」に変更することもできます</li>
+    <li>画面下部に操作履歴（いつ・何個使用/入荷したか）が表示されます</li>
+  </ul>
+
+  <div class="callout danger">
+    <span class="callout-icon">🗑️</span>
+    <div class="callout-body">
+      <strong>削除は取り消せません</strong><br>
+      管理ページの「削除」ボタンを押すと確認ダイアログが表示されます。削除したアイテムは元に戻せません。
+    </div>
+  </div>
+</div>
+
+<!-- ===== 7. よくある質問 ===== -->
+<div class="page">
+  <div class="section-header">
+    <span class="section-header-icon">❓</span>
+    <span class="section-header-text">7. よくある質問</span>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">
+      <span class="faq-q-badge">Q</span>
+      在庫数がマイナスになりません
+    </div>
+    <div class="faq-a">
+      使用量が現在の在庫を超える場合、操作はキャンセルされ「在庫不足」エラーが表示されます。
+      実際の在庫数を確認し、在庫数がシステムと合っていなければ管理者に連絡してください。
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">
+      <span class="faq-q-badge">Q</span>
+      同じ名前のアイテムを登録しようとするとエラーになります
+    </div>
+    <div class="faq-a">
+      アイテム名は重複できません。既存のアイテムを「管理」ページから検索して編集してください。
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">
+      <span class="faq-q-badge">Q</span>
+      ホームに「到着確認」パネルが表示されています
+    </div>
+    <div class="faq-a">
+      発注中だったアイテム・試薬が入荷処理されたことを意味します。
+      物品の現物を確認し、「確認した」ボタンを押してください。
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">
+      <span class="faq-q-badge">Q</span>
+      箱管理の設定方法は？
+    </div>
+    <div class="faq-a">
+      アイテムの「編集」画面から「<strong>1箱あたりの個数</strong>」を設定します（例：10）。
+      設定後、入荷ページでは箱数で入力でき、使用ページでは個・箱どちらでも消費できます。
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">
+      <span class="faq-q-badge">Q</span>
+      英語で使いたい
+    </div>
+    <div class="faq-a">
+      画面右上の「<strong>English</strong>」ボタンで言語を切り替えられます。リロード後も設定は保持されます。
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">
+      <span class="faq-q-badge">Q</span>
+      承認待ちパネルのアイテムを誤って「注文した」にしてしまいました
+    </div>
+    <div class="faq-a">
+      「詳細」ボタンからアイテム詳細ページを開き、ステータスを手動で変更できます。
+    </div>
+  </div>
+
+  <div style="margin-top: 32px; padding: 20px; background: var(--gray-50); border-radius: 10px; border: 1px solid var(--gray-200); text-align:center;">
+    <div style="font-size:18px; margin-bottom:8px;">🙋</div>
+    <div style="font-weight:700; margin-bottom:4px;">その他の問題・不具合</div>
+    <div style="font-size:9.5pt; color:var(--gray-600);">
+      システムに問題が発生した場合は、管理者（システム担当者）にご連絡ください。
+    </div>
+  </div>
+
+  <div style="margin-top:48px; text-align:center; color:var(--gray-400); font-size:8.5pt; border-top:1px solid var(--gray-200); padding-top:16px;">
+    Omni-Stock — 研究室在庫管理システム　使い方ガイド　2026年7月版
+  </div>
+</div>
+
+</body>
+</html>
