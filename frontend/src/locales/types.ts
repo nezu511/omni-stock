@@ -155,6 +155,7 @@ export interface Translations {
     newReagentTitle: string;
     nameLabel: string;
     englishNameLabel: string;
+    catalogNumberLabel: string;
     urlLabel: string;
     registerAndRequest: string;
     registerFailed: string;
@@ -189,6 +190,7 @@ export interface Translations {
     noOrdered: string;
     noArrived: string;
     requestLink: string;
+    catalogNumber: string;
     siteUrl: string;
     requestedAt: string;
     loading: string;

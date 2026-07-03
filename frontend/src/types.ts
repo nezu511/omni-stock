@@ -35,6 +35,7 @@ export interface Reagent {
   id: number;
   name: string;
   englishName: string | null;
+  catalogNumber: string | null;
   site_url: string | null;
   createdAt: string;
   requests: ReagentRequest[];

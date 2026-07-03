@@ -43,12 +43,13 @@ model History {
 // 試薬品目マスタ。同じ試薬を繰り返し発注するため、マスタ(Reagent)と
 // 発注イベント(ReagentRequest)を1対多で分離する。
 model Reagent {
-  id          Int              @id @default(autoincrement())
-  name        String           @unique
-  englishName String?
-  site_url    String?
-  createdAt   DateTime         @default(now())
-  requests    ReagentRequest[]
+  id            Int              @id @default(autoincrement())
+  name          String           @unique
+  englishName   String?
+  catalogNumber String?
+  site_url      String?
+  createdAt     DateTime         @default(now())
+  requests      ReagentRequest[]
 }
 
 // 発注リクエスト1件＝イベント。

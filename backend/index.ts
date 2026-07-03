@@ -403,9 +403,9 @@ app.get('/api/reagents', async (req, res) => {
 // 試薬マスタ新規登録（重複名は 400）
 app.post('/api/reagents', async (req, res) => {
   try {
-    const { name, englishName, site_url } = req.body;
+    const { name, englishName, catalogNumber, site_url } = req.body;
     const reagent = await prisma.reagent.create({
-      data: { name, englishName: englishName || null, site_url: site_url || null },
+      data: { name, englishName: englishName || null, catalogNumber: catalogNumber || null, site_url: site_url || null },
     });
     res.json(reagent);
   } catch (error: any) {

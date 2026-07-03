@@ -19,6 +19,7 @@ export default function ReagentRequest() {
   const [showNew, setShowNew] = useState(false);
   const [newName, setNewName] = useState('');
   const [newEnglishName, setNewEnglishName] = useState('');
+  const [newCatalogNumber, setNewCatalogNumber] = useState('');
   const [newSiteUrl, setNewSiteUrl] = useState('');
 
   useEffect(() => {
@@ -32,7 +33,8 @@ export default function ReagentRequest() {
     const q = query.toLowerCase();
     return (
       r.name.toLowerCase().includes(q) ||
-      (r.englishName ?? '').toLowerCase().includes(q)
+      (r.englishName ?? '').toLowerCase().includes(q) ||
+      (r.catalogNumber ?? '').toLowerCase().includes(q)
     );
   });
 
@@ -58,7 +60,7 @@ export default function ReagentRequest() {
     const regRes = await fetch(`${API_BASE}/api/reagents`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: newName, englishName: newEnglishName, site_url: newSiteUrl }),
+      body: JSON.stringify({ name: newName, englishName: newEnglishName, catalogNumber: newCatalogNumber, site_url: newSiteUrl }),
     });
     if (!regRes.ok) {
       setMessage(t.registerFailed);
@@ -71,6 +73,7 @@ export default function ReagentRequest() {
     setShowNew(false);
     setNewName('');
     setNewEnglishName('');
+    setNewCatalogNumber('');
     setNewSiteUrl('');
   }
 
@@ -133,6 +136,7 @@ export default function ReagentRequest() {
             <div>
               <div style={{ fontWeight: 'bold' }}>{r.name}</div>
               {r.englishName && <div style={{ fontSize: '13px', color: '#6b7280' }}>{r.englishName}</div>}
+              {r.catalogNumber && <div style={{ fontSize: '12px', color: '#9ca3af' }}># {r.catalogNumber}</div>}
             </div>
             <span style={{ fontSize: '12px', color: '#9ca3af' }}>
               {r.requests.length > 0 ? `${r.requests.length} req` : ''}
@@ -185,6 +189,14 @@ export default function ReagentRequest() {
             type="text"
             value={newEnglishName}
             onChange={(e) => setNewEnglishName(e.target.value)}
+            style={{ display: 'block', width: '100%', padding: '8px 10px', border: '1px solid #d1d5db', borderRadius: '6px', marginTop: '4px', marginBottom: '10px', boxSizing: 'border-box' }}
+          />
+          <label style={{ fontSize: '14px' }}>{t.catalogNumberLabel}</label>
+          <input
+            type="text"
+            value={newCatalogNumber}
+            onChange={(e) => setNewCatalogNumber(e.target.value)}
+            placeholder="例: 194-09995"
             style={{ display: 'block', width: '100%', padding: '8px 10px', border: '1px solid #d1d5db', borderRadius: '6px', marginTop: '4px', marginBottom: '10px', boxSizing: 'border-box' }}
           />
           <label style={{ fontSize: '14px' }}>{t.urlLabel}</label>

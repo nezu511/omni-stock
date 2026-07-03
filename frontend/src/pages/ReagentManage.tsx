@@ -84,6 +84,9 @@ export default function ReagentManage() {
             {req.reagent.englishName && (
               <div style={{ fontSize: '13px', color: '#6b7280' }}>{req.reagent.englishName}</div>
             )}
+            {req.reagent.catalogNumber && (
+              <div style={{ fontSize: '12px', color: '#9ca3af' }}>{t.catalogNumber} {req.reagent.catalogNumber}</div>
+            )}
             {req.requestedBy && (
               <div style={{ fontSize: '13px', color: '#374151', marginTop: '4px' }}>
                 {t.requestedBy} {req.requestedBy}
