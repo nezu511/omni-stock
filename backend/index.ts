@@ -415,6 +415,15 @@ app.delete('/api/history/:id', async (req, res) => {
     if (!hist) return res.status(404).json({ error: 'History entry not found' });
     if (hist.amountChange === 0) return res.status(400).json({ error: 'Status-only entries cannot be undone' });
 
+    // 最新の量変更エントリのみ取り消し可能
+    const latestQtyHist = await prisma.history.findFirst({
+      where: { itemId: hist.itemId, amountChange: { not: 0 } },
+      orderBy: { id: 'desc' },
+    });
+    if (!latestQtyHist || latestQtyHist.id !== histId) {
+      return res.status(400).json({ error: '最新の変更のみ取り消しできます' });
+    }
+
     // 同一タイムスタンプの amountChange:0 エントリ = この操作が自動で引き起こしたステータス変化
     const associated = await prisma.history.findMany({
       where: { itemId: hist.itemId, amountChange: 0, timestamp: hist.timestamp },
@@ -423,8 +432,6 @@ app.delete('/api/history/:id', async (req, res) => {
     const reversal = -hist.amountChange;
     const currentItem = hist.item;
     const newQty = currentItem.quantity + reversal;
-
-    if (newQty < 0) return res.status(400).json({ error: '取り消すと在庫がマイナスになるため実行できません' });
 
     // ステータス自動戻し: 対応する自動ステータス変化が現在のステータスと一致する場合のみ戻す
     let orderStatusUpdate: Record<string, string> = {};

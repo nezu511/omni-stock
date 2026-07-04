@@ -290,14 +290,18 @@ export default function ItemDetail() {
         <h3 style={{ marginTop: 0, color: '#374151' }}>{i18n.itemDetail.historyTitle}</h3>
         {item.histories && item.histories.length > 0 ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {item.histories.map((history) => (
+            {(() => {
+              const latestQtyHistId = [...(item.histories ?? [])]
+                .filter(h => h.amountChange !== 0)
+                .sort((a, b) => b.id - a.id)[0]?.id;
+              return item.histories!.map((history) => (
               <div key={history.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', borderBottom: '1px solid #f3f4f6', fontSize: '14px' }}>
                 <span style={{ color: '#6b7280', flexShrink: 0 }}>{new Date(history.timestamp).toLocaleString('ja-JP')}</span>
                 <span style={{ color: '#374151', fontWeight: 'bold', margin: '0 8px' }}>{i18n.itemDetail.actions[history.actionType] ?? history.actionType}</span>
                 <span style={{ color: history.amountChange > 0 ? '#059669' : history.amountChange < 0 ? '#dc2626' : '#9ca3af', marginRight: 'auto' }}>
                   {history.amountChange > 0 ? `+${history.amountChange}` : history.amountChange}
                 </span>
-                {history.amountChange !== 0 && (
+                {history.id === latestQtyHistId && (
                   <button
                     onClick={async () => {
                       if (!window.confirm(i18n.itemDetail.undoConfirm)) return;
@@ -324,7 +328,8 @@ export default function ItemDetail() {
                   </button>
                 )}
               </div>
-            ))}
+              ));
+            })()}
           </div>
         ) : (
           <p style={{ color: '#6b7280' }}>{i18n.itemDetail.noHistory}</p>
