@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { API_BASE } from '../config';
+import { apiFetch } from '../config';
 import { Link } from 'react-router-dom';
 import type { Item } from '../types';
 import { matchesSearchQuery } from '../utils/searchItems';
@@ -13,7 +13,7 @@ export default function Consume() {
   const [searchQuery, setSearchQuery] = useState('');
 
   const fetchItems = () => {
-    fetch(`${API_BASE}/api/items`)
+    apiFetch(`/api/items`)
       .then((res) => res.json())
       .then((data) => setItems(data))
       .catch((err) => console.error('Error:', err));
@@ -25,7 +25,7 @@ export default function Consume() {
     if (consumeAmount <= 0) return;
 
     try {
-      const response = await fetch(`${API_BASE}/api/quantity_change`, {
+      const response = await apiFetch(`/api/quantity_change`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

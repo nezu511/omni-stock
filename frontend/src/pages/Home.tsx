@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { API_BASE } from '../config';
+import { apiFetch } from '../config';
 import { useState, useEffect } from 'react';
 import type { Item, Reagent, ReagentRequest } from '../types';
 import { formatQuantity } from '../utils/formatQuantity';
@@ -22,11 +22,11 @@ function Home() {
   });
 
   useEffect(() => {
-    fetch(`${API_BASE}/api/items`)
+    apiFetch(`/api/items`)
       .then((res) => res.json())
       .then((data) => setItems(data))
       .catch((err) => console.error('Error:', err));
-    fetch(`${API_BASE}/api/reagents`)
+    apiFetch(`/api/reagents`)
       .then((res) => res.json())
       .then((data) => setReagents(data))
       .catch((err) => console.error('Error:', err));
@@ -47,7 +47,7 @@ function Home() {
 
   const handleChangeStatus = async (itemId: number, orderStatus: string) => {
     try {
-      const res = await fetch(`${API_BASE}/api/change_status`, {
+      const res = await apiFetch(`/api/change_status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ itemId, orderStatus }),
@@ -63,7 +63,7 @@ function Home() {
 
   const handleCancelReagentRequest = async (requestId: number) => {
     try {
-      const res = await fetch(`${API_BASE}/api/reagent_requests/${requestId}`, { method: 'DELETE' });
+      const res = await apiFetch(`/api/reagent_requests/${requestId}`, { method: 'DELETE' });
       if (!res.ok) { alert(i18n.home.reagentCancelFailed); return; }
       setReagents(prev => prev.map(r => ({
         ...r,

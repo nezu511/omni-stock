@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import PasswordGate from './components/PasswordGate';
 import Home from './pages/Home';
 import Consume from './pages/Consume';
 import Restock from './pages/Restock';
@@ -67,6 +68,7 @@ function NavBar() {
 
 function App() {
   return (
+    <PasswordGate>
     <BrowserRouter>
       <LanguageProvider>
         <div style={{ fontFamily: 'sans-serif', backgroundColor: '#f9fafb', minHeight: '100vh' }}>
@@ -86,6 +88,7 @@ function App() {
         </div>
       </LanguageProvider>
     </BrowserRouter>
+    </PasswordGate>
   );
 }
 

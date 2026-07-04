@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { API_BASE } from '../config';
+import { API_BASE, getAuthToken } from '../config';
 import { useLang } from '../contexts/LanguageContext';
 
 
@@ -29,7 +29,8 @@ export function useNotifications() {
       new Notification(title, { body });
     }
 
-    const es = new EventSource(`${API_BASE}/api/events`);
+    const token = getAuthToken();
+    const es = new EventSource(`${API_BASE}/api/events?token=${encodeURIComponent(token)}`);
 
     es.addEventListener('low_stock', (e) => {
       const d = JSON.parse(e.data);

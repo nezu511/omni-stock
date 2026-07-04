@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { API_BASE } from '../config';
+import { apiFetch } from '../config';
 import { useNavigate } from 'react-router-dom';
 import { useLang } from '../contexts/LanguageContext';
 
@@ -43,7 +43,7 @@ export default function AddItem() {
     uploadData.append('image', file);
 
     try {
-      const response = await fetch(`${API_BASE}/api/upload`, {
+      const response = await apiFetch(`/api/upload`, {
         method: 'POST',
         body: uploadData,
       });
@@ -58,7 +58,7 @@ export default function AddItem() {
     e.preventDefault();
 
     try {
-      const response = await fetch(`${API_BASE}/api/items`, {
+      const response = await apiFetch(`/api/items`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

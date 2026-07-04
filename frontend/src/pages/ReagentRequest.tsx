@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { API_BASE } from '../config';
+import { apiFetch } from '../config';
 import { useNavigate } from 'react-router-dom';
 import { useLang } from '../contexts/LanguageContext';
 import type { Reagent } from '../types';
@@ -23,7 +23,7 @@ export default function ReagentRequest() {
   const [newSiteUrl, setNewSiteUrl] = useState('');
 
   useEffect(() => {
-    fetch(`${API_BASE}/api/reagents`)
+    apiFetch(`/api/reagents`)
       .then((r) => r.json())
       .then(setReagents)
       .catch(console.error);
@@ -39,7 +39,7 @@ export default function ReagentRequest() {
   });
 
   async function submitRequest(reagentId: number) {
-    const res = await fetch(`${API_BASE}/api/reagent_requests`, {
+    const res = await apiFetch(`/api/reagent_requests`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ reagentId, requestedBy }),
@@ -57,7 +57,7 @@ export default function ReagentRequest() {
   async function handleRegisterAndRequest() {
     if (!newName.trim()) return;
 
-    const regRes = await fetch(`${API_BASE}/api/reagents`, {
+    const regRes = await apiFetch(`/api/reagents`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: newName, englishName: newEnglishName, catalogNumber: newCatalogNumber, site_url: newSiteUrl }),

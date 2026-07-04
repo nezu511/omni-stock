@@ -37,6 +37,30 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// ==========================================
+// 🔐 認証
+// ==========================================
+const APP_SECRET = process.env.APP_SECRET ?? '';
+
+app.post('/api/auth', (req, res) => {
+  if (!APP_SECRET || APP_SECRET === 'CHANGE_ME') {
+    return res.status(503).json({ error: 'APP_SECRET が未設定です。backend/.env を確認してください。' });
+  }
+  const { password } = req.body as { password?: string };
+  if (password === APP_SECRET) return res.json({ ok: true });
+  return res.status(401).json({ error: 'パスワードが正しくありません' });
+});
+
+app.use((req, res, next) => {
+  if (!APP_SECRET || APP_SECRET === 'CHANGE_ME') return next();
+  if (req.path === '/' || req.path.startsWith('/uploads/')) return next();
+  if (req.path === '/api/events') {
+    if ((req.query as Record<string, string>).token === APP_SECRET) return next();
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  if (req.headers.authorization === `Bearer ${APP_SECRET}`) return next();
+  return res.status(401).json({ error: 'Unauthorized' });
+});
 
 // 🌟 2. 保存先フォルダの準備（なければ自動で作る）
 const uploadDir = path.join(__dirname, 'uploads');
