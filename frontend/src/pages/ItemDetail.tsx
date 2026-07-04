@@ -292,11 +292,37 @@ export default function ItemDetail() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {item.histories.map((history) => (
               <div key={history.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', borderBottom: '1px solid #f3f4f6', fontSize: '14px' }}>
-                <span style={{ color: '#6b7280' }}>{new Date(history.timestamp).toLocaleString('ja-JP')}</span>
-                <span style={{ color: '#374151', fontWeight: 'bold' }}>{i18n.itemDetail.actions[history.actionType] ?? history.actionType}</span>
-                <span style={{ color: history.amountChange > 0 ? '#059669' : history.amountChange < 0 ? '#dc2626' : '#9ca3af' }}>
+                <span style={{ color: '#6b7280', flexShrink: 0 }}>{new Date(history.timestamp).toLocaleString('ja-JP')}</span>
+                <span style={{ color: '#374151', fontWeight: 'bold', margin: '0 8px' }}>{i18n.itemDetail.actions[history.actionType] ?? history.actionType}</span>
+                <span style={{ color: history.amountChange > 0 ? '#059669' : history.amountChange < 0 ? '#dc2626' : '#9ca3af', marginRight: 'auto' }}>
                   {history.amountChange > 0 ? `+${history.amountChange}` : history.amountChange}
                 </span>
+                {history.amountChange !== 0 && (
+                  <button
+                    onClick={async () => {
+                      if (!window.confirm(i18n.itemDetail.undoConfirm)) return;
+                      const res = await apiFetch(`/api/history/${history.id}`, { method: 'DELETE' });
+                      if (!res.ok) {
+                        alert(i18n.itemDetail.undoFailed);
+                        return;
+                      }
+                      const updated = await res.json();
+                      setItem(updated);
+                      setFormData({
+                        name: updated.name,
+                        englishName: updated.englishName ?? '',
+                        minThreshold: updated.minThreshold,
+                        unitPerBox: updated.unitPerBox ?? 1,
+                        keywords: updated.keywords ?? '',
+                        imageUrl: updated.imageUrl ?? '',
+                        orderUrl: updated.orderUrl ?? '',
+                      });
+                    }}
+                    style={{ flexShrink: 0, padding: '3px 10px', fontSize: '12px', backgroundColor: 'white', color: '#6b7280', border: '1px solid #d1d5db', borderRadius: '4px', cursor: 'pointer' }}
+                  >
+                    {i18n.itemDetail.undoButton}
+                  </button>
+                )}
               </div>
             ))}
           </div>

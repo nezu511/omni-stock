@@ -133,6 +133,9 @@ export const ja: Translations = {
     statusUpdateFailed: 'ステータスの更新に失敗しました',
     historyTitle: '📜 履歴',
     noHistory: '履歴はありません。',
+    undoButton: '取り消し',
+    undoConfirm: 'この変更を取り消しますか？',
+    undoFailed: '取り消しに失敗しました。在庫がマイナスになる場合は取り消しできません。',
     loading: '読み込み中...',
     actions: {
       CREATE: '作成',

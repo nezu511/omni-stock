@@ -133,6 +133,9 @@ export interface Translations {
     statusUpdateFailed: string;
     historyTitle: string;
     noHistory: string;
+    undoButton: string;
+    undoConfirm: string;
+    undoFailed: string;
     loading: string;
     actions: Record<string, string>;
     statuses: {

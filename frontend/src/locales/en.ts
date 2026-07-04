@@ -133,6 +133,9 @@ export const en: Translations = {
     statusUpdateFailed: 'Failed to update status.',
     historyTitle: '📜 History',
     noHistory: 'No history yet.',
+    undoButton: 'Undo',
+    undoConfirm: 'Undo this change?',
+    undoFailed: 'Failed to undo. Cannot undo if it would result in negative stock.',
     loading: 'Loading...',
     actions: {
       CREATE: 'Created',

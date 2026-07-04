@@ -403,6 +403,68 @@ app.delete("/api/items/:id", async (req, res) => {
   }
 });
 
+// 履歴エントリの取り消し
+app.delete('/api/history/:id', async (req, res) => {
+  try {
+    const histId = parseInt(req.params.id, 10);
+
+    const hist = await prisma.history.findUnique({
+      where: { id: histId },
+      include: { item: true },
+    });
+    if (!hist) return res.status(404).json({ error: 'History entry not found' });
+    if (hist.amountChange === 0) return res.status(400).json({ error: 'Status-only entries cannot be undone' });
+
+    // 同一タイムスタンプの amountChange:0 エントリ = この操作が自動で引き起こしたステータス変化
+    const associated = await prisma.history.findMany({
+      where: { itemId: hist.itemId, amountChange: 0, timestamp: hist.timestamp },
+    });
+
+    const reversal = -hist.amountChange;
+    const currentItem = hist.item;
+    const newQty = currentItem.quantity + reversal;
+
+    if (newQty < 0) return res.status(400).json({ error: '取り消すと在庫がマイナスになるため実行できません' });
+
+    // ステータス自動戻し: 対応する自動ステータス変化が現在のステータスと一致する場合のみ戻す
+    let orderStatusUpdate: Record<string, string> = {};
+    for (const a of associated) {
+      if (a.actionType === 'REQUESTED' && currentItem.orderStatus === 'REQUESTED') {
+        // CONSUME → REQUESTED を取り消す → NONE に戻す
+        orderStatusUpdate = { orderStatus: 'NONE' };
+      } else if (a.actionType === 'ARRIVED' && currentItem.orderStatus === 'ARRIVED') {
+        // RESTOCK → ARRIVED を取り消す → ORDERED に戻す
+        orderStatusUpdate = { orderStatus: 'ORDERED' };
+      } else if (a.actionType === 'NONE' && currentItem.orderStatus === 'NONE' && newQty <= currentItem.minThreshold) {
+        // RESTOCK → NONE（在庫回復）を取り消す → REQUESTED に戻す
+        orderStatusUpdate = { orderStatus: 'REQUESTED' };
+      }
+    }
+
+    const allIdsToDelete = [histId, ...associated.map((a) => a.id)];
+
+    const updatedItem = await prisma.$transaction(async (tx) => {
+      await tx.history.deleteMany({ where: { id: { in: allIdsToDelete } } });
+      return tx.item.update({
+        where: { id: hist.itemId },
+        data: {
+          quantity: { increment: reversal },
+          ...orderStatusUpdate,
+          histories: {
+            create: { actionType: 'QUANTITY_UPDATE', amountChange: reversal },
+          },
+        },
+        include: { histories: { orderBy: { timestamp: 'desc' } } },
+      });
+    });
+
+    res.json(updatedItem);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to undo history entry' });
+  }
+});
+
 
 
 
