@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { apiFetch } from '../config';
 import { Link } from 'react-router-dom';
 import type { Item } from '../types';
@@ -11,6 +11,15 @@ export default function Consume() {
   const [inputValues, setInputValues] = useState<{ [key: number]: number | '' }>({});
   const [consumeMode, setConsumeMode] = useState<{ [key: number]: 'unit' | 'box' }>({});
   const [searchQuery, setSearchQuery] = useState('');
+  const [enlargedImage, setEnlargedImage] = useState<string | null>(null);
+
+  const closeImage = useCallback(() => setEnlargedImage(null), []);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') closeImage(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [closeImage]);
 
   const fetchItems = () => {
     apiFetch(`/api/items`)
@@ -85,15 +94,20 @@ export default function Consume() {
             flexDirection: 'column',
           }}>
 
-            <Link to={`/manage/${item.id}`}>
-              {item.imageUrl ? (
-                <img src={item.imageUrl} alt={item.name} style={{ width: '100%', height: '140px', objectFit: 'cover', borderRadius: '8px', cursor: 'pointer' }} />
-              ) : (
+            {item.imageUrl ? (
+              <img
+                src={item.imageUrl}
+                alt={item.name}
+                onClick={() => setEnlargedImage(item.imageUrl!)}
+                style={{ width: '100%', height: '140px', objectFit: 'cover', borderRadius: '8px', cursor: 'zoom-in' }}
+              />
+            ) : (
+              <Link to={`/manage/${item.id}`}>
                 <div style={{ width: '100%', height: '140px', backgroundColor: '#f3f4f6', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9ca3af', cursor: 'pointer' }}>
                   {i18n.consume.noImage}
                 </div>
-              )}
-            </Link>
+              </Link>
+            )}
 
             <h3 style={{ margin: '10px 0 6px', fontSize: '16px', color: '#1f2937', lineHeight: 1.3 }}>{item.name}</h3>
 
@@ -176,6 +190,19 @@ export default function Consume() {
           </div>
         ))}
       </div>
+      {enlargedImage && (
+        <div
+          onClick={closeImage}
+          style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, cursor: 'zoom-out' }}
+        >
+          <img
+            src={enlargedImage}
+            alt="拡大"
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxWidth: '90vw', maxHeight: '90vh', objectFit: 'contain', borderRadius: '8px', boxShadow: '0 25px 50px rgba(0,0,0,0.5)' }}
+          />
+        </div>
+      )}
     </div>
   );
 }
