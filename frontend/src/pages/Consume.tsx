@@ -73,15 +73,16 @@ export default function Consume() {
         </button>
       </div>
 
-      <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
         {filteredItems.map((item) => (
           <div key={item.id} style={{
             backgroundColor: 'white',
             border: '1px solid #e5e7eb',
             padding: '15px',
             borderRadius: '12px',
-            width: '240px',
-            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.06)',
+            display: 'flex',
+            flexDirection: 'column',
           }}>
 
             <Link to={`/manage/${item.id}`}>
@@ -94,19 +95,15 @@ export default function Consume() {
               )}
             </Link>
 
-            <h3 style={{ margin: '12px 0 5px 0', fontSize: '18px', color: '#1f2937' }}>{item.name}</h3>
+            <h3 style={{ margin: '10px 0 6px', fontSize: '16px', color: '#1f2937', lineHeight: 1.3 }}>{item.name}</h3>
 
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-              <p style={{ fontSize: '28px', fontWeight: 'bold', margin: '0', color: item.quantity <= item.minThreshold ? '#dc2626' : '#111827' }}>
-                {i18n.consume.stockLeft} {item.quantity}
-              </p>
-            </div>
-
-            {item.unitPerBox > 1 && (
-              <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '2px' }}>
-                {i18n.consume.boxHint(item.unitPerBox)}
+            <div style={{ marginBottom: '4px' }}>
+              <div style={{ fontSize: '11px', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{i18n.consume.stockLeft}</div>
+              <div style={{ fontSize: '26px', fontWeight: 'bold', lineHeight: 1.1, color: item.quantity <= item.minThreshold ? '#dc2626' : '#111827' }}>
+                {item.quantity}
+                {item.unitPerBox > 1 && <span style={{ fontSize: '12px', fontWeight: 'normal', color: '#6b7280', marginLeft: '6px' }}>{i18n.consume.boxHint(item.unitPerBox)}</span>}
               </div>
-            )}
+            </div>
 
             <hr style={{ border: 'none', borderTop: '1px dashed #e5e7eb', margin: '15px 0' }} />
 
@@ -154,7 +151,7 @@ export default function Consume() {
                   const val = parseInt(e.target.value, 10);
                   setInputValues((prev) => ({ ...prev, [item.id]: isNaN(val) ? '' : val }));
                 }}
-                style={{ flex: 1, padding: '8px', border: '1px solid #d1d5db', borderRadius: '6px', fontSize: '16px' }}
+                style={{ flex: 1, minWidth: 0, padding: '8px', border: '1px solid #d1d5db', borderRadius: '6px', fontSize: '14px' }}
               />
               <button
                 onClick={() => {
@@ -163,7 +160,7 @@ export default function Consume() {
                   handleConsume(item.id, isBox ? raw * item.unitPerBox : raw);
                 }}
                 disabled={!inputValues[item.id]}
-                style={{ padding: '8px 12px', background: inputValues[item.id] ? '#dc2626' : '#d1d5db', color: 'white', border: 'none', borderRadius: '6px', cursor: inputValues[item.id] ? 'pointer' : 'not-allowed', fontWeight: 'bold' }}
+                style={{ flexShrink: 0, padding: '8px 10px', background: inputValues[item.id] ? '#dc2626' : '#d1d5db', color: 'white', border: 'none', borderRadius: '6px', cursor: inputValues[item.id] ? 'pointer' : 'not-allowed', fontWeight: 'bold', fontSize: '14px' }}
               >
                 {i18n.consume.useButton}
               </button>
@@ -171,7 +168,7 @@ export default function Consume() {
 
             <Link
               to={`/manage/${item.id}`}
-              style={{ display: 'block', textAlign: 'center', marginTop: '10px', backgroundColor: '#e5e7eb', color: '#374151', textDecoration: 'none', borderRadius: '6px', padding: '8px', fontSize: '14px', fontWeight: 'bold' }}
+              style={{ display: 'block', textAlign: 'center', marginTop: '10px', backgroundColor: '#f9fafb', color: '#6b7280', textDecoration: 'none', borderRadius: '6px', padding: '7px', fontSize: '13px', border: '1px solid #e5e7eb' }}
             >
               {i18n.consume.detailButton}
             </Link>
