@@ -27,11 +27,11 @@ function NavBar() {
                                    (i18n.nav.notifyRequest ?? 'Click to enable notifications');
 
   return (
-    <nav style={{ backgroundColor: 'white', padding: '15px 20px', borderBottom: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', gap: '20px' }}>
+    <nav className="nav-root" style={{ backgroundColor: 'white', padding: '15px 20px', borderBottom: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', gap: '20px' }}>
       <Link to="/" style={{ textDecoration: 'none', color: '#111827' }}>
         <h1 style={{ margin: 0, fontSize: '20px' }}>📦 Omni-Stock</h1>
       </Link>
-      <div style={{ display: 'flex', gap: '15px', marginLeft: 'auto', alignItems: 'center' }}>
+      <div className="nav-links" style={{ display: 'flex', gap: '15px', marginLeft: 'auto', alignItems: 'center' }}>
         <Link to="/consume" style={{ textDecoration: 'none', color: '#4b5563', fontWeight: 'bold' }}>{i18n.nav.consume}</Link>
         <Link to="/restock" style={{ textDecoration: 'none', color: '#4b5563', fontWeight: 'bold' }}>{i18n.nav.restock}</Link>
         <Link to="/reagents" style={{ textDecoration: 'none', color: '#4b5563', fontWeight: 'bold' }}>{i18n.nav.reagent}</Link>
@@ -73,7 +73,7 @@ function App() {
       <LanguageProvider>
         <div style={{ fontFamily: 'sans-serif', backgroundColor: '#f9fafb', minHeight: '100vh' }}>
           <NavBar />
-          <div style={{ padding: '20px' }}>
+          <div className="app-content" style={{ padding: '20px' }}>
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/consume" element={<Consume />} />

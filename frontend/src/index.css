@@ -66,6 +66,39 @@ body {
   margin: 0;
 }
 
+/* ========== iPad mini 縦（〜768px）向けレスポンシブ ========== */
+
+/* タッチターゲット最低サイズ確保（Apple HIG: 44px） */
+@media (max-width: 768px) {
+  button, a[role="button"] {
+    min-height: 44px;
+  }
+}
+
+/* NavBar: タブレットでリンク間隔を詰める */
+@media (max-width: 768px) {
+  .nav-links {
+    gap: 10px !important;
+  }
+  .nav-root {
+    padding: 10px 14px !important;
+  }
+}
+
+/* アプリ本体のパディングをタブレットで少し詰める */
+@media (max-width: 768px) {
+  .app-content {
+    padding: 16px !important;
+  }
+}
+
+/* Manage ページヘッダー: タブレットで検索欄の余白を調整 */
+@media (max-width: 768px) {
+  .manage-header-search {
+    margin: 0 8px !important;
+  }
+}
+
 h1,
 h2 {
   font-family: var(--heading);
