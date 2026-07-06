@@ -23,8 +23,9 @@ function broadcastEvent(event: string, data: Record<string, unknown>) {
 
 // プライベートIPアドレス（ローカルネットワーク）からのリクエストのみ許可する。
 // 10.x, 172.16-31.x, 192.168.x は RFC1918 のプライベートアドレス帯。
+// *.local は mDNS(Bonjour) のホスト名（例: omnistock.local）。
 // ラボPCから直接開いた場合の origin: null（ファイル直接開き）も許可する。
-const PRIVATE_IP_RE = /^https?:\/\/(localhost|127\.0\.0\.1|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+|192\.168\.\d+\.\d+)(:\d+)?$/;
+const PRIVATE_IP_RE = /^https?:\/\/(localhost|127\.0\.0\.1|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+|192\.168\.\d+\.\d+|[a-zA-Z0-9-]+\.local)(:\d+)?$/;
 
 app.use(cors({
   origin: (origin, callback) => {
@@ -53,7 +54,7 @@ app.post('/api/auth', (req, res) => {
 
 app.use((req, res, next) => {
   if (!APP_SECRET || APP_SECRET === 'CHANGE_ME') return next();
-  if (req.path === '/' || req.path.startsWith('/uploads/')) return next();
+  if (!req.path.startsWith('/api/')) return next();
   if (req.path === '/api/events') {
     if ((req.query as Record<string, string>).token === APP_SECRET) return next();
     return res.status(401).json({ error: 'Unauthorized' });
@@ -123,11 +124,6 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 //API エンドポイント
 
-
-//動作確認用ルート
-app.get('/', (req, res) => {
-  res.send('Lab Inventory API is running');
-});
 
 // SSE エンドポイント — クライアントはここに接続し続けてイベントを受け取る
 app.get('/api/events', (req, res) => {
@@ -589,6 +585,15 @@ app.delete('/api/reagents/:id', async (req, res) => {
   } catch (error) {
     res.status(404).json({ error: 'Reagent not found' });
   }
+});
+
+// ==========================================
+// 🌐 フロントエンド配信（本番ビルド）
+// ==========================================
+const frontendDist = path.join(__dirname, '../frontend/dist');
+app.use(express.static(frontendDist));
+app.get(/^\/(?!api|uploads).*/, (req, res) => {
+  res.sendFile(path.join(frontendDist, 'index.html'));
 });
 
 const PORT = 3001;

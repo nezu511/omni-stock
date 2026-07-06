@@ -9,6 +9,13 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+*.swp
+
+# Claude Code ローカル設定
+.claude/
+
+# データ取り込み用の一時Excelファイル
+*.xlsx
 
 # =========================
 # バックエンド (Node.js / Prisma)
