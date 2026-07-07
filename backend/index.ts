@@ -513,9 +513,15 @@ app.post('/api/reagents', async (req, res) => {
 // 発注リクエスト作成（既存試薬を選んで新規リクエスト1件を生やす）
 app.post('/api/reagent_requests', async (req, res) => {
   try {
-    const { reagentId, requestedBy } = req.body;
+    const { reagentId, requestedBy, quantity, note } = req.body;
     const request = await prisma.reagentRequest.create({
-      data: { reagentId, requestedBy: requestedBy || null, status: 'REQUESTED' },
+      data: {
+        reagentId,
+        requestedBy: requestedBy || null,
+        status: 'REQUESTED',
+        quantity: Number(quantity) > 0 ? Number(quantity) : 1,
+        note: note || null,
+      },
       include: { reagent: true },
     });
 

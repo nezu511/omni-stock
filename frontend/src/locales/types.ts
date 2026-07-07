@@ -154,6 +154,9 @@ export interface Translations {
     searchPlaceholder: string;
     requestedByLabel: string;
     requestedByPlaceholder: string;
+    quantityLabel: string;
+    noteLabel: string;
+    notePlaceholder: string;
     submitButton: string;
     submitSuccess: string;
     submitFailed: string;
@@ -195,6 +198,8 @@ export interface Translations {
     cancelButton: string;
     cancelFailed: string;
     requestedBy: string;
+    quantity: string;
+    note: string;
     noRequested: string;
     noOrdered: string;
     noArrived: string;

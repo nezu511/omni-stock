@@ -196,6 +196,15 @@ function Home() {
                       {i18n.reagentManage.requestedBy} {req.requestedBy}
                     </div>
                   )}
+                  {req.note && (
+                    <div style={{
+                      fontSize: '12px', color: '#92400e', backgroundColor: '#fffbeb', border: '1px solid #fde68a',
+                      borderRadius: '4px', padding: '4px 6px', marginBottom: '8px',
+                      display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+                    }}>
+                      {req.note}
+                    </div>
+                  )}
                   <Link
                     to="/reagents/manage"
                     style={{ display: 'block', textAlign: 'center', backgroundColor: '#d97706', color: 'white', textDecoration: 'none', borderRadius: '6px', padding: '7px', fontSize: '13px', fontWeight: 'bold', marginBottom: '4px' }}

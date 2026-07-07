@@ -26,6 +26,8 @@ export interface ReagentRequest {
   reagentId: number;
   status: string;
   requestedBy: string | null;
+  quantity: number;
+  note: string | null;
   createdAt: string;
   updatedAt: string;
   reagent?: Reagent;

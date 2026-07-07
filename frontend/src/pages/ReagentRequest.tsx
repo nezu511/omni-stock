@@ -14,6 +14,8 @@ export default function ReagentRequest() {
   const [query, setQuery] = useState('');
   const [selected, setSelected] = useState<Reagent | null>(null);
   const [requestedBy, setRequestedBy] = useState('');
+  const [quantity, setQuantity] = useState<number>(1);
+  const [note, setNote] = useState('');
   const [message, setMessage] = useState('');
 
   // 新規試薬登録フォーム
@@ -43,7 +45,7 @@ export default function ReagentRequest() {
     const res = await apiFetch(`/api/reagent_requests`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ reagentId, requestedBy }),
+      body: JSON.stringify({ reagentId, requestedBy, quantity, note: note.trim() || null }),
     });
     if (!res.ok) {
       setMessage(t.submitFailed);
@@ -52,6 +54,8 @@ export default function ReagentRequest() {
     setMessage(t.submitSuccess);
     setSelected(null);
     setRequestedBy('');
+    setQuantity(1);
+    setNote('');
     setQuery('');
   }
 
@@ -189,6 +193,22 @@ export default function ReagentRequest() {
                 placeholder={t.requestedByPlaceholder}
                 style={{ display: 'block', width: '100%', padding: '8px 10px', border: '1px solid #d1d5db', borderRadius: '6px', marginTop: '4px', marginBottom: '12px', boxSizing: 'border-box' }}
               />
+              <label style={{ fontSize: '14px', color: '#374151' }}>{t.quantityLabel}</label>
+              <input
+                type="number"
+                min="1"
+                value={quantity}
+                onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value, 10) || 1))}
+                style={{ display: 'block', width: '100px', padding: '8px 10px', border: '1px solid #d1d5db', borderRadius: '6px', marginTop: '4px', marginBottom: '12px', boxSizing: 'border-box' }}
+              />
+              <label style={{ fontSize: '14px', color: '#374151' }}>{t.noteLabel}</label>
+              <textarea
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                placeholder={t.notePlaceholder}
+                rows={2}
+                style={{ display: 'block', width: '100%', padding: '8px 10px', border: '1px solid #d1d5db', borderRadius: '6px', marginTop: '4px', marginBottom: '12px', boxSizing: 'border-box', resize: 'vertical', fontFamily: 'inherit' }}
+              />
               <button
                 onClick={() => submitRequest(selected.id)}
                 style={{ padding: '8px 20px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
@@ -238,6 +258,22 @@ export default function ReagentRequest() {
             onChange={(e) => setRequestedBy(e.target.value)}
             placeholder={t.requestedByPlaceholder}
             style={{ display: 'block', width: '100%', padding: '8px 10px', border: '1px solid #d1d5db', borderRadius: '6px', marginTop: '4px', marginBottom: '12px', boxSizing: 'border-box' }}
+          />
+          <label style={{ fontSize: '14px', fontWeight: 'bold' }}>{t.quantityLabel}</label>
+          <input
+            type="number"
+            min="1"
+            value={quantity}
+            onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value, 10) || 1))}
+            style={{ display: 'block', width: '100px', padding: '8px 10px', border: '1px solid #d1d5db', borderRadius: '6px', marginTop: '4px', marginBottom: '12px', boxSizing: 'border-box' }}
+          />
+          <label style={{ fontSize: '14px', fontWeight: 'bold' }}>{t.noteLabel}</label>
+          <textarea
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder={t.notePlaceholder}
+            rows={2}
+            style={{ display: 'block', width: '100%', padding: '8px 10px', border: '1px solid #d1d5db', borderRadius: '6px', marginTop: '4px', marginBottom: '12px', boxSizing: 'border-box', resize: 'vertical', fontFamily: 'inherit' }}
           />
           <button
             onClick={handleRegisterAndRequest}

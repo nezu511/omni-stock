@@ -61,6 +61,8 @@ model ReagentRequest {
   reagent     Reagent  @relation(fields: [reagentId], references: [id], onDelete: Cascade)
   status      String   @default("REQUESTED")
   requestedBy String?
+  quantity    Int      @default(1)
+  note        String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

@@ -92,6 +92,14 @@ export default function ReagentManage() {
                 {t.requestedBy} {req.requestedBy}
               </div>
             )}
+            <div style={{ fontSize: '13px', color: '#374151', marginTop: '4px' }}>
+              {t.quantity} {req.quantity}
+            </div>
+            {req.note && (
+              <div style={{ fontSize: '13px', color: '#92400e', backgroundColor: '#fffbeb', border: '1px solid #fde68a', borderRadius: '4px', padding: '4px 6px', marginTop: '4px', whiteSpace: 'pre-wrap' }}>
+                {t.note} {req.note}
+              </div>
+            )}
             <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '2px' }}>
               {t.requestedAt} {formatDate(req.createdAt)}
             </div>
