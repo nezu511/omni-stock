@@ -189,7 +189,7 @@ function Home() {
                 const reagentName = getDisplayName(req.reagent.name, req.reagent.englishName, lang);
                 return (
                 <div key={`req-${req.id}`} style={{ backgroundColor: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #fde68a', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
-                  <div style={{ fontWeight: 'bold', color: '#111827', marginBottom: '4px' }}>{reagentName.primary}</div>
+                  <div style={{ fontWeight: 'bold', color: '#111827', marginBottom: '4px', overflowWrap: 'break-word', wordBreak: 'break-word' }}>{reagentName.primary}</div>
                   {req.requestedBy && (
                     <div style={{ fontSize: '13px', color: '#374151', marginBottom: '8px' }}>
                       {i18n.reagentManage.requestedBy} {req.requestedBy}
@@ -259,7 +259,7 @@ function Home() {
               const reagentName = getDisplayName(req.reagent.name, req.reagent.englishName, lang);
               return (
               <div key={`req-${req.id}`} style={{ backgroundColor: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #ddd6fe', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
-                <div style={{ fontWeight: 'bold', color: '#111827', marginBottom: '4px' }}>{reagentName.primary}</div>
+                <div style={{ fontWeight: 'bold', color: '#111827', marginBottom: '4px', overflowWrap: 'break-word', wordBreak: 'break-word' }}>{reagentName.primary}</div>
                 {req.requestedBy && (
                   <div style={{ fontSize: '13px', color: '#374151', marginBottom: '8px' }}>
                     {i18n.reagentManage.requestedBy} {req.requestedBy}
