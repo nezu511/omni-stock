@@ -130,6 +130,9 @@ export interface Translations {
     saveButton: string;
     saveSuccess: string;
     saveFailed: string;
+    quantityUpdateButton: string;
+    quantityUpdateSuccess: string;
+    quantityUpdateFailed: string;
     statusUpdateFailed: string;
     historyTitle: string;
     noHistory: string;

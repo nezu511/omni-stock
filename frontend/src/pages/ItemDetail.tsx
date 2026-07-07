@@ -21,6 +21,7 @@ export default function ItemDetail() {
   const { i18n } = useLang();
 
   const [item, setItem] = useState<Item | null>(null);
+  const [quantityDraft, setQuantityDraft] = useState<number>(0);
   const [formData, setFormData] = useState<ItemFormData>({
     name: '',
     englishName: '',
@@ -43,6 +44,7 @@ export default function ItemDetail() {
       .then((res) => res.json())
       .then((data: Item) => {
         setItem(data);
+        setQuantityDraft(data.quantity);
         setFormData({
           name: data.name,
           englishName: data.englishName ?? '',
@@ -110,6 +112,32 @@ export default function ItemDetail() {
     }
   };
 
+  const handleQuantitySave = async () => {
+    if (!item) return;
+    const delta = quantityDraft - item.quantity;
+    if (delta === 0) return;
+
+    try {
+      const res = await apiFetch(`/api/quantity_change`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          itemId: Number(id),
+          quantity_change: delta,
+          actionType: 'QUANTITY_UPDATE',
+        }),
+      });
+      if (res.ok) {
+        alert(i18n.itemDetail.quantityUpdateSuccess);
+        fetchItem();
+      } else {
+        alert(i18n.itemDetail.quantityUpdateFailed);
+      }
+    } catch (err) {
+      console.error('Error:', err);
+    }
+  };
+
   const handleChangeStatus = async (orderStatus: string) => {
     try {
       const res = await apiFetch(`/api/change_status`, {
@@ -146,8 +174,37 @@ export default function ItemDetail() {
       <div style={{ display: 'flex', gap: '20px', marginBottom: '20px', backgroundColor: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>{i18n.itemDetail.currentStock}</div>
-          <div style={{ fontSize: '28px', fontWeight: 'bold', color: item.quantity <= item.minThreshold ? '#dc2626' : '#111827' }}>
-            {item.quantity}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <input
+              type="number"
+              min="0"
+              value={quantityDraft}
+              onChange={(e) => setQuantityDraft(Number(e.target.value))}
+              style={{
+                width: '90px',
+                fontSize: '28px',
+                fontWeight: 'bold',
+                color: item.quantity <= item.minThreshold ? '#dc2626' : '#111827',
+                border: '1px solid #d1d5db',
+                borderRadius: '6px',
+                padding: '2px 6px',
+              }}
+            />
+            <button
+              onClick={handleQuantitySave}
+              disabled={quantityDraft === item.quantity}
+              style={{
+                padding: '8px 12px',
+                borderRadius: '6px',
+                border: '1px solid #d1d5db',
+                backgroundColor: quantityDraft === item.quantity ? '#e5e7eb' : '#2563eb',
+                color: quantityDraft === item.quantity ? '#9ca3af' : 'white',
+                fontWeight: 'bold',
+                cursor: quantityDraft === item.quantity ? 'default' : 'pointer',
+              }}
+            >
+              {i18n.itemDetail.quantityUpdateButton}
+            </button>
           </div>
         </div>
 
@@ -312,6 +369,7 @@ export default function ItemDetail() {
                       }
                       const updated = await res.json();
                       setItem(updated);
+                      setQuantityDraft(updated.quantity);
                       setFormData({
                         name: updated.name,
                         englishName: updated.englishName ?? '',
