@@ -4,12 +4,13 @@ import { Link } from 'react-router-dom';
 import type { Item, Reagent, ReagentRequest } from '../types';
 import { matchesSearchQuery } from '../utils/searchItems';
 import { formatBoxQuantity } from '../utils/formatQuantity';
+import { getDisplayName } from '../utils/getDisplayName';
 import { useLang } from '../contexts/LanguageContext';
 
 type RequestWithReagent = ReagentRequest & { reagent: Reagent };
 
 export default function Restock() {
-  const { i18n } = useLang();
+  const { i18n, lang } = useLang();
   const [items, setItems] = useState<Item[]>([]);
   const [inputValues, setInputValues] = useState<{ [key: number]: number | '' }>({});
   const [searchQuery, setSearchQuery] = useState('');
@@ -99,7 +100,9 @@ export default function Restock() {
   const otherItems = items.filter((item) => item.orderStatus !== 'ORDERED');
   const searchResults = items.filter((item) => matchesSearchQuery(item, searchQuery));
 
-  const renderReagentRequestCard = (req: RequestWithReagent) => (
+  const renderReagentRequestCard = (req: RequestWithReagent) => {
+    const reagentName = getDisplayName(req.reagent.name, req.reagent.englishName, lang);
+    return (
     <div key={req.id} style={{
       backgroundColor: 'white',
       border: '2px solid #ddd6fe',
@@ -112,9 +115,9 @@ export default function Restock() {
       <div style={{ fontSize: '11px', fontWeight: 'bold', color: '#7c3aed', backgroundColor: '#f5f3ff', padding: '3px 8px', borderRadius: '4px', display: 'inline-block', marginBottom: '8px' }}>
         {i18n.restock.reagentBadge}
       </div>
-      <h3 style={{ margin: '0 0 4px', fontSize: '18px', color: '#1f2937' }}>{req.reagent.name}</h3>
-      {req.reagent.englishName && (
-        <div style={{ fontSize: '13px', color: '#6b7280', marginBottom: '6px' }}>{req.reagent.englishName}</div>
+      <h3 style={{ margin: '0 0 4px', fontSize: '18px', color: '#1f2937' }}>{reagentName.primary}</h3>
+      {reagentName.secondary && (
+        <div style={{ fontSize: '13px', color: '#6b7280', marginBottom: '6px' }}>{reagentName.secondary}</div>
       )}
       {req.requestedBy && (
         <div style={{ fontSize: '13px', color: '#374151', marginBottom: '8px' }}>
@@ -135,9 +138,12 @@ export default function Restock() {
         {i18n.restock.reagentArriveButton}
       </button>
     </div>
-  );
+    );
+  };
 
-  const renderItemCard = (item: Item) => (
+  const renderItemCard = (item: Item) => {
+    const itemName = getDisplayName(item.name, item.englishName, lang);
+    return (
     <div key={item.id} style={{
       backgroundColor: 'white',
       border: '1px solid #e5e7eb',
@@ -163,7 +169,8 @@ export default function Restock() {
         </Link>
       )}
 
-      <h3 style={{ margin: '10px 0 6px', fontSize: '16px', color: '#1f2937', lineHeight: 1.3 }}>{item.name}</h3>
+      <h3 style={{ margin: '10px 0 6px', fontSize: '16px', color: '#1f2937', lineHeight: 1.3 }}>{itemName.primary}</h3>
+      {itemName.secondary && <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '-4px', marginBottom: '6px' }}>{itemName.secondary}</div>}
 
       <div style={{ marginBottom: '4px' }}>
         <div style={{ fontSize: '11px', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{i18n.restock.stockLeft}</div>
@@ -211,7 +218,8 @@ export default function Restock() {
       </Link>
 
     </div>
-  );
+    );
+  };
 
   return (
     <div>

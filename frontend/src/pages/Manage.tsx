@@ -3,10 +3,11 @@ import { apiFetch } from '../config';
 import { useNavigate } from 'react-router-dom';
 import type { Item } from '../types';
 import { matchesSearchQuery } from '../utils/searchItems';
+import { getDisplayName } from '../utils/getDisplayName';
 import { useLang } from '../contexts/LanguageContext';
 
 export default function Admin() {
-  const { i18n } = useLang();
+  const { i18n, lang } = useLang();
   const [items, setItems] = useState<Item[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -86,7 +87,7 @@ export default function Admin() {
             {filteredItems.map((item) => (
               <tr key={item.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
                 <td style={{ padding: '12px 16px', color: '#6b7280' }}>{item.id}</td>
-                <td style={{ padding: '12px 16px', fontWeight: 'bold', color: '#111827' }}>{item.name}</td>
+                <td style={{ padding: '12px 16px', fontWeight: 'bold', color: '#111827' }}>{getDisplayName(item.name, item.englishName, lang).primary}</td>
 
                 <td style={{ padding: '12px 16px' }}>
                   <span style={{

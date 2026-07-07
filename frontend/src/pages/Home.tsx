@@ -3,12 +3,13 @@ import { apiFetch } from '../config';
 import { useState, useEffect } from 'react';
 import type { Item, Reagent, ReagentRequest } from '../types';
 import { formatQuantity } from '../utils/formatQuantity';
+import { getDisplayName } from '../utils/getDisplayName';
 import { useLang } from '../contexts/LanguageContext';
 
 type RequestWithReagent = ReagentRequest & { reagent: Reagent };
 
 function Home() {
-  const { i18n } = useLang();
+  const { i18n, lang } = useLang();
   const [items, setItems] = useState<Item[]>([]);
   const [reagents, setReagents] = useState<Reagent[]>([]);
   // ARRIVED試薬は最終状態（DBステータスを戻す先がない）なのでlocalStorageで確認済みを管理
@@ -154,9 +155,11 @@ function Home() {
             </div>
             <p style={{ color: '#6b7280', marginTop: '6px', marginBottom: '20px' }}>{i18n.home.pendingDesc}</p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '15px' }}>
-              {lowStockItems.map((item) => (
+              {lowStockItems.map((item) => {
+                const itemName = getDisplayName(item.name, item.englishName, lang);
+                return (
                 <div key={`item-${item.id}`} style={{ backgroundColor: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #fecaca', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
-                  <div style={{ fontWeight: 'bold', color: '#111827', marginBottom: '8px' }}>{item.name}</div>
+                  <div style={{ fontWeight: 'bold', color: '#111827', marginBottom: '8px' }}>{itemName.primary}</div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', marginBottom: '10px' }}>
                     <span style={{ color: '#dc2626', fontWeight: 'bold' }}>{i18n.home.stockLeft} {formatQuantity(item.quantity, item.unitPerBox)}</span>
                     <span style={{ color: '#6b7280' }}>{i18n.home.thresholdLabel} {item.minThreshold}</span>
@@ -180,11 +183,14 @@ function Home() {
                     {i18n.home.detailButton}
                   </Link>
                 </div>
-              ))}
-              {pendingReagentRequests.map((req) => (
+                );
+              })}
+              {pendingReagentRequests.map((req) => {
+                const reagentName = getDisplayName(req.reagent.name, req.reagent.englishName, lang);
+                return (
                 <div key={`req-${req.id}`} style={{ backgroundColor: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #fde68a', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
-                  <div style={{ fontWeight: 'bold', color: '#111827', marginBottom: '4px' }}>{req.reagent.name}</div>
-                  {req.reagent.englishName && <div style={{ fontSize: '13px', color: '#6b7280', marginBottom: '4px' }}>{req.reagent.englishName}</div>}
+                  <div style={{ fontWeight: 'bold', color: '#111827', marginBottom: '4px' }}>{reagentName.primary}</div>
+                  {reagentName.secondary && <div style={{ fontSize: '13px', color: '#6b7280', marginBottom: '4px' }}>{reagentName.secondary}</div>}
                   {req.requestedBy && (
                     <div style={{ fontSize: '13px', color: '#374151', marginBottom: '8px' }}>
                       {i18n.reagentManage.requestedBy} {req.requestedBy}
@@ -203,7 +209,8 @@ function Home() {
                     {i18n.home.reagentCancelButton}
                   </button>
                 </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         );
@@ -217,9 +224,11 @@ function Home() {
           </h2>
           <p style={{ color: '#6b7280', marginTop: '6px', marginBottom: '20px' }}>{i18n.home.arrivedCombinedDesc}</p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '15px' }}>
-            {arrivedItems.map((item) => (
+            {arrivedItems.map((item) => {
+              const itemName = getDisplayName(item.name, item.englishName, lang);
+              return (
               <div key={`item-${item.id}`} style={{ backgroundColor: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #a7f3d0', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
-                <div style={{ fontWeight: 'bold', color: '#111827', marginBottom: '8px' }}>{item.name}</div>
+                <div style={{ fontWeight: 'bold', color: '#111827', marginBottom: '8px' }}>{itemName.primary}</div>
                 <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '10px' }}>
                   {i18n.home.stockLabel} {item.quantity}
                 </div>
@@ -236,12 +245,15 @@ function Home() {
                   {i18n.home.detailButton}
                 </Link>
               </div>
-            ))}
-            {arrivedReagentRequests.map((req) => (
+              );
+            })}
+            {arrivedReagentRequests.map((req) => {
+              const reagentName = getDisplayName(req.reagent.name, req.reagent.englishName, lang);
+              return (
               <div key={`req-${req.id}`} style={{ backgroundColor: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #ddd6fe', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
-                <div style={{ fontWeight: 'bold', color: '#111827', marginBottom: '4px' }}>{req.reagent.name}</div>
-                {req.reagent.englishName && (
-                  <div style={{ fontSize: '13px', color: '#6b7280', marginBottom: '8px' }}>{req.reagent.englishName}</div>
+                <div style={{ fontWeight: 'bold', color: '#111827', marginBottom: '4px' }}>{reagentName.primary}</div>
+                {reagentName.secondary && (
+                  <div style={{ fontSize: '13px', color: '#6b7280', marginBottom: '8px' }}>{reagentName.secondary}</div>
                 )}
                 {req.requestedBy && (
                   <div style={{ fontSize: '13px', color: '#374151', marginBottom: '8px' }}>
@@ -255,7 +267,8 @@ function Home() {
                   {i18n.home.reagentConfirmButton}
                 </button>
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}

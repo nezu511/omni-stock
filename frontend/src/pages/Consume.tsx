@@ -3,10 +3,11 @@ import { apiFetch } from '../config';
 import { Link } from 'react-router-dom';
 import type { Item } from '../types';
 import { matchesSearchQuery } from '../utils/searchItems';
+import { getDisplayName } from '../utils/getDisplayName';
 import { useLang } from '../contexts/LanguageContext';
 
 export default function Consume() {
-  const { i18n } = useLang();
+  const { i18n, lang } = useLang();
   const [items, setItems] = useState<Item[]>([]);
   const [inputValues, setInputValues] = useState<{ [key: number]: number | '' }>({});
   const [consumeMode, setConsumeMode] = useState<{ [key: number]: 'unit' | 'box' }>({});
@@ -83,7 +84,9 @@ export default function Consume() {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
-        {filteredItems.map((item) => (
+        {filteredItems.map((item) => {
+          const itemName = getDisplayName(item.name, item.englishName, lang);
+          return (
           <div key={item.id} style={{
             backgroundColor: 'white',
             border: '1px solid #e5e7eb',
@@ -109,7 +112,8 @@ export default function Consume() {
               </Link>
             )}
 
-            <h3 style={{ margin: '10px 0 6px', fontSize: '16px', color: '#1f2937', lineHeight: 1.3 }}>{item.name}</h3>
+            <h3 style={{ margin: '10px 0 6px', fontSize: '16px', color: '#1f2937', lineHeight: 1.3 }}>{itemName.primary}</h3>
+            {itemName.secondary && <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '-4px', marginBottom: '6px' }}>{itemName.secondary}</div>}
 
             <div style={{ marginBottom: '4px' }}>
               <div style={{ fontSize: '11px', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{i18n.consume.stockLeft}</div>
@@ -188,7 +192,8 @@ export default function Consume() {
             </Link>
 
           </div>
-        ))}
+          );
+        })}
       </div>
       {enlargedImage && (
         <div

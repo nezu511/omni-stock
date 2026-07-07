@@ -157,6 +157,9 @@ export interface Translations {
     submitButton: string;
     submitSuccess: string;
     submitFailed: string;
+    existingTabLabel: string;
+    newTabLabel: string;
+    catalogNumberPlaceholder: string;
     newReagentToggle: string;
     newReagentTitle: string;
     nameLabel: string;

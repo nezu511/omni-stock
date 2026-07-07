@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import { apiFetch } from '../config';
 import { useNavigate } from 'react-router-dom';
 import { useLang } from '../contexts/LanguageContext';
+import { getDisplayName } from '../utils/getDisplayName';
 import type { Reagent } from '../types';
 
 export default function ReagentRequest() {
-  const { i18n } = useLang();
+  const { i18n, lang } = useLang();
   const t = i18n.reagentRequest;
   const navigate = useNavigate();
 
@@ -124,7 +125,7 @@ export default function ReagentRequest() {
             color: tab === 'existing' ? '#1d4ed8' : '#374151',
           }}
         >
-          🔍 既存から選ぶ
+          {t.existingTabLabel}
         </button>
         <button
           onClick={() => setTab('new')}
@@ -135,7 +136,7 @@ export default function ReagentRequest() {
             color: tab === 'new' ? '#065f46' : '#374151',
           }}
         >
-          ＋ 新規試薬を発注
+          {t.newTabLabel}
         </button>
       </div>
 
@@ -155,28 +156,31 @@ export default function ReagentRequest() {
             {filtered.length === 0 && query && (
               <p style={{ color: '#9ca3af', textAlign: 'center' }}>{t.noResults}</p>
             )}
-            {filtered.map((r) => (
+            {filtered.map((r) => {
+              const reagentName = getDisplayName(r.name, r.englishName, lang);
+              return (
               <div
                 key={r.id}
                 style={selected?.id === r.id ? selectedCard : card}
                 onClick={() => setSelected(selected?.id === r.id ? null : r)}
               >
                 <div>
-                  <div style={{ fontWeight: 'bold' }}>{r.name}</div>
-                  {r.englishName && <div style={{ fontSize: '13px', color: '#6b7280' }}>{r.englishName}</div>}
+                  <div style={{ fontWeight: 'bold' }}>{reagentName.primary}</div>
+                  {reagentName.secondary && <div style={{ fontSize: '13px', color: '#6b7280' }}>{reagentName.secondary}</div>}
                   {r.catalogNumber && <div style={{ fontSize: '12px', color: '#9ca3af' }}># {r.catalogNumber}</div>}
                 </div>
                 <span style={{ fontSize: '12px', color: '#9ca3af' }}>
                   {r.requests.length > 0 ? `${r.requests.length} req` : ''}
                 </span>
               </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* 選択済み → requestedBy + 提出 */}
           {selected && (
             <div style={{ border: '1px solid #3b82f6', borderRadius: '8px', padding: '16px', backgroundColor: '#eff6ff', marginBottom: '16px' }}>
-              <div style={{ fontWeight: 'bold', marginBottom: '10px' }}>📌 {selected.name}</div>
+              <div style={{ fontWeight: 'bold', marginBottom: '10px' }}>📌 {getDisplayName(selected.name, selected.englishName, lang).primary}</div>
               <label style={{ fontSize: '14px', color: '#374151' }}>{t.requestedByLabel}</label>
               <input
                 type="text"
@@ -217,7 +221,7 @@ export default function ReagentRequest() {
             type="text"
             value={newCatalogNumber}
             onChange={(e) => setNewCatalogNumber(e.target.value)}
-            placeholder="例: 194-09995"
+            placeholder={t.catalogNumberPlaceholder}
             style={{ display: 'block', width: '100%', padding: '8px 10px', border: '1px solid #d1d5db', borderRadius: '6px', marginTop: '4px', marginBottom: '10px', boxSizing: 'border-box' }}
           />
           <label style={{ fontSize: '14px', fontWeight: 'bold' }}>{t.urlLabel}</label>
