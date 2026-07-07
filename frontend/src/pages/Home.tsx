@@ -190,7 +190,6 @@ function Home() {
                 return (
                 <div key={`req-${req.id}`} style={{ backgroundColor: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #fde68a', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
                   <div style={{ fontWeight: 'bold', color: '#111827', marginBottom: '4px' }}>{reagentName.primary}</div>
-                  {reagentName.secondary && <div style={{ fontSize: '13px', color: '#6b7280', marginBottom: '4px' }}>{reagentName.secondary}</div>}
                   {req.requestedBy && (
                     <div style={{ fontSize: '13px', color: '#374151', marginBottom: '8px' }}>
                       {i18n.reagentManage.requestedBy} {req.requestedBy}
@@ -261,9 +260,6 @@ function Home() {
               return (
               <div key={`req-${req.id}`} style={{ backgroundColor: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #ddd6fe', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
                 <div style={{ fontWeight: 'bold', color: '#111827', marginBottom: '4px' }}>{reagentName.primary}</div>
-                {reagentName.secondary && (
-                  <div style={{ fontSize: '13px', color: '#6b7280', marginBottom: '8px' }}>{reagentName.secondary}</div>
-                )}
                 {req.requestedBy && (
                   <div style={{ fontSize: '13px', color: '#374151', marginBottom: '8px' }}>
                     {i18n.reagentManage.requestedBy} {req.requestedBy}

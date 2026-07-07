@@ -170,7 +170,6 @@ export default function ReagentRequest() {
               >
                 <div>
                   <div style={{ fontWeight: 'bold' }}>{reagentName.primary}</div>
-                  {reagentName.secondary && <div style={{ fontSize: '13px', color: '#6b7280' }}>{reagentName.secondary}</div>}
                   {r.catalogNumber && <div style={{ fontSize: '12px', color: '#9ca3af' }}># {r.catalogNumber}</div>}
                 </div>
                 <span style={{ fontSize: '12px', color: '#9ca3af' }}>

@@ -2,12 +2,13 @@ import { useState, useEffect } from 'react';
 import { apiFetch } from '../config';
 import { useNavigate } from 'react-router-dom';
 import { useLang } from '../contexts/LanguageContext';
+import { getDisplayName } from '../utils/getDisplayName';
 import type { Reagent, ReagentRequest } from '../types';
 
 type RequestWithReagent = ReagentRequest & { reagent: Reagent };
 
 export default function ReagentManage() {
-  const { i18n } = useLang();
+  const { i18n, lang } = useLang();
   const t = i18n.reagentManage;
   const navigate = useNavigate();
 
@@ -76,14 +77,12 @@ export default function ReagentManage() {
   };
 
   function RequestCard({ req, actions }: { req: RequestWithReagent; actions: React.ReactNode }) {
+    const reagentName = getDisplayName(req.reagent.name, req.reagent.englishName, lang);
     return (
       <div style={{ border: '1px solid #e5e7eb', borderRadius: '8px', padding: '12px 16px', backgroundColor: 'white', marginBottom: '8px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
-            <div style={{ fontWeight: 'bold', fontSize: '15px' }}>{req.reagent.name}</div>
-            {req.reagent.englishName && (
-              <div style={{ fontSize: '13px', color: '#6b7280' }}>{req.reagent.englishName}</div>
-            )}
+            <div style={{ fontWeight: 'bold', fontSize: '15px' }}>{reagentName.primary}</div>
             {req.reagent.catalogNumber && (
               <div style={{ fontSize: '12px', color: '#9ca3af' }}>{t.catalogNumber} {req.reagent.catalogNumber}</div>
             )}
