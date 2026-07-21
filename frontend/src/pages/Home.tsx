@@ -33,10 +33,16 @@ function Home() {
       .then((res) => res.json())
       .then((data) => setReagents(data))
       .catch((err) => console.error('Error:', err));
-    apiFetch(`/api/tunnel-url`)
-      .then((res) => res.json())
-      .then((data) => setTunnelUrl(data.url))
-      .catch((err) => console.error('Error:', err));
+    const fetchTunnelUrl = () => {
+      apiFetch(`/api/tunnel-url`)
+        .then((res) => res.json())
+        .then((data) => setTunnelUrl(data.url))
+        .catch((err) => console.error('Error:', err));
+    };
+    fetchTunnelUrl();
+    // cloudflaredが再接続すると発行されるURLが変わることがあるため、定期的に取り直す
+    const tunnelPoll = setInterval(fetchTunnelUrl, 60000);
+    return () => clearInterval(tunnelPoll);
   }, []);
 
   const copyTunnelUrl = () => {
@@ -134,31 +140,6 @@ function Home() {
   return (
     <div style={{ textAlign: 'center', marginTop: '40px' }}>
       <h2 style={{ color: '#4b5563', marginBottom: '40px' }}>{i18n.home.question}</h2>
-
-      {/* 外部アクセス用URL（cloudflaredが起動している時のみ表示） */}
-      {tunnelUrl && (
-        <div style={{ maxWidth: '600px', margin: '0 auto 30px', textAlign: 'left', border: '1px solid #bfdbfe', borderRadius: '10px', padding: '12px 16px', backgroundColor: '#eff6ff' }}>
-          <div style={{ fontSize: '13px', color: '#1d4ed8', fontWeight: 'bold', marginBottom: '6px' }}>
-            {i18n.home.externalUrlLabel}
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-            <a
-              href={tunnelUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ fontSize: '13px', color: '#2563eb', wordBreak: 'break-all', flex: 1, minWidth: 0 }}
-            >
-              {tunnelUrl}
-            </a>
-            <button
-              onClick={copyTunnelUrl}
-              style={{ flexShrink: 0, padding: '4px 10px', fontSize: '12px', fontWeight: 'bold', backgroundColor: copied ? '#10b981' : 'white', color: copied ? 'white' : '#2563eb', border: '1px solid #93c5fd', borderRadius: '6px', cursor: 'pointer' }}
-            >
-              {copied ? i18n.home.externalUrlCopied : i18n.home.externalUrlCopyButton}
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* 3つのメインボタン */}
       <div style={{ display: 'flex', gap: '30px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '20px' }}>
@@ -314,6 +295,22 @@ function Home() {
               );
             })}
           </div>
+        </div>
+      )}
+
+      {/* 外部アクセス用URL（cloudflaredが起動している時のみ、地味に表示） */}
+      {tunnelUrl && (
+        <div style={{ marginTop: '50px', fontSize: '12px', color: '#9ca3af' }}>
+          <span>{i18n.home.externalUrlLabel}: </span>
+          <a href={tunnelUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#9ca3af', wordBreak: 'break-all' }}>
+            {tunnelUrl}
+          </a>
+          <button
+            onClick={copyTunnelUrl}
+            style={{ marginLeft: '8px', padding: '1px 8px', fontSize: '11px', backgroundColor: 'transparent', color: copied ? '#10b981' : '#9ca3af', border: '1px solid #d1d5db', borderRadius: '4px', cursor: 'pointer' }}
+          >
+            {copied ? i18n.home.externalUrlCopied : i18n.home.externalUrlCopyButton}
+          </button>
         </div>
       )}
     </div>
