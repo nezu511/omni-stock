@@ -1,7 +1,12 @@
 // バックエンドのベースURL。
-// window.location.hostname を使うことで、localhost でも LAN の IP からでも正しく動作する。
-const API_PORT = import.meta.env.VITE_API_PORT ?? '3001';
-export const API_BASE = `http://${window.location.hostname}:${API_PORT}`;
+// VITE_API_PORT が設定されている場合（開発時など、フロントとバックエンドが別ポート）は
+// そのポートを使う。未設定の場合（本番ビルド・Cloudflare Tunnel経由など、フロントと
+// バックエンドが同一オリジンで配信される構成）は window.location.origin をそのまま使う。
+// 固定で :3001 を付けてしまうと、Tunnel経由（443のみ公開）で外から繋がらなくなるため。
+const explicitApiPort = import.meta.env.VITE_API_PORT;
+export const API_BASE = explicitApiPort
+  ? `http://${window.location.hostname}:${explicitApiPort}`
+  : window.location.origin;
 
 export function getAuthToken(): string {
   return localStorage.getItem('omni-stock-token') ?? '';

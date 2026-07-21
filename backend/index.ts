@@ -27,9 +27,13 @@ function broadcastEvent(event: string, data: Record<string, unknown>) {
 // ラボPCから直接開いた場合の origin: null（ファイル直接開き）も許可する。
 const PRIVATE_IP_RE = /^https?:\/\/(localhost|127\.0\.0\.1|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+|192\.168\.\d+\.\d+|[a-zA-Z0-9-]+\.local)(:\d+)?$/;
 
+// Cloudflare Quick Tunnel経由の外部アクセス用（例: https://random-words.trycloudflare.com）。
+// トンネル起動のたびにサブドメインが変わるため、ワイルドカードで許可する。
+const CLOUDFLARE_TUNNEL_RE = /^https:\/\/[a-zA-Z0-9-]+\.trycloudflare\.com$/;
+
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || PRIVATE_IP_RE.test(origin)) {
+    if (!origin || PRIVATE_IP_RE.test(origin) || CLOUDFLARE_TUNNEL_RE.test(origin)) {
       callback(null, true);
     } else {
       callback(new Error('CORS: このオリジンからのアクセスは許可されていません'));
