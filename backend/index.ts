@@ -167,12 +167,13 @@ app.get('/api/events', (req, res) => {
 // ==========================================
 // 🌐 Cloudflare Tunnel URL
 // ==========================================
-// cloudflared（Quick Tunnel）は起動のたびにランダムなURLを発行し、標準出力に出すだけで
-// アプリ側には一切通知してこない。pm2のログファイルから直近発行されたURLを都度読み取って返す。
+// cloudflared（Quick Tunnel）は起動のたびにランダムなURLを発行し、標準エラー出力に出すだけで
+// アプリ側には一切通知してこない。pm2のログファイル（ecosystem.config.jsでout_file/error_file
+// を1本にまとめてある）から直近発行されたURLを都度読み取って返す。
 // 常駐プロセスではなくログを読むだけなので、cloudflaredが起動していない/ログが無い場合は
 // null を返す（エラーにはしない）。
 const TUNNEL_LOG_PATH = process.env.CLOUDFLARED_LOG_PATH
-  ?? path.join(process.env.HOME ?? '', '.pm2/logs/cloudflared-tunnel-out.log');
+  ?? path.join(process.env.HOME ?? '', '.pm2/logs/cloudflared-tunnel-combined.log');
 const TUNNEL_URL_RE = /https:\/\/[a-zA-Z0-9-]+\.trycloudflare\.com/g;
 
 app.get('/api/tunnel-url', (req, res) => {

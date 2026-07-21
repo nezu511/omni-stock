@@ -1,3 +1,7 @@
+const os = require('os');
+const path = require('path');
+const cloudflaredLogPath = path.join(os.homedir(), '.pm2/logs/cloudflared-tunnel-combined.log');
+
 module.exports = {
   apps: [
     {
@@ -10,15 +14,17 @@ module.exports = {
     },
     {
       // Cloudflare Quick Tunnelを常駐化し、外部（LAN外）からomni-stockにアクセスできるようにする。
-      // 起動のたびに新しいランダムなURLが発行される。発行されたURLはこのプロセスの標準出力
-      // ログ（pm2のデフォルトログパス: ~/.pm2/logs/cloudflared-tunnel-out.log）に出力され、
+      // 起動のたびに新しいランダムなURLが発行される。cloudflaredは全ログを標準エラー出力に
+      // 書くため、out_file/error_fileを同じファイルにまとめて1箇所から読めるようにする。
       // バックエンドの GET /api/tunnel-url がこのログを読んでフロントのHome画面に表示する。
-      // アプリ名を変更する場合は、backend/index.ts の TUNNEL_LOG_PATH も合わせて変更すること。
+      // アプリ名やログパスを変更する場合は、backend/index.ts の TUNNEL_LOG_PATH も合わせて変更すること。
       name: 'cloudflared-tunnel',
       script: '/opt/homebrew/bin/cloudflared',
       args: 'tunnel --url http://localhost:3001',
       autorestart: true,
       watch: false,
+      out_file: cloudflaredLogPath,
+      error_file: cloudflaredLogPath,
     },
   ],
 };
