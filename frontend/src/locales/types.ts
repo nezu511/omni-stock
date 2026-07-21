@@ -41,6 +41,9 @@ export interface Translations {
     arrivedCombinedAlert: (count: number) => string;
     arrivedCombinedDesc: string;
     toOrderButton: string;
+    externalUrlLabel: string;
+    externalUrlCopyButton: string;
+    externalUrlCopied: string;
   };
   consume: {
     title: string;
@@ -98,6 +101,19 @@ export interface Translations {
     deleteConfirm: (name: string) => string;
     deleteSuccess: string;
     deleteFailed: string;
+    historyLink: string;
+  };
+  historyLog: {
+    title: string;
+    subtitle: string;
+    backButton: string;
+    searchPlaceholder: string;
+    colDate: string;
+    colItem: string;
+    colAction: string;
+    colAmount: string;
+    noHistory: string;
+    loading: string;
   };
   addItem: {
     title: string;

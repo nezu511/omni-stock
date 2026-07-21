@@ -6,6 +6,10 @@ export interface History {
   timestamp: string;
 }
 
+export interface HistoryWithItem extends History {
+  item: { id: number; name: string; englishName: string | null };
+}
+
 export interface Item {
   id: number;
   name: string;

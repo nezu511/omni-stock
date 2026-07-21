@@ -60,12 +60,20 @@ export default function Admin() {
         style={{ flex: 1, padding: '12px', fontSize: '16px', border: '1px solid #d1d5db', borderRadius: '8px', boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.05)', margin: '0 16px' }}
         />
 
-        <button
-          onClick={() => navigate('/manage/new')}
-          style={{ padding: '10px 20px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}
-        >
-          {i18n.manage.addButton}
-        </button>
+        <div style={{ display: 'flex', gap: '10px', flexShrink: 0 }}>
+          <button
+            onClick={() => navigate('/manage/history')}
+            style={{ padding: '10px 16px', backgroundColor: 'white', color: '#374151', border: '1px solid #d1d5db', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}
+          >
+            {i18n.manage.historyLink}
+          </button>
+          <button
+            onClick={() => navigate('/manage/new')}
+            style={{ padding: '10px 20px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}
+          >
+            {i18n.manage.addButton}
+          </button>
+        </div>
       </div>
 
       <div style={{ overflowX: 'auto', backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}>

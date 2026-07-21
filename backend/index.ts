@@ -1,5 +1,6 @@
 import express, { Response } from 'express';
 import cors from 'cors';
+import rateLimit from 'express-rate-limit';
 import { PrismaClient } from '@prisma/client';
 import 'dotenv/config'
 import multer from 'multer';
@@ -8,6 +9,10 @@ import fs from 'fs';
 
 const prisma = new PrismaClient();
 const app = express();
+
+// Cloudflare Tunnel (cloudflared) 経由のリクエストは localhost からのプロキシとして届くため、
+// X-Forwarded-For を信頼しないと req.ip が常に 127.0.0.1 になり、IPごとのレート制限が機能しない。
+app.set('trust proxy', true);
 
 // ==========================================
 // 📡 SSE — ブラウザへのリアルタイム通知
@@ -47,7 +52,18 @@ app.use(express.json());
 // ==========================================
 const APP_SECRET = process.env.APP_SECRET ?? '';
 
-app.post('/api/auth', (req, res) => {
+// 総当たり対策: 同一IPから15分間に5回失敗したら429でブロックする。
+// 成功した試行はカウントしない（正規ユーザーが後で入力に成功しても不利にならないように）。
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skipSuccessfulRequests: true,
+  message: { error: 'ログイン試行回数が多すぎます。しばらくしてから再度お試しください。' },
+});
+
+app.post('/api/auth', authLimiter, (req, res) => {
   if (!APP_SECRET || APP_SECRET === 'CHANGE_ME') {
     return res.status(503).json({ error: 'APP_SECRET が未設定です。backend/.env を確認してください。' });
   }
@@ -148,6 +164,38 @@ app.get('/api/events', (req, res) => {
   req.on('close', () => clearInterval(heartbeat));
 });
 
+// ==========================================
+// 🌐 Cloudflare Tunnel URL
+// ==========================================
+// cloudflared（Quick Tunnel）は起動のたびにランダムなURLを発行し、標準出力に出すだけで
+// アプリ側には一切通知してこない。pm2のログファイルから直近発行されたURLを都度読み取って返す。
+// 常駐プロセスではなくログを読むだけなので、cloudflaredが起動していない/ログが無い場合は
+// null を返す（エラーにはしない）。
+const TUNNEL_LOG_PATH = process.env.CLOUDFLARED_LOG_PATH
+  ?? path.join(process.env.HOME ?? '', '.pm2/logs/cloudflared-tunnel-out.log');
+const TUNNEL_URL_RE = /https:\/\/[a-zA-Z0-9-]+\.trycloudflare\.com/g;
+
+app.get('/api/tunnel-url', (req, res) => {
+  try {
+    if (!fs.existsSync(TUNNEL_LOG_PATH)) {
+      return res.json({ url: null });
+    }
+    // ログ末尾だけ読めば十分（ローテーションされていても直近の発行URLが分かればいい）
+    const stat = fs.statSync(TUNNEL_LOG_PATH);
+    const readSize = Math.min(stat.size, 64 * 1024);
+    const fd = fs.openSync(TUNNEL_LOG_PATH, 'r');
+    const buffer = Buffer.alloc(readSize);
+    fs.readSync(fd, buffer, 0, readSize, stat.size - readSize);
+    fs.closeSync(fd);
+    const matches = buffer.toString('utf-8').match(TUNNEL_URL_RE);
+    const url = matches && matches.length > 0 ? matches[matches.length - 1] : null;
+    res.json({ url });
+  } catch (error) {
+    console.error(error);
+    res.json({ url: null });
+  }
+});
+
 //在庫一覧を取得するAPI
 app.get('/api/items', async (req, res) => {
   try {
@@ -159,6 +207,23 @@ app.get('/api/items', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to fetch items' });
+  }
+});
+
+// 全アイテムの履歴をまとめて時系列（新しい順）で取得するAPI。
+// 管理画面の「全履歴」ページ用。既定で直近500件まで。
+app.get('/api/history', async (req, res) => {
+  try {
+    const limit = Math.min(Number(req.query.limit) || 500, 2000);
+    const histories = await prisma.history.findMany({
+      orderBy: { timestamp: 'desc' },
+      take: limit,
+      include: { item: { select: { id: true, name: true, englishName: true } } },
+    });
+    res.json(histories);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch history' });
   }
 });
 

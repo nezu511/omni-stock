@@ -81,7 +81,7 @@ export default function ReagentManage() {
     return (
       <div style={{ border: '1px solid #e5e7eb', borderRadius: '8px', padding: '12px 16px', backgroundColor: 'white', marginBottom: '8px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <div>
+          <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontWeight: 'bold', fontSize: '15px' }}>{reagentName.primary}</div>
             {req.reagent.catalogNumber && (
               <div style={{ fontSize: '12px', color: '#9ca3af' }}>{t.catalogNumber} {req.reagent.catalogNumber}</div>
@@ -107,7 +107,7 @@ export default function ReagentManage() {
                 href={req.reagent.site_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ fontSize: '13px', color: '#3b82f6', display: 'block', marginTop: '4px' }}
+                style={{ fontSize: '13px', color: '#3b82f6', display: 'block', marginTop: '4px', wordBreak: 'break-all' }}
               >
                 {t.siteUrl} {req.reagent.site_url}
               </a>

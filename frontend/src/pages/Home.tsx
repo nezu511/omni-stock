@@ -12,6 +12,8 @@ function Home() {
   const { i18n, lang } = useLang();
   const [items, setItems] = useState<Item[]>([]);
   const [reagents, setReagents] = useState<Reagent[]>([]);
+  const [tunnelUrl, setTunnelUrl] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
   // ARRIVED試薬は最終状態（DBステータスを戻す先がない）なのでlocalStorageで確認済みを管理
   const [dismissedReagentRequestIds, setDismissedReagentRequestIds] = useState<Set<number>>(() => {
     try {
@@ -31,7 +33,19 @@ function Home() {
       .then((res) => res.json())
       .then((data) => setReagents(data))
       .catch((err) => console.error('Error:', err));
+    apiFetch(`/api/tunnel-url`)
+      .then((res) => res.json())
+      .then((data) => setTunnelUrl(data.url))
+      .catch((err) => console.error('Error:', err));
   }, []);
+
+  const copyTunnelUrl = () => {
+    if (!tunnelUrl) return;
+    navigator.clipboard.writeText(tunnelUrl).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
 
   const lowStockItems = items.filter(item => item.quantity <= item.minThreshold && item.orderStatus === 'REQUESTED');
   const arrivedItems = items.filter(item => item.orderStatus === 'ARRIVED');
@@ -120,6 +134,31 @@ function Home() {
   return (
     <div style={{ textAlign: 'center', marginTop: '40px' }}>
       <h2 style={{ color: '#4b5563', marginBottom: '40px' }}>{i18n.home.question}</h2>
+
+      {/* 外部アクセス用URL（cloudflaredが起動している時のみ表示） */}
+      {tunnelUrl && (
+        <div style={{ maxWidth: '600px', margin: '0 auto 30px', textAlign: 'left', border: '1px solid #bfdbfe', borderRadius: '10px', padding: '12px 16px', backgroundColor: '#eff6ff' }}>
+          <div style={{ fontSize: '13px', color: '#1d4ed8', fontWeight: 'bold', marginBottom: '6px' }}>
+            {i18n.home.externalUrlLabel}
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            <a
+              href={tunnelUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ fontSize: '13px', color: '#2563eb', wordBreak: 'break-all', flex: 1, minWidth: 0 }}
+            >
+              {tunnelUrl}
+            </a>
+            <button
+              onClick={copyTunnelUrl}
+              style={{ flexShrink: 0, padding: '4px 10px', fontSize: '12px', fontWeight: 'bold', backgroundColor: copied ? '#10b981' : 'white', color: copied ? 'white' : '#2563eb', border: '1px solid #93c5fd', borderRadius: '6px', cursor: 'pointer' }}
+            >
+              {copied ? i18n.home.externalUrlCopied : i18n.home.externalUrlCopyButton}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* 3つのメインボタン */}
       <div style={{ display: 'flex', gap: '30px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '20px' }}>
