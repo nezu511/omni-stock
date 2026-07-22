@@ -1,6 +1,7 @@
 import type { Translations } from './types';
 
 export const en: Translations = {
+  stagingBanner: '🧪 Test Environment (not production)',
   nav: {
     consume: 'Consume',
     restock: 'Restock',

@@ -1,6 +1,7 @@
 export type Lang = 'ja' | 'en';
 
 export interface Translations {
+  stagingBanner: string;
   nav: {
     consume: string;
     restock: string;

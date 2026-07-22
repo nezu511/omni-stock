@@ -1,6 +1,7 @@
 import type { Translations } from './types';
 
 export const ja: Translations = {
+  stagingBanner: '🧪 テスト環境（本番ではありません）',
   nav: {
     consume: '使用',
     restock: '入荷',

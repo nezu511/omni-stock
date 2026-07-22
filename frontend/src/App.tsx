@@ -13,6 +13,16 @@ import ReagentHistoryLog from './pages/ReagentHistoryLog';
 import { LanguageProvider, useLang } from './contexts/LanguageContext';
 import { useNotifications } from './hooks/useNotifications';
 
+function StagingBanner() {
+  const { i18n } = useLang();
+  if (import.meta.env.VITE_ENV_LABEL !== 'staging') return null;
+  return (
+    <div style={{ backgroundColor: '#f59e0b', color: 'white', textAlign: 'center', padding: '5px 8px', fontSize: '13px', fontWeight: 'bold' }}>
+      {i18n.stagingBanner}
+    </div>
+  );
+}
+
 function NavBar() {
   const { i18n, toggleLanguage } = useLang();
   const { permission, requestPermission } = useNotifications();
@@ -74,6 +84,7 @@ function App() {
     <BrowserRouter>
       <LanguageProvider>
         <div style={{ fontFamily: 'sans-serif', backgroundColor: '#f9fafb', minHeight: '100vh' }}>
+          <StagingBanner />
           <NavBar />
           <div className="app-content" style={{ padding: '20px' }}>
             <Routes>
