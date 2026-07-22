@@ -50,6 +50,7 @@ model Reagent {
   site_url      String?
   createdAt     DateTime         @default(now())
   requests      ReagentRequest[]
+  histories     ReagentHistory[]
 }
 
 // 発注リクエスト1件＝イベント。
@@ -65,4 +66,18 @@ model ReagentRequest {
   note        String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+// 試薬の発注イベントの履歴ログ。ReagentRequest本体（キャンセル時に削除される）とは独立して
+// 記録することで、キャンセル後も「いつ・誰が・何を発注申請してキャンセルしたか」を追跡できる。
+// actionType: 'REQUESTED' | 'ORDERED' | 'ARRIVED' | 'CANCELLED'
+model ReagentHistory {
+  id          Int      @id @default(autoincrement())
+  reagentId   Int
+  reagent     Reagent  @relation(fields: [reagentId], references: [id], onDelete: Cascade)
+  actionType  String
+  requestedBy String?
+  quantity    Int?
+  note        String?
+  timestamp   DateTime @default(now())
 }

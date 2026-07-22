@@ -47,3 +47,17 @@ export interface Reagent {
   requests: ReagentRequest[];
 }
 
+export interface ReagentHistory {
+  id: number;
+  reagentId: number;
+  actionType: string;
+  requestedBy: string | null;
+  quantity: number | null;
+  note: string | null;
+  timestamp: string;
+}
+
+export interface ReagentHistoryWithReagent extends ReagentHistory {
+  reagent: { id: number; name: string; englishName: string | null };
+}
+

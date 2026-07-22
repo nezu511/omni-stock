@@ -224,5 +224,21 @@ export interface Translations {
     siteUrl: string;
     requestedAt: string;
     loading: string;
+    historyLink: string;
+  };
+  reagentHistoryLog: {
+    title: string;
+    subtitle: string;
+    backButton: string;
+    searchPlaceholder: string;
+    colDate: string;
+    colReagent: string;
+    colAction: string;
+    colQuantity: string;
+    colRequestedBy: string;
+    colNote: string;
+    noHistory: string;
+    loading: string;
+    actions: Record<string, string>;
   };
 }

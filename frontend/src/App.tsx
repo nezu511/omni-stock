@@ -9,6 +9,7 @@ import ItemDetail from './pages/ItemDetail';
 import ReagentRequest from './pages/ReagentRequest';
 import ReagentManage from './pages/ReagentManage';
 import HistoryLog from './pages/HistoryLog';
+import ReagentHistoryLog from './pages/ReagentHistoryLog';
 import { LanguageProvider, useLang } from './contexts/LanguageContext';
 import { useNotifications } from './hooks/useNotifications';
 
@@ -85,6 +86,7 @@ function App() {
               <Route path="/manage/:id" element={<ItemDetail />} />
               <Route path="/reagents" element={<ReagentRequest />} />
               <Route path="/reagents/manage" element={<ReagentManage />} />
+              <Route path="/reagents/manage/history" element={<ReagentHistoryLog />} />
             </Routes>
           </div>
         </div>

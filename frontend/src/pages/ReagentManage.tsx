@@ -129,12 +129,20 @@ export default function ReagentManage() {
     <div style={{ maxWidth: '680px', margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
         <h2 style={{ margin: 0 }}>{t.title}</h2>
-        <button
-          onClick={() => navigate('/reagents')}
-          style={{ fontSize: '14px', color: '#3b82f6', background: 'none', border: 'none', cursor: 'pointer' }}
-        >
-          {t.requestLink}
-        </button>
+        <div style={{ display: 'flex', gap: '14px' }}>
+          <button
+            onClick={() => navigate('/reagents/manage/history')}
+            style={{ fontSize: '14px', color: '#6b7280', background: 'none', border: 'none', cursor: 'pointer' }}
+          >
+            {t.historyLink}
+          </button>
+          <button
+            onClick={() => navigate('/reagents')}
+            style={{ fontSize: '14px', color: '#3b82f6', background: 'none', border: 'none', cursor: 'pointer' }}
+          >
+            {t.requestLink}
+          </button>
+        </div>
       </div>
       <p style={{ color: '#6b7280', marginBottom: '24px' }}>{t.subtitle}</p>
 

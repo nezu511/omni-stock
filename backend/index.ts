@@ -228,6 +228,23 @@ app.get('/api/history', async (req, res) => {
   }
 });
 
+// 全試薬の発注履歴をまとめて時系列（新しい順）で取得するAPI。
+// 試薬発注状況ページの「全履歴」用。既定で直近500件まで。
+app.get('/api/reagent-history', async (req, res) => {
+  try {
+    const limit = Math.min(Number(req.query.limit) || 500, 2000);
+    const histories = await prisma.reagentHistory.findMany({
+      orderBy: { timestamp: 'desc' },
+      take: limit,
+      include: { reagent: { select: { id: true, name: true, englishName: true } } },
+    });
+    res.json(histories);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch reagent history' });
+  }
+});
+
 //アイテムを追加
 app.post('/api/items', async (req, res) => {
   try {
@@ -584,15 +601,27 @@ app.post('/api/reagents', async (req, res) => {
 app.post('/api/reagent_requests', async (req, res) => {
   try {
     const { reagentId, requestedBy, quantity, note } = req.body;
+    const finalQuantity = Number(quantity) > 0 ? Number(quantity) : 1;
+    const finalNote = note || null;
     const request = await prisma.reagentRequest.create({
       data: {
         reagentId,
         requestedBy: requestedBy || null,
         status: 'REQUESTED',
-        quantity: Number(quantity) > 0 ? Number(quantity) : 1,
-        note: note || null,
+        quantity: finalQuantity,
+        note: finalNote,
       },
       include: { reagent: true },
+    });
+
+    await prisma.reagentHistory.create({
+      data: {
+        reagentId,
+        actionType: 'REQUESTED',
+        requestedBy: requestedBy || null,
+        quantity: finalQuantity,
+        note: finalNote,
+      },
     });
 
     broadcastEvent('reagent_requested', {
@@ -616,6 +645,16 @@ app.delete('/api/reagent_requests/:id', async (req, res) => {
     if (target.status === 'ARRIVED') {
       return res.status(400).json({ error: 'ARRIVED のリクエストはキャンセルできません' });
     }
+    // リクエスト本体は消えるが、キャンセルされた事実は履歴に残す
+    await prisma.reagentHistory.create({
+      data: {
+        reagentId: target.reagentId,
+        actionType: 'CANCELLED',
+        requestedBy: target.requestedBy,
+        quantity: target.quantity,
+        note: target.note,
+      },
+    });
     await prisma.reagentRequest.delete({ where: { id } });
     res.json({ message: 'Cancelled' });
   } catch (error) {
@@ -639,6 +678,16 @@ app.patch('/api/reagent_requests/:id/status', async (req, res) => {
       where: { id },
       data: { status },
       include: { reagent: true },
+    });
+
+    await prisma.reagentHistory.create({
+      data: {
+        reagentId: updated.reagentId,
+        actionType: status,
+        requestedBy: updated.requestedBy,
+        quantity: updated.quantity,
+        note: updated.note,
+      },
     });
 
     if (status === 'ARRIVED') {
