@@ -129,16 +129,16 @@ export default function ReagentManage() {
     <div style={{ maxWidth: '680px', margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
         <h2 style={{ margin: 0 }}>{t.title}</h2>
-        <div style={{ display: 'flex', gap: '14px' }}>
+        <div style={{ display: 'flex', gap: '10px' }}>
           <button
-            onClick={() => navigate('/reagents/manage/history')}
-            style={{ fontSize: '14px', color: '#6b7280', background: 'none', border: 'none', cursor: 'pointer' }}
+            onClick={() => navigate('/manage/history?type=reagent')}
+            style={{ padding: '10px 16px', backgroundColor: 'white', color: '#374151', border: '1px solid #d1d5db', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}
           >
             {t.historyLink}
           </button>
           <button
             onClick={() => navigate('/reagents')}
-            style={{ fontSize: '14px', color: '#3b82f6', background: 'none', border: 'none', cursor: 'pointer' }}
+            style={{ padding: '10px 20px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}
           >
             {t.requestLink}
           </button>

@@ -229,7 +229,7 @@ export const ja: Translations = {
     noRequested: '承認待ちのリクエストはありません。',
     noOrdered: '発注済みのアイテムはありません。',
     noArrived: '到着済みのアイテムはまだありません。',
-    requestLink: '→ 新規リクエストを提出',
+    requestLink: '＋ 新規リクエストを提出',
     catalogNumber: '型番号:',
     siteUrl: '発注先:',
     requestedAt: 'リクエスト日時:',

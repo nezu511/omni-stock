@@ -229,7 +229,7 @@ export const en: Translations = {
     noRequested: 'No pending requests.',
     noOrdered: 'No items currently ordered.',
     noArrived: 'No arrived items yet.',
-    requestLink: '→ Submit New Request',
+    requestLink: '+ Submit New Request',
     catalogNumber: 'Catalog #:',
     siteUrl: 'Order from:',
     requestedAt: 'Requested:',
