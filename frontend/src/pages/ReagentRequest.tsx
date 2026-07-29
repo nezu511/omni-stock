@@ -162,60 +162,61 @@ export default function ReagentRequest() {
             )}
             {filtered.map((r) => {
               const reagentName = getDisplayName(r.name, r.englishName, lang);
+              const isSelected = selected?.id === r.id;
               return (
-              <div
-                key={r.id}
-                style={selected?.id === r.id ? selectedCard : card}
-                onClick={() => setSelected(selected?.id === r.id ? null : r)}
-              >
-                <div>
-                  <div style={{ fontWeight: 'bold' }}>{reagentName.primary}</div>
-                  {r.catalogNumber && <div style={{ fontSize: '12px', color: '#9ca3af' }}># {r.catalogNumber}</div>}
+              <div key={r.id}>
+                <div
+                  style={isSelected ? selectedCard : card}
+                  onClick={() => setSelected(isSelected ? null : r)}
+                >
+                  <div>
+                    <div style={{ fontWeight: 'bold' }}>{reagentName.primary}</div>
+                    {r.catalogNumber && <div style={{ fontSize: '12px', color: '#9ca3af' }}># {r.catalogNumber}</div>}
+                  </div>
+                  <span style={{ fontSize: '12px', color: '#9ca3af' }}>
+                    {r.requests.length > 0 ? `${r.requests.length} req` : ''}
+                  </span>
                 </div>
-                <span style={{ fontSize: '12px', color: '#9ca3af' }}>
-                  {r.requests.length > 0 ? `${r.requests.length} req` : ''}
-                </span>
+
+                {/* 選択中のカードの直下にフォームを表示 */}
+                {isSelected && (
+                  <div style={{ border: '1px solid #3b82f6', borderRadius: '8px', padding: '16px', backgroundColor: '#eff6ff', marginTop: '8px' }}>
+                    <label style={{ fontSize: '14px', color: '#374151' }}>{t.requestedByLabel}</label>
+                    <input
+                      type="text"
+                      value={requestedBy}
+                      onChange={(e) => setRequestedBy(e.target.value)}
+                      placeholder={t.requestedByPlaceholder}
+                      style={{ display: 'block', width: '100%', padding: '8px 10px', border: '1px solid #d1d5db', borderRadius: '6px', marginTop: '4px', marginBottom: '12px', boxSizing: 'border-box' }}
+                    />
+                    <label style={{ fontSize: '14px', color: '#374151' }}>{t.quantityLabel}</label>
+                    <input
+                      type="number"
+                      min="1"
+                      value={quantity}
+                      onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value, 10) || 1))}
+                      style={{ display: 'block', width: '100px', padding: '8px 10px', border: '1px solid #d1d5db', borderRadius: '6px', marginTop: '4px', marginBottom: '12px', boxSizing: 'border-box' }}
+                    />
+                    <label style={{ fontSize: '14px', color: '#374151' }}>{t.noteLabel}</label>
+                    <textarea
+                      value={note}
+                      onChange={(e) => setNote(e.target.value)}
+                      placeholder={t.notePlaceholder}
+                      rows={2}
+                      style={{ display: 'block', width: '100%', padding: '8px 10px', border: '1px solid #d1d5db', borderRadius: '6px', marginTop: '4px', marginBottom: '12px', boxSizing: 'border-box', resize: 'vertical', fontFamily: 'inherit' }}
+                    />
+                    <button
+                      onClick={() => submitRequest(r.id)}
+                      style={{ padding: '8px 20px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
+                    >
+                      {t.submitButton}
+                    </button>
+                  </div>
+                )}
               </div>
               );
             })}
           </div>
-
-          {/* 選択済み → requestedBy + 提出 */}
-          {selected && (
-            <div style={{ border: '1px solid #3b82f6', borderRadius: '8px', padding: '16px', backgroundColor: '#eff6ff', marginBottom: '16px' }}>
-              <div style={{ fontWeight: 'bold', marginBottom: '10px' }}>📌 {getDisplayName(selected.name, selected.englishName, lang).primary}</div>
-              <label style={{ fontSize: '14px', color: '#374151' }}>{t.requestedByLabel}</label>
-              <input
-                type="text"
-                value={requestedBy}
-                onChange={(e) => setRequestedBy(e.target.value)}
-                placeholder={t.requestedByPlaceholder}
-                style={{ display: 'block', width: '100%', padding: '8px 10px', border: '1px solid #d1d5db', borderRadius: '6px', marginTop: '4px', marginBottom: '12px', boxSizing: 'border-box' }}
-              />
-              <label style={{ fontSize: '14px', color: '#374151' }}>{t.quantityLabel}</label>
-              <input
-                type="number"
-                min="1"
-                value={quantity}
-                onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value, 10) || 1))}
-                style={{ display: 'block', width: '100px', padding: '8px 10px', border: '1px solid #d1d5db', borderRadius: '6px', marginTop: '4px', marginBottom: '12px', boxSizing: 'border-box' }}
-              />
-              <label style={{ fontSize: '14px', color: '#374151' }}>{t.noteLabel}</label>
-              <textarea
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                placeholder={t.notePlaceholder}
-                rows={2}
-                style={{ display: 'block', width: '100%', padding: '8px 10px', border: '1px solid #d1d5db', borderRadius: '6px', marginTop: '4px', marginBottom: '12px', boxSizing: 'border-box', resize: 'vertical', fontFamily: 'inherit' }}
-              />
-              <button
-                onClick={() => submitRequest(selected.id)}
-                style={{ padding: '8px 20px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
-              >
-                {t.submitButton}
-              </button>
-            </div>
-          )}
         </>
       )}
 
