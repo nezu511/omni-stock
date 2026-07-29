@@ -8,6 +8,20 @@ export const API_BASE = explicitApiPort
   ? `http://${window.location.hostname}:${explicitApiPort}`
   : window.location.origin;
 
+// 画像URLを現在のアクセス経路（API_BASE）に合わせて解決する。
+// DBには相対パス（例: /uploads/xxx.jpg）が保存されているが、Tunnel経由の
+// 移行前に登録された古いデータには絶対URL（例: http://192.168.x.x:3001/uploads/xxx.jpg）が
+// 残っている場合があるため、その場合もパス部分だけ取り出して現在のoriginで組み直す。
+export function resolveImageUrl(imageUrl: string | null | undefined): string | null {
+  if (!imageUrl) return null;
+  if (!imageUrl.startsWith('http')) return `${API_BASE}${imageUrl}`;
+  try {
+    return `${API_BASE}${new URL(imageUrl).pathname}`;
+  } catch {
+    return imageUrl;
+  }
+}
+
 export function getAuthToken(): string {
   return localStorage.getItem('omni-stock-token') ?? '';
 }

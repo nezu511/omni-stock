@@ -98,7 +98,7 @@ export const ja: Translations = {
     colStatus: 'ステータス',
     colAction: '操作',
     editButton: '編集',
-    deleteButton: '🗑️ 削除',
+    deleteButton: '削除',
     deleteConfirm: (name) => `本当に「 ${name} 」を削除しますか？\n この操作は取り消せません`,
     deleteSuccess: '削除が完了しました',
     deleteFailed: '削除に失敗',

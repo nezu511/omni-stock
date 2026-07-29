@@ -7,6 +7,41 @@ import type { HistoryWithItem, ReagentHistoryWithReagent } from '../types';
 
 type Mode = 'item' | 'reagent';
 
+const ITEM_ACTION_COLORS: Record<string, { color: string; bg: string }> = {
+  CREATE: { color: '#1d4ed8', bg: '#eff6ff' },
+  QUANTITY_UPDATE: { color: '#374151', bg: '#f3f4f6' },
+  CONSUME: { color: '#b91c1c', bg: '#fef2f2' },
+  RESTOCK: { color: '#047857', bg: '#ecfdf5' },
+  REQUESTED: { color: '#1d4ed8', bg: '#eff6ff' },
+  ORDERED: { color: '#92400e', bg: '#fffbeb' },
+  ARRIVED: { color: '#047857', bg: '#ecfdf5' },
+  NONE: { color: '#6b7280', bg: '#f3f4f6' },
+};
+
+const REAGENT_ACTION_COLORS: Record<string, { color: string; bg: string }> = {
+  REQUESTED: { color: '#1d4ed8', bg: '#eff6ff' },
+  ORDERED: { color: '#92400e', bg: '#fffbeb' },
+  ARRIVED: { color: '#047857', bg: '#ecfdf5' },
+  CANCELLED: { color: '#b91c1c', bg: '#fef2f2' },
+};
+
+function ActionBadge({ label, actionType, colors }: { label: string; actionType: string; colors: Record<string, { color: string; bg: string }> }) {
+  const c = colors[actionType] ?? { color: '#374151', bg: '#f3f4f6' };
+  return (
+    <span style={{
+      display: 'inline-block',
+      padding: '3px 10px',
+      borderRadius: '999px',
+      fontSize: '13px',
+      fontWeight: 'bold',
+      color: c.color,
+      backgroundColor: c.bg,
+    }}>
+      {label}
+    </span>
+  );
+}
+
 export default function HistoryLog() {
   const { i18n, lang } = useLang();
   const navigate = useNavigate();
@@ -134,8 +169,8 @@ export default function HistoryLog() {
                       <td style={{ padding: '8px 14px', color: '#111827', fontWeight: 'bold', fontSize: '14px' }}>
                         {itemName.primary}
                       </td>
-                      <td style={{ padding: '8px 14px', color: '#374151', fontSize: '14px' }}>
-                        {i18n.itemDetail.actions[h.actionType] ?? h.actionType}
+                      <td style={{ padding: '8px 14px', fontSize: '14px' }}>
+                        <ActionBadge label={i18n.itemDetail.actions[h.actionType] ?? h.actionType} actionType={h.actionType} colors={ITEM_ACTION_COLORS} />
                       </td>
                       <td style={{
                         padding: '8px 14px', textAlign: 'right', fontSize: '14px', fontWeight: 'bold',
@@ -176,8 +211,8 @@ export default function HistoryLog() {
                     <td style={{ padding: '8px 14px', color: '#111827', fontWeight: 'bold', fontSize: '14px' }}>
                       {reagentName.primary}
                     </td>
-                    <td style={{ padding: '8px 14px', color: '#374151', fontSize: '14px' }}>
-                      {i18n.reagentHistoryLog.actions[h.actionType] ?? h.actionType}
+                    <td style={{ padding: '8px 14px', fontSize: '14px' }}>
+                      <ActionBadge label={i18n.reagentHistoryLog.actions[h.actionType] ?? h.actionType} actionType={h.actionType} colors={REAGENT_ACTION_COLORS} />
                     </td>
                     <td style={{ padding: '8px 14px', textAlign: 'right', fontSize: '14px', color: '#374151' }}>
                       {h.quantity ?? '-'}

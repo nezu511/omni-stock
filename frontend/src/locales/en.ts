@@ -98,7 +98,7 @@ export const en: Translations = {
     colStatus: 'Status',
     colAction: 'Actions',
     editButton: 'Edit',
-    deleteButton: '🗑️ Delete',
+    deleteButton: 'Delete',
     deleteConfirm: (name) => `Are you sure you want to delete "${name}"?\nThis action cannot be undone.`,
     deleteSuccess: 'Item deleted successfully.',
     deleteFailed: 'Failed to delete item.',

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { apiFetch } from '../config';
+import { apiFetch, resolveImageUrl } from '../config';
 import { useNavigate, useParams } from 'react-router-dom';
 import type { Item } from '../types';
 import { useLang } from '../contexts/LanguageContext';
@@ -317,7 +317,7 @@ export default function ItemDetail() {
           />
           {formData.imageUrl && (
             <div style={{ marginTop: '10px' }}>
-              <img src={formData.imageUrl} alt="Preview" style={{ height: '150px', borderRadius: '8px', objectFit: 'cover', border: '1px solid #e5e7eb' }} />
+              <img src={resolveImageUrl(formData.imageUrl) ?? undefined} alt="Preview" style={{ height: '150px', borderRadius: '8px', objectFit: 'cover', border: '1px solid #e5e7eb' }} />
             </div>
           )}
         </div>

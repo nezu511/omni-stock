@@ -130,7 +130,11 @@ app.post('/api/upload', (req, res) => {
     if (!req.file) {
       return res.status(400).json({ error: 'ファイルがありません' });
     }
-    const imageUrl = `http://${req.headers.host?.split(':')[0] ?? 'localhost'}:3001/uploads/${req.file.filename}`;
+    // ホスト名・ポートを含めない相対パスで返す。
+    // 絶対URLで固定すると、Cloudflare Tunnel経由（https・443番のみ公開）など
+    // アクセス元によって届かないURLになってしまうため、表示側（フロントエンド）で
+    // 現在のアクセス経路に応じて解決させる。
+    const imageUrl = `/uploads/${req.file.filename}`;
     res.json({ imageUrl });
   });
 });
@@ -721,7 +725,51 @@ app.get(/^\/(?!api|uploads).*/, (req, res) => {
   res.sendFile(path.join(frontendDist, 'index.html'));
 });
 
+// ==========================================
+// ⏰ 到着確認の自動化
+// ==========================================
+// ARRIVED（到着済み・未確認）のまま AUTO_CONFIRM_DAYS 日以上放置されたものは、
+// 手動で「確認した」を押したのと同じ扱いにする。
+// - アイテム: orderStatus を NONE に戻す（手動確認 = /api/change_status と同じ遷移）
+// - 試薬リクエスト: レコードごと削除する（ARRIVED の履歴は到着時点で既に
+//   ReagentHistory に書き込み済みなので、監査ログは残ったまま消える）
+const AUTO_CONFIRM_DAYS = 7;
+
+async function runAutoConfirm() {
+  const cutoff = new Date(Date.now() - AUTO_CONFIRM_DAYS * 24 * 60 * 60 * 1000);
+
+  try {
+    const staleItems = await prisma.item.findMany({
+      where: { orderStatus: 'ARRIVED', updatedAt: { lte: cutoff } },
+    });
+    for (const item of staleItems) {
+      await prisma.item.update({
+        where: { id: item.id },
+        data: {
+          orderStatus: 'NONE',
+          histories: { create: { actionType: 'NONE', amountChange: 0 } },
+        },
+      });
+    }
+
+    const staleRequests = await prisma.reagentRequest.findMany({
+      where: { status: 'ARRIVED', updatedAt: { lte: cutoff } },
+    });
+    for (const req of staleRequests) {
+      await prisma.reagentRequest.delete({ where: { id: req.id } });
+    }
+
+    if (staleItems.length > 0 || staleRequests.length > 0) {
+      console.log(`[auto-confirm] items: ${staleItems.length}, reagent requests: ${staleRequests.length}`);
+    }
+  } catch (error) {
+    console.error('[auto-confirm] failed:', error);
+  }
+}
+
 const PORT = Number(process.env.PORT) || 3001;
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on http://localhost:${PORT}`);
+  runAutoConfirm();
+  setInterval(runAutoConfirm, 60 * 60 * 1000);
 });

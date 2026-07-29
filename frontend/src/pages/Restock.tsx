@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { apiFetch } from '../config';
+import { apiFetch, resolveImageUrl } from '../config';
 import { Link } from 'react-router-dom';
 import type { Item, Reagent, ReagentRequest } from '../types';
 import { matchesSearchQuery } from '../utils/searchItems';
@@ -156,7 +156,7 @@ export default function Restock() {
 
       {item.imageUrl ? (
         <img
-          src={item.imageUrl}
+          src={resolveImageUrl(item.imageUrl) ?? undefined}
           alt={item.name}
           onClick={() => setEnlargedImage(item.imageUrl!)}
           style={{ width: '100%', height: '140px', objectFit: 'cover', borderRadius: '8px', cursor: 'zoom-in' }}
@@ -286,7 +286,7 @@ export default function Restock() {
           style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, cursor: 'zoom-out' }}
         >
           <img
-            src={enlargedImage}
+            src={resolveImageUrl(enlargedImage) ?? undefined}
             alt="拡大"
             onClick={(e) => e.stopPropagation()}
             style={{ maxWidth: '90vw', maxHeight: '90vh', objectFit: 'contain', borderRadius: '8px', boxShadow: '0 25px 50px rgba(0,0,0,0.5)' }}
