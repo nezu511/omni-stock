@@ -45,6 +45,8 @@ export interface Translations {
     externalUrlLabel: string;
     externalUrlCopyButton: string;
     externalUrlCopied: string;
+    newItemsButton: (count: number) => string;
+    newItemsDesc: string;
   };
   consume: {
     title: string;

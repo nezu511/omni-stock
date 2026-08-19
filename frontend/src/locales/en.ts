@@ -45,6 +45,8 @@ export const en: Translations = {
     externalUrlLabel: '🌐 External Access URL (for use outside the LAN, e.g. from home)',
     externalUrlCopyButton: 'Copy',
     externalUrlCopied: 'Copied',
+    newItemsButton: (n) => `What's New (${n})`,
+    newItemsDesc: 'Recently added items. Please decrease the count from the Consume page after use.',
   },
   consume: {
     title: '📤 Consume Items',

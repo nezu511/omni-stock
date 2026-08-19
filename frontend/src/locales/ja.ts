@@ -45,6 +45,8 @@ export const ja: Translations = {
     externalUrlLabel: '🌐 外部アクセス用URL（自宅などLAN外から使う時）',
     externalUrlCopyButton: 'コピー',
     externalUrlCopied: 'コピーしました',
+    newItemsButton: (n) => `お知らせ (${n}件)`,
+    newItemsDesc: '最近登録されたアイテムです。使用後は「使用」画面から数を減らしてください。',
   },
   consume: {
     title: '📤 物品の使用（消費）',

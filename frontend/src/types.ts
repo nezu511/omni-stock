@@ -22,6 +22,7 @@ export interface Item {
   orderStatus: string;
   orderUrl: string | null;
   unitPerBox: number;
+  createdAt: string;
   histories?: History[];
 }
 

@@ -8,12 +8,16 @@ import { useLang } from '../contexts/LanguageContext';
 
 type RequestWithReagent = ReagentRequest & { reagent: Reagent };
 
+const NEW_ITEM_ANNOUNCE_DAYS = 3;
+
 function Home() {
   const { i18n, lang } = useLang();
   const [items, setItems] = useState<Item[]>([]);
   const [reagents, setReagents] = useState<Reagent[]>([]);
   const [tunnelUrl, setTunnelUrl] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [showNewItems, setShowNewItems] = useState(false);
+  const [now, setNow] = useState<number | null>(null);
   // ARRIVED試薬は最終状態（DBステータスを戻す先がない）なのでlocalStorageで確認済みを管理
   const [dismissedReagentRequestIds, setDismissedReagentRequestIds] = useState<Set<number>>(() => {
     try {
@@ -27,7 +31,7 @@ function Home() {
   useEffect(() => {
     apiFetch(`/api/items`)
       .then((res) => res.json())
-      .then((data) => setItems(data))
+      .then((data) => { setItems(data); setNow(Date.now()); })
       .catch((err) => console.error('Error:', err));
     apiFetch(`/api/reagents`)
       .then((res) => res.json())
@@ -55,6 +59,11 @@ function Home() {
 
   const lowStockItems = items.filter(item => item.quantity <= item.minThreshold && item.orderStatus === 'REQUESTED');
   const arrivedItems = items.filter(item => item.orderStatus === 'ARRIVED');
+
+  const newItems = now === null ? [] : items.filter(item => {
+    const ageMs = now - new Date(item.createdAt).getTime();
+    return ageMs <= NEW_ITEM_ANNOUNCE_DAYS * 24 * 60 * 60 * 1000;
+  });
 
   // REQUESTED 状態のリクエストを持つ試薬（承認待ち）
   const pendingReagents = reagents.filter(r => r.requests.some(req => req.status === 'REQUESTED'));
@@ -149,11 +158,52 @@ function Home() {
       </div>
 
       {/* 試薬ボタン（横長） */}
-      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '60px' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: newItems.length > 0 ? '16px' : '60px' }}>
         <Link to="/reagents" style={wideButtonStyle}>
           {i18n.home.reagentButton}
         </Link>
       </div>
+
+      {/* ===== 新規アイテム追加のお知らせ（クリックで展開） ===== */}
+      {newItems.length > 0 && (
+        <div style={{ maxWidth: '780px', margin: '0 auto 60px', textAlign: 'left' }}>
+          <button
+            onClick={() => setShowNewItems(prev => !prev)}
+            style={{
+              display: 'block', width: '100%',
+              padding: '10px 16px', borderRadius: '8px', fontSize: '14px', fontWeight: 'bold',
+              border: '1px solid #d1d5db', backgroundColor: 'white', color: '#374151', cursor: 'pointer',
+            }}
+          >
+            {i18n.home.newItemsButton(newItems.length)}
+          </button>
+
+          {showNewItems && (
+            <div style={{ marginTop: '10px', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '20px', backgroundColor: '#f9fafb' }}>
+              <p style={{ color: '#6b7280', marginTop: 0, marginBottom: '16px', fontSize: '14px' }}>{i18n.home.newItemsDesc}</p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '15px' }}>
+                {newItems.map((item) => {
+                  const itemName = getDisplayName(item.name, item.englishName, lang);
+                  return (
+                  <div key={`new-${item.id}`} style={{ backgroundColor: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #e5e7eb', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+                    <div style={{ fontWeight: 'bold', color: '#111827', marginBottom: '8px' }}>{itemName.primary}</div>
+                    <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '10px' }}>
+                      {i18n.home.stockLabel} {formatQuantity(item.quantity, item.unitPerBox)}
+                    </div>
+                    <Link
+                      to={`/manage/${item.id}`}
+                      style={{ display: 'block', textAlign: 'center', backgroundColor: '#e5e7eb', color: '#374151', textDecoration: 'none', borderRadius: '6px', padding: '8px', fontSize: '14px', fontWeight: 'bold' }}
+                    >
+                      {i18n.home.detailButton}
+                    </Link>
+                  </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ===== 承認待ちパネル（在庫低下アラート + 試薬承認待ち） ===== */}
       {(lowStockItems.length > 0 || pendingReagents.length > 0) && (() => {
