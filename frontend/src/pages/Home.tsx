@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import type { Item, Reagent, ReagentRequest } from '../types';
 import { formatQuantity } from '../utils/formatQuantity';
 import { getDisplayName } from '../utils/getDisplayName';
+import { estimateDaysUntilEmpty, estimateLeadTimeDays } from '../utils/predictInventory';
 import { useLang } from '../contexts/LanguageContext';
 
 type RequestWithReagent = ReagentRequest & { reagent: Reagent };
@@ -227,6 +228,9 @@ function Home() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '15px' }}>
               {lowStockItems.map((item) => {
                 const itemName = getDisplayName(item.name, item.englishName, lang);
+                const histories = item.histories ?? [];
+                const daysUntilEmpty = estimateDaysUntilEmpty(item.quantity, histories);
+                const leadTime = estimateLeadTimeDays(histories);
                 return (
                 <div key={`item-${item.id}`} style={{ backgroundColor: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #fecaca', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
                   <div style={{ fontWeight: 'bold', color: '#111827', marginBottom: '8px' }}>{itemName.primary}</div>
@@ -234,6 +238,13 @@ function Home() {
                     <span style={{ color: '#dc2626', fontWeight: 'bold' }}>{i18n.home.stockLeft} {formatQuantity(item.quantity, item.unitPerBox)}</span>
                     <span style={{ color: '#6b7280' }}>{i18n.home.thresholdLabel} {item.minThreshold}</span>
                   </div>
+                  {daysUntilEmpty !== null && (
+                    <div style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '10px' }}>
+                      {leadTime !== null
+                        ? i18n.home.stockoutHintWithLeadTime(daysUntilEmpty.toFixed(0), leadTime.avgDays.toFixed(0))
+                        : i18n.home.stockoutHint(daysUntilEmpty.toFixed(0))}
+                    </div>
+                  )}
                   <button
                     onClick={() => handleChangeStatus(item.id, 'ORDERED')}
                     style={{ width: '100%', backgroundColor: '#dc2626', color: 'white', border: 'none', borderRadius: '6px', padding: '8px', fontSize: '14px', fontWeight: 'bold', cursor: 'pointer', marginBottom: '4px' }}

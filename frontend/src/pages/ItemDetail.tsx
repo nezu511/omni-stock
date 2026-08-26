@@ -3,6 +3,7 @@ import { apiFetch, resolveImageUrl } from '../config';
 import { useNavigate, useParams } from 'react-router-dom';
 import type { Item } from '../types';
 import { useLang } from '../contexts/LanguageContext';
+import { estimateDailyConsumptionRate, estimateDaysUntilEmpty, estimateLeadTimeDays } from '../utils/predictInventory';
 
 const STATUS_COLORS = {
   NONE: { color: '#374151', bg: '#f3f4f6' },
@@ -161,6 +162,11 @@ export default function ItemDetail() {
 
   const currentStatus = statusLabels[item.orderStatus as StatusKey] ?? statusLabels.NONE;
 
+  const histories = item.histories ?? [];
+  const consumptionRate = estimateDailyConsumptionRate(histories);
+  const daysUntilEmpty = estimateDaysUntilEmpty(item.quantity, histories);
+  const leadTime = estimateLeadTimeDays(histories);
+
   return (
     <div style={{ maxWidth: '600px', margin: '0 auto', padding: '20px' }}>
 
@@ -232,6 +238,22 @@ export default function ItemDetail() {
                 {i18n.itemDetail.setToStatus(statusLabels[status].label)}
               </button>
             ))}
+          </div>
+        </div>
+      </div>
+
+      <div style={{ marginBottom: '20px', backgroundColor: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
+        <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#374151', marginBottom: '8px' }}>{i18n.itemDetail.predictionTitle}</div>
+        <div style={{ fontSize: '14px', color: '#4b5563', lineHeight: 1.8 }}>
+          <div>
+            {consumptionRate !== null && daysUntilEmpty !== null
+              ? `${i18n.itemDetail.consumptionRateLabel(consumptionRate.toFixed(1))} ／ ${i18n.itemDetail.daysUntilEmptyLabel(daysUntilEmpty.toFixed(0))}`
+              : i18n.itemDetail.predictionInsufficientData}
+          </div>
+          <div>
+            {leadTime !== null
+              ? i18n.itemDetail.leadTimeLabel(leadTime.avgDays.toFixed(1), leadTime.sampleCount)
+              : i18n.itemDetail.predictionInsufficientData}
           </div>
         </div>
       </div>

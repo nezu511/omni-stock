@@ -47,6 +47,8 @@ export interface Translations {
     externalUrlCopied: string;
     newItemsButton: (count: number) => string;
     newItemsDesc: string;
+    stockoutHint: (days: string) => string;
+    stockoutHintWithLeadTime: (days: string, leadDays: string) => string;
   };
   consume: {
     title: string;
@@ -155,6 +157,11 @@ export interface Translations {
     statusUpdateFailed: string;
     historyTitle: string;
     noHistory: string;
+    predictionTitle: string;
+    consumptionRateLabel: (perDay: string) => string;
+    daysUntilEmptyLabel: (days: string) => string;
+    leadTimeLabel: (days: string, count: number) => string;
+    predictionInsufficientData: string;
     undoButton: string;
     undoConfirm: string;
     undoFailed: string;

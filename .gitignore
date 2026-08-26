@@ -33,3 +33,4 @@ backend/uploads/*
 # =========================
 frontend/dist/
 frontend/.env
+db-backups/
