@@ -100,6 +100,7 @@ export const en: Translations = {
     colStock: 'Stock',
     colThreshold: 'Min Threshold',
     colStatus: 'Status',
+    colDaysUntilEmpty: 'Runs Out In',
     colAction: 'Actions',
     editButton: 'Edit',
     deleteButton: 'Delete',
@@ -107,6 +108,8 @@ export const en: Translations = {
     deleteSuccess: 'Item deleted successfully.',
     deleteFailed: 'Failed to delete item.',
     historyLink: '📜 View Full History',
+    daysUntilEmptyShort: (days) => `~${days}d`,
+    daysUntilEmptyUnknown: '—',
   },
   historyLog: {
     title: '📜 Full History',

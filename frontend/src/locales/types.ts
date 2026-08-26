@@ -100,6 +100,7 @@ export interface Translations {
     colStock: string;
     colThreshold: string;
     colStatus: string;
+    colDaysUntilEmpty: string;
     colAction: string;
     editButton: string;
     deleteButton: string;
@@ -107,6 +108,8 @@ export interface Translations {
     deleteSuccess: string;
     deleteFailed: string;
     historyLink: string;
+    daysUntilEmptyShort: (days: string) => string;
+    daysUntilEmptyUnknown: string;
   };
   historyLog: {
     title: string;

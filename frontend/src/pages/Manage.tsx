@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import type { Item } from '../types';
 import { matchesSearchQuery } from '../utils/searchItems';
 import { getDisplayName } from '../utils/getDisplayName';
+import { estimateDaysUntilEmpty } from '../utils/predictInventory';
 import { useLang } from '../contexts/LanguageContext';
 
 export default function Admin() {
@@ -87,6 +88,7 @@ export default function Admin() {
               <th style={{ padding: '12px 16px', color: '#4b5563' }}>{i18n.manage.colStock}</th>
               <th style={{ padding: '12px 16px', color: '#4b5563' }}>{i18n.manage.colThreshold}</th>
               <th style={{ padding: '12px 16px', color: '#4b5563' }}>{i18n.manage.colStatus}</th>
+              <th style={{ padding: '12px 16px', color: '#4b5563' }}>{i18n.manage.colDaysUntilEmpty}</th>
               <th style={{ padding: '12px 16px', color: '#4b5563', textAlign: 'center' }}>{i18n.manage.colAction}</th>
             </tr>
           </thead>
@@ -120,6 +122,21 @@ export default function Admin() {
                     return (
                       <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: '6px', fontSize: '13px', fontWeight: 'bold', color: s.color, backgroundColor: s.bg }}>
                         {s.label}
+                      </span>
+                    );
+                  })()}
+                </td>
+
+                <td style={{ padding: '12px 16px' }}>
+                  {(() => {
+                    const daysLeft = estimateDaysUntilEmpty(item.quantity, item.histories ?? []);
+                    if (daysLeft === null) {
+                      return <span style={{ color: '#d1d5db' }}>{i18n.manage.daysUntilEmptyUnknown}</span>;
+                    }
+                    const color = daysLeft <= 7 ? '#dc2626' : daysLeft <= 14 ? '#d97706' : '#374151';
+                    return (
+                      <span style={{ color, fontWeight: daysLeft <= 14 ? 'bold' : 'normal' }}>
+                        {i18n.manage.daysUntilEmptyShort(daysLeft.toFixed(0))}
                       </span>
                     );
                   })()}

@@ -100,6 +100,7 @@ export const ja: Translations = {
     colStock: '現在在庫',
     colThreshold: 'しきい値',
     colStatus: 'ステータス',
+    colDaysUntilEmpty: '在庫切れまで',
     colAction: '操作',
     editButton: '編集',
     deleteButton: '削除',
@@ -107,6 +108,8 @@ export const ja: Translations = {
     deleteSuccess: '削除が完了しました',
     deleteFailed: '削除に失敗',
     historyLink: '📜 全履歴を見る',
+    daysUntilEmptyShort: (days) => `約${days}日`,
+    daysUntilEmptyUnknown: '—',
   },
   historyLog: {
     title: '📜 全履歴',
