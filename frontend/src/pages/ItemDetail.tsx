@@ -329,8 +329,17 @@ export default function ItemDetail() {
           />
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', position: 'relative' }}>
           <label style={{ fontWeight: 'bold', color: '#4b5563' }}>{i18n.itemDetail.imageLabel}</label>
+          {formData.imageUrl && (
+            <button
+              type="button"
+              onClick={() => setFormData((prev) => ({ ...prev, imageUrl: '' }))}
+              style={{ position: 'absolute', top: 0, right: 0, padding: '4px 10px', fontSize: '12px', backgroundColor: 'white', color: '#dc2626', border: '1px solid #fecaca', borderRadius: '6px', cursor: 'pointer' }}
+            >
+              {i18n.itemDetail.removeImageButton}
+            </button>
+          )}
           <input
             type="file"
             accept="image/*"

@@ -148,6 +148,7 @@ export interface Translations {
     keywordsLabel: string;
     urlLabel: string;
     imageLabel: string;
+    removeImageButton: string;
     saveButton: string;
     saveSuccess: string;
     saveFailed: string;

@@ -148,6 +148,7 @@ export const ja: Translations = {
     keywordsLabel: 'キーワード',
     urlLabel: '商品購入用URL',
     imageLabel: 'アイテム画像',
+    removeImageButton: '画像を削除',
     saveButton: '保存する',
     saveSuccess: '保存しました',
     saveFailed: '保存に失敗しました',

@@ -393,6 +393,8 @@ app.patch('/api/items/:id', async (req, res) => {
     const itemId = parseInt(req.params.id, 10);
     const { name, englishName, minThreshold, keywords, imageUrl, orderUrl, unitPerBox } = req.body;
 
+    const currentItem = await prisma.item.findUnique({ where: { id: itemId } });
+
     const updatedItem = await prisma.item.update({
       where: { id: itemId },
       data: {
@@ -400,12 +402,25 @@ app.patch('/api/items/:id', async (req, res) => {
         ...(englishName !== undefined && { englishName }),
         ...(minThreshold !== undefined && { minThreshold }),
         ...(keywords !== undefined && { keywords }),
-        ...(imageUrl !== undefined && { imageUrl }),
+        ...(imageUrl !== undefined && { imageUrl: imageUrl || null }),
         ...(orderUrl !== undefined && { site_url: orderUrl }),
         ...(unitPerBox !== undefined && { unitPerBox }),
       },
       include: { histories: { orderBy: { timestamp: 'desc' } } }
     });
+
+    // 画像が変更・削除された場合、置き換えられた古いファイルをディスクから削除する
+    // （そのままにすると使われなくなった画像がuploadsフォルダに残り続けてしまう）
+    if (imageUrl !== undefined && currentItem?.imageUrl && currentItem.imageUrl !== updatedItem.imageUrl) {
+      const filename = currentItem.imageUrl.split('/').pop();
+      if (filename) {
+        const filePath = path.join(__dirname, 'uploads', filename);
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+          console.log(`Deleted old image file: ${filename}`);
+        }
+      }
+    }
 
     const { site_url, ...rest } = updatedItem;
     res.json({ ...rest, orderUrl: site_url });

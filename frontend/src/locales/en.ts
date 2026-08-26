@@ -148,6 +148,7 @@ export const en: Translations = {
     keywordsLabel: 'Keywords',
     urlLabel: 'Purchase URL',
     imageLabel: 'Item Image',
+    removeImageButton: 'Remove Image',
     saveButton: 'Save',
     saveSuccess: 'Saved successfully.',
     saveFailed: 'Failed to save.',
