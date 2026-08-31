@@ -285,6 +285,10 @@ app.post('/api/items', async (req, res) => {
   }
 });
 
+// ランダム在庫確認（棚卸しスポットチェック）で確認モーダルを出す確率。
+// auditEnabled が true のアイテムに対してのみ、この確率でCONSUME/RESTOCK成功時に発動する。
+const AUDIT_PROBABILITY = 0.2;
+
 //アイテム数を増減
 app.post("/api/quantity_change", async (req, res) => {
   try {
@@ -321,7 +325,8 @@ app.post("/api/quantity_change", async (req, res) => {
       }
     }
 
-    if (actionType === 'CONSUME') {
+    // CONSUME、および在庫が減る方向の在庫確認修正(AUDIT_CORRECTED)は同じ扱いにする
+    if (actionType === 'CONSUME' || (actionType === 'AUDIT_CORRECTED' && quantity_change < 0)) {
       const s = currentItem?.orderStatus;
       // NONE or ARRIVED（確認前に消費）で閾値以下になった → 補充検討中に自動遷移
       if ((s === 'NONE' || s === 'ARRIVED') && newQty <= (currentItem?.minThreshold ?? 0)) {
@@ -356,7 +361,16 @@ app.post("/api/quantity_change", async (req, res) => {
       broadcastEvent('item_arrived', { name: updatedItem.name });
     }
 
-    res.json(updatedItem);
+    // ランダム在庫確認: 対象アイテムでCONSUME（消費）が成功した時だけ、低確率で
+    // 「実際の個数を確認してください」を促す。入荷(RESTOCK)時は不要（入荷直後は
+    // 数を数えて登録したばかりなのでズレにくいため）。在庫確認自体の送信
+    // (AUDIT_CONFIRMED/AUDIT_CORRECTED)では再度促さない。
+    const auditRequested =
+      actionType === 'CONSUME' &&
+      updatedItem.auditEnabled &&
+      Math.random() < AUDIT_PROBABILITY;
+
+    res.json({ ...updatedItem, auditRequested });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to update amount ' });
@@ -391,7 +405,7 @@ app.get('/api/items/:id', async (req, res) => {
 app.patch('/api/items/:id', async (req, res) => {
   try {
     const itemId = parseInt(req.params.id, 10);
-    const { name, englishName, minThreshold, keywords, imageUrl, orderUrl, unitPerBox } = req.body;
+    const { name, englishName, minThreshold, keywords, imageUrl, orderUrl, unitPerBox, auditEnabled } = req.body;
 
     const currentItem = await prisma.item.findUnique({ where: { id: itemId } });
 
@@ -405,6 +419,7 @@ app.patch('/api/items/:id', async (req, res) => {
         ...(imageUrl !== undefined && { imageUrl: imageUrl || null }),
         ...(orderUrl !== undefined && { site_url: orderUrl }),
         ...(unitPerBox !== undefined && { unitPerBox }),
+        ...(auditEnabled !== undefined && { auditEnabled }),
       },
       include: { histories: { orderBy: { timestamp: 'desc' } } }
     });

@@ -25,6 +25,7 @@ model Item {
     site_url String?
     orderStatus String @default("NONE")
     unitPerBox Int @default(1)
+    auditEnabled Boolean @default(false)
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 

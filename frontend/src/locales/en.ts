@@ -152,6 +152,7 @@ export const en: Translations = {
     urlLabel: 'Purchase URL',
     imageLabel: 'Item Image',
     removeImageButton: 'Remove Image',
+    auditEnabledLabel: 'Include in random inventory checks',
     saveButton: 'Save',
     saveSuccess: 'Saved successfully.',
     saveFailed: 'Failed to save.',
@@ -179,6 +180,8 @@ export const en: Translations = {
       ORDERED: 'Set to Ordered',
       ARRIVED: 'Set to Arrived',
       NONE: 'Set to None',
+      AUDIT_CONFIRMED: 'Inventory Check OK',
+      AUDIT_CORRECTED: 'Corrected via Inventory Check',
     },
     statuses: {
       NONE: 'None',
@@ -268,5 +271,13 @@ export const en: Translations = {
       ARRIVED: 'Arrived',
       CANCELLED: 'Cancelled',
     },
+  },
+  auditConfirm: {
+    title: '🔍 Inventory Check',
+    description: 'Please count the actual quantity and enter it below. If it matches the record, just submit as-is.',
+    inputLabel: 'Actual Quantity',
+    confirmButton: 'Confirm',
+    skipButton: 'Skip for now',
+    updateFailed: 'Failed to submit the confirmation',
   },
 };

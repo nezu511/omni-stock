@@ -6,6 +6,7 @@ import { matchesSearchQuery } from '../utils/searchItems';
 import { formatBoxQuantity } from '../utils/formatQuantity';
 import { getDisplayName } from '../utils/getDisplayName';
 import { useLang } from '../contexts/LanguageContext';
+import AuditConfirmModal from '../components/AuditConfirmModal';
 
 type RequestWithReagent = ReagentRequest & { reagent: Reagent };
 
@@ -16,6 +17,7 @@ export default function Restock() {
   const [searchQuery, setSearchQuery] = useState('');
   const [orderedReagentRequests, setOrderedReagentRequests] = useState<RequestWithReagent[]>([]);
   const [enlargedImage, setEnlargedImage] = useState<string | null>(null);
+  const [auditModalItem, setAuditModalItem] = useState<Item | null>(null);
 
   const closeImage = useCallback(() => setEnlargedImage(null), []);
 
@@ -66,12 +68,12 @@ export default function Restock() {
       });
 
       if (response.ok) {
-        setItems((prev) => prev.map((item) =>
-          item.id === itemId
-            ? { ...item, quantity: item.quantity + restockAmount, orderStatus: item.orderStatus === 'ORDERED' ? 'ARRIVED' : item.orderStatus }
-            : item
-        ));
+        const updated: Item & { auditRequested?: boolean } = await response.json();
+        setItems((prev) => prev.map((item) => (item.id === itemId ? { ...item, ...updated } : item)));
         setInputValues((prev) => ({ ...prev, [itemId]: '' }));
+        if (updated.auditRequested) {
+          setAuditModalItem(updated);
+        }
       } else {
         alert(i18n.restock.updateFailed);
       }
@@ -292,6 +294,15 @@ export default function Restock() {
             style={{ maxWidth: '90vw', maxHeight: '90vh', objectFit: 'contain', borderRadius: '8px', boxShadow: '0 25px 50px rgba(0,0,0,0.5)' }}
           />
         </div>
+      )}
+      {auditModalItem && (
+        <AuditConfirmModal
+          itemId={auditModalItem.id}
+          itemName={getDisplayName(auditModalItem.name, auditModalItem.englishName, lang).primary}
+          currentQuantity={auditModalItem.quantity}
+          onClose={() => setAuditModalItem(null)}
+          onUpdated={(updated) => setItems((prev) => prev.map((item) => (item.id === updated.id ? { ...item, ...updated } : item)))}
+        />
       )}
     </div>
   );

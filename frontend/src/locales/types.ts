@@ -152,6 +152,7 @@ export interface Translations {
     urlLabel: string;
     imageLabel: string;
     removeImageButton: string;
+    auditEnabledLabel: string;
     saveButton: string;
     saveSuccess: string;
     saveFailed: string;
@@ -254,5 +255,13 @@ export interface Translations {
     noHistory: string;
     loading: string;
     actions: Record<string, string>;
+  };
+  auditConfirm: {
+    title: string;
+    description: string;
+    inputLabel: string;
+    confirmButton: string;
+    skipButton: string;
+    updateFailed: string;
   };
 }

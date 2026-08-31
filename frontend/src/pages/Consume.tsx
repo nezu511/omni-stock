@@ -5,6 +5,7 @@ import type { Item } from '../types';
 import { matchesSearchQuery } from '../utils/searchItems';
 import { getDisplayName } from '../utils/getDisplayName';
 import { useLang } from '../contexts/LanguageContext';
+import AuditConfirmModal from '../components/AuditConfirmModal';
 
 export default function Consume() {
   const { i18n, lang } = useLang();
@@ -13,6 +14,7 @@ export default function Consume() {
   const [consumeMode, setConsumeMode] = useState<{ [key: number]: 'unit' | 'box' }>({});
   const [searchQuery, setSearchQuery] = useState('');
   const [enlargedImage, setEnlargedImage] = useState<string | null>(null);
+  const [auditModalItem, setAuditModalItem] = useState<Item | null>(null);
 
   const closeImage = useCallback(() => setEnlargedImage(null), []);
 
@@ -46,10 +48,12 @@ export default function Consume() {
       });
 
       if (response.ok) {
-        setItems((prev) => prev.map((item) =>
-          item.id === itemId ? { ...item, quantity: item.quantity - consumeAmount } : item
-        ));
+        const updated: Item & { auditRequested?: boolean } = await response.json();
+        setItems((prev) => prev.map((item) => (item.id === itemId ? { ...item, ...updated } : item)));
         setInputValues((prev) => ({ ...prev, [itemId]: '' }));
+        if (updated.auditRequested) {
+          setAuditModalItem(updated);
+        }
       } else {
         alert(i18n.consume.updateFailed);
       }
@@ -207,6 +211,15 @@ export default function Consume() {
             style={{ maxWidth: '90vw', maxHeight: '90vh', objectFit: 'contain', borderRadius: '8px', boxShadow: '0 25px 50px rgba(0,0,0,0.5)' }}
           />
         </div>
+      )}
+      {auditModalItem && (
+        <AuditConfirmModal
+          itemId={auditModalItem.id}
+          itemName={getDisplayName(auditModalItem.name, auditModalItem.englishName, lang).primary}
+          currentQuantity={auditModalItem.quantity}
+          onClose={() => setAuditModalItem(null)}
+          onUpdated={(updated) => setItems((prev) => prev.map((item) => (item.id === updated.id ? { ...item, ...updated } : item)))}
+        />
       )}
     </div>
   );

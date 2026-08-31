@@ -16,6 +16,8 @@ const ITEM_ACTION_COLORS: Record<string, { color: string; bg: string }> = {
   ORDERED: { color: '#92400e', bg: '#fffbeb' },
   ARRIVED: { color: '#047857', bg: '#ecfdf5' },
   NONE: { color: '#6b7280', bg: '#f3f4f6' },
+  AUDIT_CONFIRMED: { color: '#047857', bg: '#ecfdf5' },
+  AUDIT_CORRECTED: { color: '#92400e', bg: '#fffbeb' },
 };
 
 const REAGENT_ACTION_COLORS: Record<string, { color: string; bg: string }> = {

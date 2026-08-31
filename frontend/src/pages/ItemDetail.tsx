@@ -14,7 +14,7 @@ const STATUS_COLORS = {
 
 type StatusKey = keyof typeof STATUS_COLORS;
 
-type ItemFormData = Pick<Item, 'name' | 'englishName' | 'minThreshold' | 'unitPerBox' | 'keywords' | 'imageUrl' | 'orderUrl'>;
+type ItemFormData = Pick<Item, 'name' | 'englishName' | 'minThreshold' | 'unitPerBox' | 'keywords' | 'imageUrl' | 'orderUrl' | 'auditEnabled'>;
 
 export default function ItemDetail() {
   const { id } = useParams();
@@ -31,6 +31,7 @@ export default function ItemDetail() {
     keywords: '',
     imageUrl: '',
     orderUrl: '',
+    auditEnabled: false,
   });
 
   const statusLabels = {
@@ -54,6 +55,7 @@ export default function ItemDetail() {
           keywords: data.keywords ?? '',
           imageUrl: data.imageUrl ?? '',
           orderUrl: data.orderUrl ?? '',
+          auditEnabled: data.auditEnabled ?? false,
         });
       })
       .catch((err) => console.error('Error:', err));
@@ -65,8 +67,8 @@ export default function ItemDetail() {
   }, [id]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type } = e.target;
-    const parsedValue = type === 'number' ? Number(value) : value;
+    const { name, value, type, checked } = e.target;
+    const parsedValue = type === 'checkbox' ? checked : type === 'number' ? Number(value) : value;
     setFormData((prev) => ({ ...prev, [name]: parsedValue }));
   };
 
@@ -307,6 +309,18 @@ export default function ItemDetail() {
           />
         </div>
 
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <input
+            type="checkbox"
+            id="auditEnabled"
+            name="auditEnabled"
+            checked={formData.auditEnabled}
+            onChange={handleChange}
+            style={{ width: '16px', height: '16px' }}
+          />
+          <label htmlFor="auditEnabled" style={{ fontWeight: 'bold', color: '#4b5563', cursor: 'pointer' }}>{i18n.itemDetail.auditEnabledLabel}</label>
+        </div>
+
         <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
           <label style={{ fontWeight: 'bold', color: '#4b5563' }}>{i18n.itemDetail.keywordsLabel}</label>
           <input
@@ -409,6 +423,7 @@ export default function ItemDetail() {
                         keywords: updated.keywords ?? '',
                         imageUrl: updated.imageUrl ?? '',
                         orderUrl: updated.orderUrl ?? '',
+                        auditEnabled: updated.auditEnabled ?? false,
                       });
                     }}
                     style={{ flexShrink: 0, padding: '3px 10px', fontSize: '12px', backgroundColor: 'white', color: '#6b7280', border: '1px solid #d1d5db', borderRadius: '4px', cursor: 'pointer' }}

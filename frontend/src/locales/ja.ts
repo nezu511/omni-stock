@@ -152,6 +152,7 @@ export const ja: Translations = {
     urlLabel: '商品購入用URL',
     imageLabel: 'アイテム画像',
     removeImageButton: '画像を削除',
+    auditEnabledLabel: 'ランダム在庫確認の対象にする',
     saveButton: '保存する',
     saveSuccess: '保存しました',
     saveFailed: '保存に失敗しました',
@@ -179,6 +180,8 @@ export const ja: Translations = {
       ORDERED: '注文済みに変更',
       ARRIVED: '入荷済みに変更',
       NONE: 'Noneに変更',
+      AUDIT_CONFIRMED: '在庫確認OK',
+      AUDIT_CORRECTED: '在庫確認により修正',
     },
     statuses: {
       NONE: 'None',
@@ -268,5 +271,13 @@ export const ja: Translations = {
       ARRIVED: '到着',
       CANCELLED: 'キャンセル',
     },
+  },
+  auditConfirm: {
+    title: '🔍 在庫確認のお願い',
+    description: '実際の個数を数えて入力してください。記録と一致していればそのまま送信でOKです。',
+    inputLabel: '実際の個数',
+    confirmButton: '確認する',
+    skipButton: '今回はスキップ',
+    updateFailed: '確認結果の送信に失敗しました',
   },
 };
