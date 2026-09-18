@@ -12,12 +12,16 @@ Built for real-world use in a university research lab.
 - **Real-time stock tracking** — Consume and restock items; history is always recorded
 - **Box/unit conversion** — Items like test tubes (1 box = 10 units) handled natively; input in boxes, stored as units
 - **Low-stock alerts** — Home dashboard highlights items below threshold with box-aware display (e.g., "26 (2箱+6個)")
-- **Order status workflow** — Track items through `None → Ordered → Arrived` states
+- **Stockout prediction** — Estimates days until an item runs out from its consumption history, plus average order-to-arrival lead time
+- **Order status workflow** — Track items through `None → Requested → Ordered → Arrived` states; arrived items auto-confirm after 7 days if left untouched
+- **Random inventory audit** — Opt-in per item; after a consume action, occasionally prompts to confirm the actual count and auto-corrects the record if it drifted
 - **Reagent request system** — Lab members submit purchase requests; manager tracks status
+- **New item announcements** — Home screen surfaces recently added items for a few days so staff remember to log usage
 - **Real-time notifications** — Server-Sent Events (SSE) + Web Notifications API for arrival alerts
 - **Multilingual UI** — Japanese / English toggle
-- **Image support** — Upload product photos for quick visual identification
+- **Image support** — Upload, replace, and delete product photos for quick visual identification
 - **Keyword search** — Search by name, English name, or custom keywords
+- **Color-coded history log** — Every action type (consume, restock, audit, order status, ...) gets a distinct badge color for quick scanning
 
 ---
 
@@ -115,17 +119,26 @@ omni-stock/
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
+| POST | `/api/auth` | Password login (rate-limited) |
+| POST | `/api/upload` | Upload product image |
+| GET | `/api/events` | SSE stream for real-time alerts |
+| GET | `/api/tunnel-url` | Current Cloudflare Tunnel URL (for Home screen display) |
 | GET | `/api/items` | List all items with history |
+| GET | `/api/items/:id` | Get a single item with history |
 | POST | `/api/items` | Create item |
-| PATCH | `/api/items/:id` | Update item metadata |
+| PATCH | `/api/items/:id` | Update item metadata (name, threshold, image, audit opt-in, ...) |
 | DELETE | `/api/items/:id` | Delete item |
-| POST | `/api/quantity_change` | Consume or restock (with stock guard) |
-| PATCH | `/api/change_status` | Update order status |
+| POST | `/api/quantity_change` | Consume, restock, or audit-confirm/correct a quantity (with stock guard) |
+| PATCH | `/api/change_status` | Update order status (`Requested → Ordered → Arrived`) |
+| GET | `/api/history` | Full item action history |
+| DELETE | `/api/history/:id` | Delete a history entry (undo) |
 | GET | `/api/reagents` | List reagents with requests |
 | POST | `/api/reagents` | Create reagent |
+| DELETE | `/api/reagents/:id` | Delete reagent |
 | POST | `/api/reagent_requests` | Submit purchase request |
-| GET | `/api/notifications/stream` | SSE stream for real-time alerts |
-| POST | `/api/upload` | Upload product image |
+| PATCH | `/api/reagent_requests/:id/status` | Update reagent request status |
+| DELETE | `/api/reagent_requests/:id` | Cancel/delete a reagent request |
+| GET | `/api/reagent-history` | Full reagent request history |
 
 ---
 
